@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "displayName": "Unity Shared Dependencies",
   "description": "This package contains shared dependencies between unity-renderer and asset-bundle-converter repositories, this includes gltf importer wrappers and shaders",
-  "unity": "2020.3.34f1",
+  "unity": "2020.3",
+  "unityRelease": "34f1",
   "dependencies": {
  },
   "author": {
