@@ -19,7 +19,7 @@ namespace DCL.GLTFast.Wrappers
 
             if (gltfMaterial.emissive != Color.black)
             {
-                generatedMaterial.SetColor(emissionColorPropId, gltfMaterial.emissive * CUSTOM_EMISSIVE_FACTOR);
+                generatedMaterial.SetColor(emissiveFactorPropId, gltfMaterial.emissive * CUSTOM_EMISSIVE_FACTOR);
             }
 
             return generatedMaterial;

@@ -19,8 +19,11 @@ namespace DCL.GLTFast.Wrappers
         private readonly Shader shader;
 
         public DecentralandMaterialGenerator(string shaderName) { shader = Shader.Find(shaderName); }
-        public override Material GetDefaultMaterial() { return new Material(shader); }
-        
+        protected override Material GenerateDefaultMaterial()
+        {
+            return new Material(shader);
+        }
+
         /// <summary>
         /// Here we convert a GLTFMaterial into our Material using our shaders
         /// </summary>
