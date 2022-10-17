@@ -32,7 +32,7 @@ namespace DCL.GLTFast.Wrappers
         /// <returns></returns>
         public override Material GenerateMaterial(GLTFastMaterial gltfMaterial, IGltfReadable gltf)
         {
-            material = GetDefaultMaterial();
+            material = new Material(shader);
             material.name = gltfMaterial.name;
 
             if (gltfMaterial.extensions?.KHR_materials_pbrSpecularGlossiness != null)
