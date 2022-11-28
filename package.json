@@ -1,11 +1,12 @@
 {
   "name": "com.decentraland.unity-shared-dependencies",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "displayName": "Unity Shared Dependencies",
   "description": "This package contains shared dependencies between unity-renderer and asset-bundle-converter repositories, this includes gltf importer wrappers and shaders",
   "unity": "2021.3",
   "unityRelease": "14f1",
   "dependencies": {
+    "com.atteneder.gltfast": "https://github.com/Kinerius/glTFast.git"
  },
   "author": {
     "name": "Decentraland",
