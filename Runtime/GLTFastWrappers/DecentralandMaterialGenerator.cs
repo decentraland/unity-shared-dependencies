@@ -3,6 +3,7 @@ using DCL.Shaders;
 using GLTFast;
 using GLTFast.Materials;
 using GLTFast.Schema;
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using GLTFastMaterial = GLTFast.Schema.Material;
@@ -18,11 +19,12 @@ namespace DCL.GLTFast.Wrappers
         private Material material;
         private readonly Shader shader;
 
-        public DecentralandMaterialGenerator(string shaderName) { shader = Shader.Find(shaderName); }
-        protected override Material GenerateDefaultMaterial()
+        public DecentralandMaterialGenerator(string shaderName)
         {
-            return new Material(shader);
+            shader = Shader.Find(shaderName);
         }
+
+        protected override Material GenerateDefaultMaterial(bool pointsSupport = false) => new (shader);
 
         /// <summary>
         /// Here we convert a GLTFMaterial into our Material using our shaders
@@ -30,7 +32,7 @@ namespace DCL.GLTFast.Wrappers
         /// <param name="gltfMaterial"></param>
         /// <param name="gltf"></param>
         /// <returns></returns>
-        public override Material GenerateMaterial(GLTFastMaterial gltfMaterial, IGltfReadable gltf)
+        public override Material GenerateMaterial(GLTFastMaterial gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
         {
             material = new Material(shader);
             material.name = gltfMaterial.name;
@@ -45,6 +47,7 @@ namespace DCL.GLTFast.Wrappers
                 SetBaseMapTexture(specGloss.diffuseTexture, gltf);
                 SetSpecularMapTexture(specGloss.specularGlossinessTexture, gltf);
             }
+
             // If there's a specular-glossiness extension, ignore metallic-roughness
             // (according to extension specification)
             else
@@ -56,24 +59,24 @@ namespace DCL.GLTFast.Wrappers
                     SetColor(roughness.baseColor);
                     SetBaseMapTexture(roughness.baseColorTexture, gltf);
                     SetMetallic(roughness.metallicFactor);
-                    SetMetallicRoughnessTexture( gltf, roughness.metallicRoughnessTexture, roughness.roughnessFactor);
+                    SetMetallicRoughnessTexture(gltf, roughness.metallicRoughnessTexture, roughness.roughnessFactor);
                 }
             }
 
-            SetBumpMapTexture( gltfMaterial.normalTexture, gltf);
-            SetOcclusionTexture(  gltfMaterial.occlusionTexture, gltf);
-            SetEmissiveColor( gltfMaterial.emissive);
-            SetEmissiveTexture(  gltfMaterial.emissiveTexture, gltf);
+            SetBumpMapTexture(gltfMaterial.normalTexture, gltf);
+            SetOcclusionTexture(gltfMaterial.occlusionTexture, gltf);
+            SetEmissiveColor(gltfMaterial.emissive);
+            SetEmissiveTexture(gltfMaterial.emissiveTexture, gltf);
 
             SetAlphaMode(gltfMaterial.alphaModeEnum, gltfMaterial.alphaCutoff);
             SetDoubleSided(gltfMaterial.doubleSided);
-            
+
             SRPBatchingHelper.OptimizeMaterial(material);
-            
+
             return material;
         }
-        
-        private void SetEmissiveColor( Color gltfMaterialEmissive)
+
+        private void SetEmissiveColor(Color gltfMaterialEmissive)
         {
             if (gltfMaterialEmissive != Color.black)
             {
@@ -82,7 +85,7 @@ namespace DCL.GLTFast.Wrappers
                 material.EnableKeyword(ShaderUtils.KEYWORD_EMISSION);
             }
         }
-        
+
         private void SetEmissiveTexture(TextureInfo emissiveTexture, IGltfReadable gltf)
         {
             if (TrySetTexture(
@@ -99,7 +102,7 @@ namespace DCL.GLTFast.Wrappers
                 material.EnableKeyword(ShaderUtils.KEYWORD_EMISSION);
             }
         }
-        
+
         private void SetOcclusionTexture(OcclusionTextureInfo occlusionTexture, IGltfReadable gltf)
         {
             if (TrySetTexture(
@@ -116,13 +119,13 @@ namespace DCL.GLTFast.Wrappers
                 material.SetFloat(ShaderUtils.OcclusionStrength, occlusionTexture.strength);
             }
         }
-        
+
         private void SetBumpMapTexture(NormalTextureInfo textureInfo, IGltfReadable gltf)
         {
             if (TrySetTexture(
                     textureInfo,
                     material,
-                    gltf, 
+                    gltf,
                     ShaderUtils.BumpMap,
                     ShaderUtils.BumpMapScaleTransformPropId,
                     ShaderUtils.BumpMapRotationPropId,
@@ -151,26 +154,29 @@ namespace DCL.GLTFast.Wrappers
                 material.SetInt(ShaderUtils.MetallicMapUVs, textureInfo.texCoord);
                 material.EnableKeyword(ShaderUtils.KEYWORD_METALLICSPECGLOSSMAP);
             }
-            else
-            {
-                SetSmoothness(1 - roughnessFactor);
-            }
+            else { SetSmoothness(1 - roughnessFactor); }
         }
 
-        private void SetSmoothness(float roughnessFactor) { material.SetFloat(ShaderUtils.Smoothness, roughnessFactor); }
+        private void SetSmoothness(float roughnessFactor)
+        {
+            material.SetFloat(ShaderUtils.Smoothness, roughnessFactor);
+        }
 
-        private void SetMetallic(float metallicFactor) { material.SetFloat(ShaderUtils.Metallic, metallicFactor); }
+        private void SetMetallic(float metallicFactor)
+        {
+            material.SetFloat(ShaderUtils.Metallic, metallicFactor);
+        }
 
         private void SetSpecularMapTexture(TextureInfo textureInfo, IGltfReadable gltf)
         {
-            if(TrySetTexture(
-                textureInfo,
-                material,
-                gltf,
-                ShaderUtils.SpecGlossMap,
-                ShaderUtils.SpecGlossMapScaleTransform,
-                ShaderUtils.SpecGlossMapRotation,
-                ShaderUtils.SpecGlossMapUVChannelPropId))
+            if (TrySetTexture(
+                    textureInfo,
+                    material,
+                    gltf,
+                    ShaderUtils.SpecGlossMap,
+                    ShaderUtils.SpecGlossMapScaleTransform,
+                    ShaderUtils.SpecGlossMapRotation,
+                    ShaderUtils.SpecGlossMapUVChannelPropId))
             {
                 material.SetFloat(ShaderUtils.SmoothnessTextureChannel, 0);
                 material.EnableKeyword(ShaderUtils.KEYWORD_SPECGLOSSMAP);
@@ -190,7 +196,10 @@ namespace DCL.GLTFast.Wrappers
             );
         }
 
-        private void SetSpecularColor(Color color) { material.SetVector(ShaderUtils.SpecColor, color); }
+        private void SetSpecularColor(Color color)
+        {
+            material.SetVector(ShaderUtils.SpecColor, color);
+        }
 
         private void SetGlossiness(float glossiness)
         {
@@ -198,7 +207,10 @@ namespace DCL.GLTFast.Wrappers
             material.SetFloat(ShaderUtils.Glossiness, glossiness);
         }
 
-        private void SetColor(Color color) { material.SetColor(ShaderUtils.BaseColor, color); }
+        private void SetColor(Color color)
+        {
+            material.SetColor(ShaderUtils.BaseColor, color);
+        }
 
         private void SetAlphaMode(GLTFastMaterial.AlphaMode alphaMode, float alphaCutoff)
         {
@@ -244,14 +256,8 @@ namespace DCL.GLTFast.Wrappers
 
         private void SetDoubleSided(bool doubleSided)
         {
-            if (doubleSided)
-            {
-                material.SetInt(ShaderUtils.Cull, (int)CullMode.Off);
-            }
-            else
-            {
-                material.SetInt(ShaderUtils.Cull, (int)CullMode.Back);
-            }
+            if (doubleSided) { material.SetInt(ShaderUtils.Cull, (int)CullMode.Off); }
+            else { material.SetInt(ShaderUtils.Cull, (int)CullMode.Back); }
 
             material.doubleSidedGI = doubleSided;
         }
