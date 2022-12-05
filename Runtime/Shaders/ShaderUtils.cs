@@ -117,6 +117,7 @@ namespace DCL.Shaders
             int originalRenderQueue = material.renderQueue;
             material.shader = Shader.Find("DCL/Universal Render Pipeline/Lit");
             material.renderQueue = originalRenderQueue;
+            float cutoff = material.GetFloat(Cutoff);
 
             if (material.HasTexture(BumpMap) && material.GetTexture(BumpMap) != null)
                 material.EnableKeyword(NormalMapKeyword);
@@ -135,7 +136,7 @@ namespace DCL.Shaders
                 return;
             }
 
-            if (originalRenderQueue > 2600)
+            if (originalRenderQueue > 2600 || cutoff > 0)
             {
                 material.SetOverrideTag(RenderType, TransparentCutout);
                 material.SetInt(SrcBlend, (int)BlendMode.One);
