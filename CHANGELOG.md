@@ -1,3 +1,6 @@
+#1.1.2
+- Changed the gltfast dependency repository
+
 #1.1.1
 - Updated gltFast version and fixed compile errors
 
