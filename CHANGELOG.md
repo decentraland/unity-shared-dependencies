@@ -1,3 +1,6 @@
+#1.1.3
+- Pulled changes from https://github.com/decentraland/unity-renderer/pull/3667
+
 #1.1.2
 - Changed the gltfast dependency repository
 
