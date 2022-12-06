@@ -1,3 +1,6 @@
+#1.1.4
+- Changed dependency name as the package name was rolled back 
+
 #1.1.3
 - Pulled changes from https://github.com/decentraland/unity-renderer/pull/3667
 
