@@ -6,7 +6,7 @@
   "unity": "2021.3",
   "unityRelease": "14f1",
   "dependencies": {
-    "com.atteneder.gltfast": "https://github.com/decentraland/glTFast.git"
+    "com.atteneder.gltfast": "5.0.0-exp.1"
  },
   "author": {
     "name": "Decentraland",
