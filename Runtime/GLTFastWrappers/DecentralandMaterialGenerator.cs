@@ -41,8 +41,8 @@ namespace DCL.GLTFast.Wrappers
             {
                 var specGloss = gltfMaterial.extensions.KHR_materials_pbrSpecularGlossiness;
 
-                SetColor(specGloss.diffuseColor);
-                SetSpecularColor(specGloss.specularColor);
+                SetColor(specGloss.DiffuseColor);
+                SetSpecularColor(specGloss.SpecularColor);
                 SetGlossiness(specGloss.glossinessFactor);
                 SetBaseMapTexture(specGloss.diffuseTexture, gltf);
                 SetSpecularMapTexture(specGloss.specularGlossinessTexture, gltf);
@@ -56,7 +56,7 @@ namespace DCL.GLTFast.Wrappers
 
                 if (roughness != null)
                 {
-                    SetColor(roughness.baseColor);
+                    SetColor(roughness.BaseColor);
                     SetBaseMapTexture(roughness.baseColorTexture, gltf);
                     SetMetallic(roughness.metallicFactor);
                     SetMetallicRoughnessTexture(gltf, roughness.metallicRoughnessTexture, roughness.roughnessFactor);
@@ -65,10 +65,10 @@ namespace DCL.GLTFast.Wrappers
 
             SetBumpMapTexture(gltfMaterial.normalTexture, gltf);
             SetOcclusionTexture(gltfMaterial.occlusionTexture, gltf);
-            SetEmissiveColor(gltfMaterial.emissive);
+            SetEmissiveColor(gltfMaterial.Emissive);
             SetEmissiveTexture(gltfMaterial.emissiveTexture, gltf);
 
-            SetAlphaMode(gltfMaterial.alphaModeEnum, gltfMaterial.alphaCutoff);
+            SetAlphaMode(gltfMaterial.GetAlphaMode(), gltfMaterial.alphaCutoff);
             SetDoubleSided(gltfMaterial.doubleSided);
 
             SRPBatchingHelper.OptimizeMaterial(material);
@@ -216,7 +216,7 @@ namespace DCL.GLTFast.Wrappers
         {
             switch (alphaMode)
             {
-                case GLTFastMaterial.AlphaMode.MASK:
+                case GLTFastMaterial.AlphaMode.Mask:
                     material.SetOverrideTag(ShaderUtils.RENDERER_TYPE, "TransparentCutout");
                     material.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
                     material.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
@@ -231,7 +231,7 @@ namespace DCL.GLTFast.Wrappers
 
                     break;
 
-                case GLTFastMaterial.AlphaMode.BLEND:
+                case GLTFastMaterial.AlphaMode.Blend:
                     material.SetOverrideTag(ShaderUtils.RENDERER_TYPE, "Transparent");
                     material.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.SrcAlpha);
                     material.SetInt(ShaderUtils.DstBlend, (int)BlendMode.OneMinusSrcAlpha);
