@@ -16,7 +16,7 @@ namespace DCL.GLTFast.Wrappers
         {
             Material generatedMaterial = base.GenerateMaterial(gltfMaterial, gltf);
 
-            if (gltfMaterial.emissive != Color.black) { generatedMaterial.SetColor(emissiveFactorPropId, gltfMaterial.emissive * CUSTOM_EMISSIVE_FACTOR); }
+            if (gltfMaterial.Emissive != Color.black) { generatedMaterial.SetColor(EmissiveFactorProperty, gltfMaterial.Emissive * CUSTOM_EMISSIVE_FACTOR); }
 
             return generatedMaterial;
         }

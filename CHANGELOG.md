@@ -1,3 +1,6 @@
+#1.1.5
+- Updated gltfast to 5.0.0
+
 #1.1.4
 - Changed dependency name as the package name was rolled back 
 
