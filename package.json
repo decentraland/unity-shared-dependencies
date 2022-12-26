@@ -5,9 +5,6 @@
   "description": "This package contains shared dependencies between unity-renderer and asset-bundle-converter repositories, this includes gltf importer wrappers and shaders",
   "unity": "2021.3",
   "unityRelease": "14f1",
-  "dependencies": {
-    "com.atteneder.gltfast": "5.0.0"
- },
   "author": {
     "name": "Decentraland",
     "email": "info@decentraland.org"
