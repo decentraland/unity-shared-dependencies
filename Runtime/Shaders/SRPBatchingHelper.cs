@@ -35,7 +35,7 @@ namespace DCL.Helpers
                 if (zWrite == 0)
                 {
                     material.SetInt("_Surface", 1);
-                    material.DisableKeyword("_SCREEN_SPACE_OCCLUSION");
+                    material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
                     material.SetShaderPassEnabled("DepthNormals", false);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
                     OnMaterialProcess?.Invoke(material);
@@ -55,7 +55,10 @@ namespace DCL.Helpers
             int baseQueue;
 
             if (material.renderQueue == (int) UnityEngine.Rendering.RenderQueue.AlphaTest)
+            {
+                material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
                 baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry + 600;
+            }
             else
                 baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry;
 

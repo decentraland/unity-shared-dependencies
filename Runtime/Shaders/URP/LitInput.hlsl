@@ -131,6 +131,10 @@ half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
 
 half SampleOcclusion(float2 uv)
 {
+    #if defined(_SURFACE_TYPE_TRANSPARENT)
+        return 1.0;
+    #endif
+
     // No occlusion for transparent surfaces. They don't render normals.
     if (_Surface == SURFACE_TRANSPARENT)
         return 1.0;
