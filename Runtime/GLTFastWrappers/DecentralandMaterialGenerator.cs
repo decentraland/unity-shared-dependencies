@@ -32,10 +32,11 @@ namespace DCL.GLTFast.Wrappers
         /// <param name="gltfMaterial"></param>
         /// <param name="gltf"></param>
         /// <returns></returns>
-        public override Material GenerateMaterial(GLTFastMaterial gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
+        public override Material GenerateMaterial(int materialIndex, GLTFastMaterial gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
         {
             material = new Material(shader);
-            material.name = gltfMaterial.name;
+
+            SetMaterialName(materialIndex, gltfMaterial);
 
             if (gltfMaterial.extensions?.KHR_materials_pbrSpecularGlossiness != null)
             {
@@ -74,6 +75,20 @@ namespace DCL.GLTFast.Wrappers
             SRPBatchingHelper.OptimizeMaterial(material);
 
             return material;
+        }
+
+        // This step is important if we want to keep the functionality of skin and hair colouring
+        private void SetMaterialName(int materialIndex, GLTFastMaterial gltfMaterial)
+        {
+            material.name = "material";
+
+            if (gltfMaterial.name.Contains("skin", StringComparison.InvariantCultureIgnoreCase))
+                material.name += "_skin";
+
+            if (gltfMaterial.name.Contains("hair", StringComparison.InvariantCultureIgnoreCase))
+                material.name += "_hair";
+
+            material.name += $"_{materialIndex}";
         }
 
         private void SetEmissiveColor(Color gltfMaterialEmissive)
