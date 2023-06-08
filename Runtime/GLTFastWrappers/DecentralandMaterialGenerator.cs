@@ -82,11 +82,16 @@ namespace DCL.GLTFast.Wrappers
         {
             material.name = "material";
 
-            if (gltfMaterial.name.Contains("skin", StringComparison.InvariantCultureIgnoreCase))
-                material.name += "_skin";
+            string originalName = gltfMaterial.name;
 
-            if (gltfMaterial.name.Contains("hair", StringComparison.InvariantCultureIgnoreCase))
-                material.name += "_hair";
+            if (!string.IsNullOrEmpty(originalName))
+            {
+                if (originalName.Contains("skin", StringComparison.InvariantCultureIgnoreCase))
+                    material.name += "_skin";
+
+                if (originalName.Contains("hair", StringComparison.InvariantCultureIgnoreCase))
+                    material.name += "_hair";
+            }
 
             material.name += $"_{materialIndex}";
         }
