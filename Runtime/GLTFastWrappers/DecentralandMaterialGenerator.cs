@@ -82,10 +82,10 @@ namespace DCL.GLTFast.Wrappers
         {
             material.name = "material";
 
-            string originalName = gltfMaterial.name.ToLower();
-
-            if (!string.IsNullOrEmpty(originalName))
+            if (!string.IsNullOrEmpty(gltfMaterial.name))
             {
+                string originalName = gltfMaterial.name.ToLower();
+
                 if (originalName.Contains("skin"))
                     material.name += "_skin";
 
