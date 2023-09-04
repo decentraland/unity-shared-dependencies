@@ -24,6 +24,11 @@ namespace DCL.GLTFast.Wrappers
             shader = Shader.Find(shaderName);
         }
 
+        public DecentralandMaterialGenerator(Shader shader)
+        {
+            this.shader = shader;
+        }
+
         protected override Material GenerateDefaultMaterial(bool pointsSupport = false) => new (shader);
 
         /// <summary>
