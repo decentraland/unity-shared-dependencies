@@ -18,7 +18,6 @@ namespace DCL.Helpers
             if (!material.IsKeywordEnabled("_ALPHATEST_ON") && material.HasProperty(ShaderUtils.Cutoff))
                 material.SetFloat(ShaderUtils.Cutoff, 0);
 
-            material.EnableKeyword("_ALPHATEST_ON");
             material.DisableKeyword("_ALPHABLEND_ON");
             material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
             material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
