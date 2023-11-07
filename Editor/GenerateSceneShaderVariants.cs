@@ -1,5 +1,4 @@
-﻿using DCL.ABConverter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace DCL.Shaders.Editor
 
             if (!string.IsNullOrEmpty(path))
             {
-                string assetPath = PathUtils.FullPathToAssetPath(path);
+                string assetPath = "Assets/" + path.Substring(Application.dataPath.Length + 1);
                 ShaderVariantCollection shaderVariants = AssetDatabase.LoadAssetAtPath<ShaderVariantCollection>(assetPath);
                 shaderVariants.Clear();
 

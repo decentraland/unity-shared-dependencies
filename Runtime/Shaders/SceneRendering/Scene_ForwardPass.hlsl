@@ -71,13 +71,13 @@ static const float3 _PlaneY = float3(0.0, 0.0, 1.0);
 
 void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inputData)
 {
-    float distanceX = dot(input.positionWS, _PlaneX.xyz);
-    clip(-(distanceX + _PlaneClipping.x));
-    clip((distanceX + _PlaneClipping.y));
+    float distanceX = dot(input.positionWS, _PlaneX);
+    clip(distanceX - _PlaneClipping.x);
+    clip(-distanceX + _PlaneClipping.y);
 
-    float distanceZ = dot(input.positionWS, _PlaneY.xyz);
-    clip(-(distanceZ + _PlaneClipping.z));
-    clip((distanceZ + _PlaneClipping.w));
+    float distanceZ = dot(input.positionWS, _PlaneY);
+    clip(distanceZ - _PlaneClipping.z);
+    clip(-distanceZ + _PlaneClipping.w);
     
     inputData = (InputData_Scene)0;
 
