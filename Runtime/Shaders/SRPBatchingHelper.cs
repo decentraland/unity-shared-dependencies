@@ -7,21 +7,17 @@ namespace DCL.Helpers
     public static class SRPBatchingHelper
     {
         public static System.Action<Material> OnMaterialProcess;
-        static Dictionary<int, int> crcToQueue = new Dictionary<int, int>();
+        private static readonly Dictionary<int, int> crcToQueue = new ();
 
         public static void OptimizeMaterial(Material material)
         {
-            //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
-            material.EnableKeyword("_EMISSION");
-            material.EnableKeyword("_NORMALMAP");
-
-            if (!material.IsKeywordEnabled("_ALPHATEST_ON") && material.HasProperty(ShaderUtils.Cutoff))
+            if (!material.IsKeywordEnabled(ShaderUtils.KEYWORD_ALPHA_TEST) && material.HasProperty(ShaderUtils.Cutoff))
                 material.SetFloat(ShaderUtils.Cutoff, 0);
 
-            material.DisableKeyword("_ALPHABLEND_ON");
-            material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
-            material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
-            material.DisableKeyword("VERTEX_COLOR_ON");
+            material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_BLEND);
+            material.DisableKeyword(ShaderUtils.KEYWORD_ENV_REFLECTIONS_OFF);
+            material.DisableKeyword(ShaderUtils.KEYWORD_SPECULAR_HIGHLIGHTS_OFF);
+            material.DisableKeyword(ShaderUtils.KEYWORD_VERTEX_COLOR_ON);
 
             material.enableInstancing = false;
 
@@ -34,7 +30,7 @@ namespace DCL.Helpers
                 if (zWrite == 0)
                 {
                     material.SetInt("_Surface", 1);
-                    material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                    material.EnableKeyword(ShaderUtils.KEYWORD_SURFACE_TYPE_TRANSPARENT);
                     material.SetShaderPassEnabled("DepthNormals", false);
                     material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
                     OnMaterialProcess?.Invoke(material);
@@ -55,7 +51,7 @@ namespace DCL.Helpers
 
             if (material.renderQueue == (int) UnityEngine.Rendering.RenderQueue.AlphaTest)
             {
-                material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                material.EnableKeyword(ShaderUtils.KEYWORD_SURFACE_TYPE_TRANSPARENT);
                 baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry + 600;
             }
             else
@@ -68,6 +64,7 @@ namespace DCL.Helpers
             if (!crcToQueue.ContainsKey(crc))
                 crcToQueue.Add(crc, crcToQueue.Count + 1);
 
+            // TODO review if it is still valid
             //NOTE(Brian): we use 0, 100, 200 to group calls by culling mode (must group them or batches will break).
             int queueOffset = (cullMode + 1) * 150;
             material.renderQueue = baseQueue + crcToQueue[crc] + queueOffset;
