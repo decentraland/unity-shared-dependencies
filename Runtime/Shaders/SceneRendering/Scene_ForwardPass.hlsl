@@ -3,6 +3,7 @@
 
 #include "Scene_InputData.hlsl"
 #include "Scene_Lighting.hlsl"
+#include "Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
@@ -66,19 +67,10 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-static const float3 _PlaneX = float3(1.0, 0.0, 0.0);
-static const float3 _PlaneY = float3(0.0, 0.0, 1.0);
+
 
 void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inputData)
 {
-    float distanceX = dot(input.positionWS, _PlaneX);
-    clip(distanceX - _PlaneClipping.x);
-    clip(-distanceX + _PlaneClipping.y);
-
-    float distanceZ = dot(input.positionWS, _PlaneY);
-    clip(distanceZ - _PlaneClipping.z);
-    clip(-distanceZ + _PlaneClipping.w);
-    
     inputData = (InputData_Scene)0;
 
 #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
@@ -215,6 +207,8 @@ void LitPassFragment(
 #endif
 )
 {
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w);
+
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 

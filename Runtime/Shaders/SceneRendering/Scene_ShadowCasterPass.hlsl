@@ -3,6 +3,7 @@
 
 #include "Scene_Core.hlsl"
 #include "Scene_Shadows.hlsl"
+#include "Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
@@ -23,8 +24,9 @@ struct Attributes
 
 struct Varyings
 {
-    float2 uv           : TEXCOORD0;
     float4 positionCS   : SV_POSITION;
+    float3 positionWS   : TEXCOORD0;
+    float2 uv           : TEXCOORD1;
 };
 
 float4 GetShadowPositionHClip(Attributes input)
@@ -56,11 +58,14 @@ Varyings ShadowPassVertex(Attributes input)
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     output.positionCS = GetShadowPositionHClip(input);
+    output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
     return output;
 }
 
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w);
+
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
 
 #ifdef LOD_FADE_CROSSFADE

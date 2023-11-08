@@ -2,6 +2,7 @@
 #define SCENE_DEPTH_NORMALS_PASS_INCLUDED
 
 #include "Scene_Lighting.hlsl"
+#include "Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
@@ -40,6 +41,8 @@ struct Varyings
     half3 viewDirTS     : TEXCOORD8;
     #endif
 
+    float3 positionWS   : TEXCOORD9;
+
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -53,6 +56,7 @@ Varyings DepthNormalsVertex(Attributes input)
 
     output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
     output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+    output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);
@@ -78,6 +82,8 @@ Varyings DepthNormalsVertex(Attributes input)
 
 void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
 {
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w);
+
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
