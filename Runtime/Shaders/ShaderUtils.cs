@@ -25,12 +25,25 @@ namespace DCL.Shaders
         // keywords
         public const string KEYWORD_OCCLUSION = "_OCCLUSION";
         public const string KEYWORD_EMISSION = "_EMISSION";
-        public const string KEYWORD_ALPHA_PREMULTIPLY = "_ALPHAPREMULTIPLY_ON";
         public const string KEYWORD_ALPHA_TEST = "_ALPHATEST_ON";
         public const string KEYWORD_SPECGLOSSMAP = "_SPECGLOSSMAP";
         public const string KEYWORD_NORMALMAP = "_NORMALMAP";
         public const string KEYWORD_METALLICSPECGLOSSMAP = "_METALLICSPECGLOSSMAP";
+        public const string KEYWORD_SURFACE_TYPE_TRANSPARENT = "_SURFACE_TYPE_TRANSPARENT";
         public const string RENDERER_TYPE = "RenderType";
+
+        // Forward Plus keywords (new shader)
+        public const string FW_PLUS = "_FORWARD_PLUS";
+        public const string FW_PLUS_LIGHT_SHADOWS = "_ADDITIONAL_LIGHT_SHADOWS";
+        public const string FW_PLUS_SHADOWS_CASCADE = "_MAIN_LIGHT_SHADOWS_CASCADE";
+        public const string FW_PLUS_SHADOWS_SOFT = "_SHADOWS_SOFT";
+
+        // always inactive keywords
+        public const string KEYWORD_ALPHA_BLEND = "_ALPHABLEND_ON";
+        public const string KEYWORD_ALPHA_PREMULTIPLY = "_ALPHAPREMULTIPLY_ON";
+        public const string KEYWORD_SPECULAR_HIGHLIGHTS_OFF = "_SPECULARHIGHLIGHTS_OFF";
+        public const string KEYWORD_VERTEX_COLOR_ON = "VERTEX_COLOR_ON";
+        public const string KEYWORD_ENV_REFLECTIONS_OFF = "_ENVIRONMENTREFLECTIONS_OFF";
 
         //Lit properties
         public static readonly int AlphaTexture = Shader.PropertyToID("_AlphaTexture");
