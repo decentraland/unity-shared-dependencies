@@ -25,7 +25,10 @@ namespace DCL.Shaders
             ShaderUtils.KEYWORD_SPECGLOSSMAP,
             ShaderUtils.KEYWORD_NORMALMAP,
             ShaderUtils.KEYWORD_METALLICSPECGLOSSMAP,
-            ShaderUtils.KEYWORD_SURFACE_TYPE_TRANSPARENT
+            ShaderUtils.KEYWORD_SURFACE_TYPE_TRANSPARENT,
+            ShaderUtils.FOG_EXP,
+            ShaderUtils.FOG_EXP2,
+            ShaderUtils.FOG_LINEAR,
         };
     }
 }

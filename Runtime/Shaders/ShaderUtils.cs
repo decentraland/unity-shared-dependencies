@@ -32,6 +32,11 @@ namespace DCL.Shaders
         public const string KEYWORD_SURFACE_TYPE_TRANSPARENT = "_SURFACE_TYPE_TRANSPARENT";
         public const string RENDERER_TYPE = "RenderType";
 
+        // fog
+        public const string FOG_LINEAR = "FOG_LINEAR";
+        public const string FOG_EXP = "FOG_EXP";
+        public const string FOG_EXP2 = "FOG_EXP2";
+
         // Forward Plus keywords (new shader)
         public const string FW_PLUS = "_FORWARD_PLUS";
         public const string FW_PLUS_LIGHT_SHADOWS = "_ADDITIONAL_LIGHT_SHADOWS";
