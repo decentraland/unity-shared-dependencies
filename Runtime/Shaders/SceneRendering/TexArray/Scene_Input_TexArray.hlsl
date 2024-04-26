@@ -65,13 +65,14 @@ TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 
 half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
 {
-    half4 specGloss = half4(0.0, 0.0, 0.0, 0.0); //half4(SAMPLE_METALLICSPECULAR(uv));
-    #ifdef _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-        specGloss.a = albedoAlpha * _Smoothness;
-    #else
+    half4 specGloss;
+    #ifdef _METALLICSPECGLOSSMAP
+        specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
         specGloss.a *= _Smoothness;
+    #else // _METALLICSPECGLOSSMAP
+        specGloss.rgb = _Metallic.rrr;
+        specGloss.a = _Smoothness;
     #endif
-    
     return specGloss;
 }
 
