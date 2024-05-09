@@ -102,7 +102,7 @@ namespace DCL.GLTFast.Wrappers
             {
                 material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
                 material.SetColor(ShaderUtils.EmissionColor, gltfMaterialEmissive * EMISSIVE_HDR_INTENSITY);
-                // material.EnableKeyword(ShaderUtils.KEYWORD_EMISSION);
+                material.EnableKeyword(ShaderUtils.KEYWORD_EMISSION);
             }
         }
 
