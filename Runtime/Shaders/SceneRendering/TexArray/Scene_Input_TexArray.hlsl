@@ -20,6 +20,7 @@ UNITY_DEFINE_INSTANCED_PROP(half, _Parallax)
 UNITY_DEFINE_INSTANCED_PROP(half, _OcclusionStrength)
 UNITY_DEFINE_INSTANCED_PROP(half, _Surface)
 UNITY_DEFINE_INSTANCED_PROP(float4, _PlaneClipping)
+UNITY_DEFINE_INSTANCED_PROP(float4, _VerticalClipping)
 UNITY_DEFINE_INSTANCED_PROP(int, _BaseMapArr_ID)
 UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
@@ -35,6 +36,7 @@ UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 #define _OcclusionStrength      UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _OcclusionStrength)
 #define _Surface                UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Surface)
 #define _PlaneClipping          UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _PlaneClipping)
+#define _VerticalClipping       UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _VerticalClipping)
 #define _BaseMapArr_ID          UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMapArr_ID)
 
 #define _DCL_TEXTURE_ARRAYS
