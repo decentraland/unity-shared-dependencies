@@ -82,7 +82,7 @@ Varyings DepthNormalsVertex(Attributes input)
 
 void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
 {
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w);
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 

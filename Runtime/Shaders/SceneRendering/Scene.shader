@@ -34,6 +34,7 @@ Shader "DCL/Scene"
         [HDR] _EmissionColor("Color", Color) = (0,0,0)
         _EmissionMap("Emission", 2D) = "white" {}
         _PlaneClipping("PlaneClipping", Vector) = (-2147483648, 2147483648, -2147483648, 2147483648)
+        _VerticalClipping("VerticalClipping", Vector) = (-2147483648, 2147483648, 0, 0)
 
         // Blending state
         _Surface("__surface", Float) = 0.0
