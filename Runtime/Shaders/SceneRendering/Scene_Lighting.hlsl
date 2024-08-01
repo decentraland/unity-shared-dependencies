@@ -3,7 +3,7 @@
 
 #include "Scene_InputData.hlsl"
 #include "Scene_BRDF.hlsl"
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Debug/Debugging3D.hlsl"
+#include "Scene_Debugging3D.hlsl"
 #include "Scene_GlobalIllumination.hlsl"
 #include "Scene_RealtimeLights.hlsl"
 #include "Scene_AmbientOcclusion.hlsl"
