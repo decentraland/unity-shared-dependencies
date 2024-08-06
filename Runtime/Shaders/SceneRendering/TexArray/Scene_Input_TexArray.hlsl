@@ -70,9 +70,6 @@ half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
     half4 specGloss;
     #ifdef _METALLICSPECGLOSSMAP
         specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
-        //GLTF Provides Metallic in B and Roughness in G
-        specGloss.a = 1.0 - specGloss.g; //Conversion to GLTF and from RoughnessToSmoothness
-        specGloss.rgb = specGloss.bbb; //Conversion to GLTF
         specGloss.a *= _Smoothness;
     #else // _METALLICSPECGLOSSMAP
         specGloss.rgb = _Metallic.rrr;
