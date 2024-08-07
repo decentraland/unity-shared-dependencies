@@ -11,6 +11,7 @@ struct SurfaceData_Scene
     half3 emission;
     half  occlusion;
     half  alpha;
+    half  height;
 };
 
 #endif

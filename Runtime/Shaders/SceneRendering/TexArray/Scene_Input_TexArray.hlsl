@@ -70,10 +70,9 @@ half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
     half4 specGloss;
     #ifdef _METALLICSPECGLOSSMAP
         specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
-        //GLTF Provides Metallic in B and Roughness in G
-        specGloss.a = 1.0 - specGloss.g; //Conversion to GLTF and from RoughnessToSmoothness
-        specGloss.rgb = specGloss.bbb; //Conversion to GLTF
-        specGloss.a *= _Smoothness;
+        //ARM Texture - Provides Height in R, Metallic in B and Roughness in G
+        specGloss.a = 1.0 - specGloss.g; //Conversion from RoughnessToSmoothness
+        specGloss.rgb = specGloss.rgb;
     #else // _METALLICSPECGLOSSMAP
         specGloss.rgb = _Metallic.rrr;
         specGloss.a = _Smoothness;
@@ -105,12 +104,13 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Sc
     outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
-    outSurfaceData.metallic = specGloss.r;
+    outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.a;
     
     outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
     outSurfaceData.occlusion = SampleOcclusion(uv);
     outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.height = specGloss.r;
 }
 
 #endif // UNIVERSAL_INPUT_SURFACE_PBR_INCLUDED
