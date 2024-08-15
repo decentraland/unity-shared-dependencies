@@ -95,7 +95,7 @@ Shader "DCL/Scene"
             AlphaToMask[_AlphaToMask]
 
             HLSLPROGRAM
-            #pragma enable_d3d11_debug_symbols
+            //#pragma enable_d3d11_debug_symbols
             #pragma target 4.5
 
             // -------------------------------------
@@ -176,7 +176,7 @@ Shader "DCL/Scene"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma enable_d3d11_debug_symbols
+            //#pragma enable_d3d11_debug_symbols
             #pragma target 4.5
 
             // -------------------------------------
@@ -226,7 +226,7 @@ Shader "DCL/Scene"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma enable_d3d11_debug_symbols
+            //#pragma enable_d3d11_debug_symbols
             #pragma target 4.5
 
             // -------------------------------------
@@ -270,7 +270,7 @@ Shader "DCL/Scene"
             Cull[_Cull]
 
             HLSLPROGRAM
-            #pragma enable_d3d11_debug_symbols
+            //#pragma enable_d3d11_debug_symbols
             #pragma target 4.5
 
             // -------------------------------------
