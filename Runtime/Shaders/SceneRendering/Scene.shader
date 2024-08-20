@@ -7,7 +7,8 @@ Shader "DCL/Scene"
 
         [MainTexture] _BaseMap("Albedo", 2D) = "white" {}
         [MainColor] _BaseColor("Color", Color) = (1,1,1,1)
-
+        _AlphaTexture("Alpha Texture", 2D) = "white" {}
+        
         _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 
         _Smoothness("Smoothness", Range(0.0, 1.0)) = 0.5

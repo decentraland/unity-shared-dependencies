@@ -9,6 +9,7 @@
 
 UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
 UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
+UNITY_DEFINE_INSTANCED_PROP(float4, _AlphaTexture_ST)
 UNITY_DEFINE_INSTANCED_PROP(half4, _BaseColor)
 UNITY_DEFINE_INSTANCED_PROP(half4, _SpecColor)
 UNITY_DEFINE_INSTANCED_PROP(half4, _EmissionColor)
@@ -24,6 +25,7 @@ UNITY_DEFINE_INSTANCED_PROP(float4, _VerticalClipping)
 UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
 #define _BaseMap_ST             UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST)
+#define _AlphaTexture_ST        UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _AlphaTexture_ST)
 #define _BaseColor              UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor)
 #define _SpecColor              UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _SpecColor)
 #define _EmissionColor          UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _EmissionColor)
@@ -78,7 +80,9 @@ void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Scene outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff);
+    half4 alphaTexture = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_AlphaTexture, sampler_AlphaTexture));
+
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff) * saturate(length(alphaTexture.rgb));
     outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
