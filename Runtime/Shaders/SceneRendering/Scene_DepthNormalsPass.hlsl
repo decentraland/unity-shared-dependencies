@@ -8,13 +8,13 @@
 #endif
 
 // GLES2 has limited amount of interpolators
-#if defined(_PARALLAXMAP)
+//#if defined(_PARALLAXMAP)
 #define REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR
-#endif
+//#endif
 
-#if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)))
-#define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
-#endif
+//#if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)))
+//#define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
+//#endif
 
 struct Attributes
 {
@@ -31,15 +31,15 @@ struct Varyings
     float2 uv           : TEXCOORD1;
     half3 normalWS     : TEXCOORD2;
 
-    #if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR)
+    //#if defined(REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR)
     half4 tangentWS    : TEXCOORD4;    // xyz: tangent, w: sign
-    #endif
+    //#endif
 
     half3 viewDirWS    : TEXCOORD5;
 
-    #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+    //#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
     half3 viewDirTS     : TEXCOORD8;
-    #endif
+    //#endif
 
     float3 positionWS   : TEXCOORD9;
 
@@ -100,30 +100,30 @@ void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
         outNormalWS = half4(packedNormalWS, 0.0);
     #else
         float2 uv = input.uv;
-        #if defined(_PARALLAXMAP)
-            #if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+        //#if defined(_PARALLAXMAP)
+            //#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
                 half3 viewDirTS = input.viewDirTS;
-            #else
-                half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, input.viewDirWS);
-            #endif
+            // #else
+            //     half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, input.viewDirWS);
+            // #endif
             ApplyPerPixelDisplacement(viewDirTS, uv);
-        #endif
+        //#endif
 
-        #if defined(_NORMALMAP) || defined(_DETAIL)
+        //#if defined(_NORMALMAP) || defined(_DETAIL)
             float sgn = input.tangentWS.w;      // should be either +1 or -1
             float3 bitangent = sgn * cross(input.normalWS.xyz, input.tangentWS.xyz);
             float3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
 
-            #if defined(_DETAIL)
-                half detailMask = SAMPLE_TEXTURE2D(_DetailMask, sampler_DetailMask, uv).a;
-                float2 detailUv = uv * _DetailAlbedoMap_ST.xy + _DetailAlbedoMap_ST.zw;
-                normalTS = ApplyDetailNormal(detailUv, normalTS, detailMask);
-            #endif
+            // #if defined(_DETAIL)
+            //     half detailMask = SAMPLE_TEXTURE2D(_DetailMask, sampler_DetailMask, uv).a;
+            //     float2 detailUv = uv * _DetailAlbedoMap_ST.xy + _DetailAlbedoMap_ST.zw;
+            //     normalTS = ApplyDetailNormal(detailUv, normalTS, detailMask);
+            // #endif
 
             float3 normalWS = TransformTangentToWorld(normalTS, half3x3(input.tangentWS.xyz, bitangent.xyz, input.normalWS.xyz));
-        #else
-            float3 normalWS = input.normalWS;
-        #endif
+        // #else
+        //     float3 normalWS = input.normalWS;
+        // #endif
 
         outNormalWS = half4(NormalizeNormalPerPixel(normalWS), 0.0);
     #endif

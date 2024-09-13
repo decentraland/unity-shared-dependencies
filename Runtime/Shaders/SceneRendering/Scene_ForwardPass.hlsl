@@ -9,13 +9,13 @@
 #endif
 
 // GLES2 has limited amount of interpolators
-#if defined(_PARALLAXMAP) && !defined(SHADER_API_GLES)
+//#if defined(_PARALLAXMAP) && !defined(SHADER_API_GLES)
 #define REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR
-#endif
+//#endif
 
-#if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR))) || defined(_DETAIL)
+//#if (defined(_NORMALMAP) || (defined(_PARALLAXMAP) && !defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR))) || defined(_DETAIL)
 #define REQUIRES_WORLD_SPACE_TANGENT_INTERPOLATOR
-#endif
+//#endif
 
 // keep this file in sync with LitGBufferPass.hlsl
 
@@ -78,18 +78,18 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
 #endif
 
     half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-#if defined(_NORMALMAP) || defined(_DETAIL)
+//#if defined(_NORMALMAP) || defined(_DETAIL)
     float sgn = input.tangentWS.w;      // should be either +1 or -1
     float3 bitangent = sgn * cross(input.normalWS.xyz, input.tangentWS.xyz);
     half3x3 tangentToWorld = half3x3(input.tangentWS.xyz, bitangent.xyz, input.normalWS.xyz);
 
-    #if defined(_NORMALMAP)
+    //#if defined(_NORMALMAP)
     inputData.tangentToWorld = tangentToWorld;
-    #endif
+    //#endif
     inputData.normalWS = TransformTangentToWorld(normalTS, tangentToWorld);
-#else
-    inputData.normalWS = input.normalWS;
-#endif
+// #else
+//     inputData.normalWS = input.normalWS;
+// #endif
 
     inputData.normalWS = NormalizeNormalPerPixel(inputData.normalWS);
     inputData.viewDirectionWS = viewDirWS;
@@ -212,15 +212,15 @@ void LitPassFragment(
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-#if defined(_PARALLAXMAP)
-#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
+//#if defined(_PARALLAXMAP)
+//#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
     half3 viewDirTS = input.viewDirTS;
-#else
-    half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
-    half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, viewDirWS);
-#endif
+// #else
+//     half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
+//     half3 viewDirTS = GetViewDirectionTangentSpace(input.tangentWS, input.normalWS, viewDirWS);
+// #endif
     ApplyPerPixelDisplacement(viewDirTS, input.uv);
-#endif
+//#endif
 
     SurfaceData_Scene surfaceData;
     InitializeStandardLitSurfaceData_Scene(input.uv, surfaceData);

@@ -64,11 +64,11 @@ bool UpdateSurfaceAndInputDataForDebug(inout SurfaceData_Scene surfaceData, inou
     if (_DebugLightingMode == DEBUGLIGHTINGMODE_LIGHTING_WITHOUT_NORMAL_MAPS || _DebugLightingMode == DEBUGLIGHTINGMODE_REFLECTIONS)
     {
         const half3 normalTS = half3(0, 0, 1);
-        #if defined(_NORMALMAP)
+        //#if defined(_NORMALMAP)
         inputData.normalWS = TransformTangentToWorld(normalTS, inputData.tangentToWorld);
-        #else
-        inputData.normalWS = inputData.normalWS;
-        #endif
+        // #else
+        // inputData.normalWS = inputData.normalWS;
+        // #endif
         surfaceData.normalTS = normalTS;
         changed = true;
     }
