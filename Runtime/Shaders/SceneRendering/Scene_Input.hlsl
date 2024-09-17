@@ -38,7 +38,7 @@ UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 #define _VerticalClipping       UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _VerticalClipping)
 
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
-TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
+//TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 
 #define SAMPLE_METALLICSPECULAR(uv) SAMPLE_TEXTURE2D(_MetallicGlossMap, sampler_MetallicGlossMap, uv)
@@ -46,17 +46,17 @@ TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
 {
     half4 specGloss;
-	#ifdef _METALLICSPECGLOSSMAP
+	//#ifdef _METALLICSPECGLOSSMAP
         specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
         //ARM Texture - Provides Height in R, Metallic in B and Roughness in G
         specGloss.g = 1.0 - specGloss.g; //Conversion from RoughnessToSmoothness
         specGloss.b *= _Metallic;
-	#else // _METALLICSPECGLOSSMAP
-        specGloss.r = 0.0;
-        specGloss.g = _Smoothness;
-        specGloss.b = _Metallic;
-        specGloss.a = 0.0;
-	#endif
+	// #else // _METALLICSPECGLOSSMAP
+ //        specGloss.r = 0.0;
+ //        specGloss.g = _Smoothness;
+ //        specGloss.b = _Metallic;
+ //        specGloss.a = 0.0;
+	// #endif
     return specGloss;
 }
 
@@ -72,9 +72,9 @@ half SampleOcclusion(float2 uv)
 
 void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 {
-#if defined(_PARALLAXMAP)
+//#if defined(_PARALLAXMAP)
     uv += ParallaxMapping(TEXTURE2D_ARGS(_ParallaxMap, sampler_ParallaxMap), viewDirTS, _Parallax, uv);
-#endif
+//#endif
 }
 
 inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Scene outSurfaceData)
