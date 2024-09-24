@@ -72,8 +72,6 @@ namespace DCL.GLTFast.Wrappers
             SetAlphaMode(gltfMaterial.GetAlphaMode(), gltfMaterial.alphaCutoff);
             SetDoubleSided(gltfMaterial.doubleSided);
 
-            SRPBatchingHelper.OptimizeMaterial(material);
-
             return material;
         }
 
