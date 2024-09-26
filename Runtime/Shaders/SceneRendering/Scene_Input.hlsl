@@ -46,17 +46,17 @@ TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
 {
     half4 specGloss;
-	//#ifdef _METALLICSPECGLOSSMAP
+	#ifdef _METALLICSPECGLOSSMAP
         specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
         //ARM Texture - Provides Height in R, Metallic in B and Roughness in G
-        specGloss.g = 1.0 - (specGloss.g * (1.0-_Smoothness)); //Conversion from RoughnessToSmoothness
+        specGloss.g = 1.0 - specGloss.g; //Conversion from RoughnessToSmoothness
         specGloss.b *= _Metallic;
-	// #else // _METALLICSPECGLOSSMAP
- //        specGloss.r = 0.0;
- //        specGloss.g = _Smoothness;
- //        specGloss.b = _Metallic;
- //        specGloss.a = 0.0;
-	// #endif
+	#else // _METALLICSPECGLOSSMAP
+        specGloss.r = 0.0;
+        specGloss.g = _Smoothness;
+        specGloss.b = _Metallic;
+        specGloss.a = 0.0;
+	#endif
     return specGloss;
 }
 
@@ -72,9 +72,9 @@ half SampleOcclusion(float2 uv)
 
 void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 {
-//#if defined(_PARALLAXMAP)
-    uv += ParallaxMapping(TEXTURE2D_ARGS(_ParallaxMap, sampler_ParallaxMap), viewDirTS, _Parallax, uv);
-//#endif
+#if defined(_METALLICSPECGLOSSMAP) // using HRM texture, so RGB == Height, Roughness, Metallic
+    uv += ParallaxMapping(TEXTURE2D_ARGS(_MetallicGlossMap, sampler_MetallicGlossMap), viewDirTS, _Parallax, uv);
+#endif
 }
 
 inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Scene outSurfaceData)
