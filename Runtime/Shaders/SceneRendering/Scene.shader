@@ -113,7 +113,7 @@ Shader "DCL/Scene"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _ _ALPHAPREMULTIPLY_ON
             //#pragma shader_feature_local_fragment _EMISSION
-            //#pragma shader_feature_local_fragment _METALLICSPECGLOSSMAP
+            #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
             //#pragma shader_feature_local_fragment _OCCLUSIONMAP
             //#pragma shader_feature_local_fragment _SPECULARHIGHLIGHTS_OFF
@@ -282,6 +282,7 @@ Shader "DCL/Scene"
             // Material Keywords
             //#pragma shader_feature_local _NORMALMAP
             //#pragma shader_feature_local _PARALLAXMAP
+            #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
             //#pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
