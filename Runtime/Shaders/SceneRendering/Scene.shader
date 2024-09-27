@@ -188,6 +188,7 @@ Shader "DCL/Scene"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
 
             //--------------------------------------
             // GPU Instancing
@@ -238,6 +239,7 @@ Shader "DCL/Scene"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
 
             // -------------------------------------
             // Unity defined keywords
