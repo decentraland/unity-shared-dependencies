@@ -8,6 +8,8 @@
 
 TEXTURE2D(_BaseMap);
 SAMPLER(sampler_BaseMap);
+TEXTURE2D(_AlphaTexture);
+SAMPLER(sampler_AlphaTexture);
 float4 _BaseMap_TexelSize;
 float4 _BaseMap_MipInfo;
 TEXTURE2D(_BumpMap);
