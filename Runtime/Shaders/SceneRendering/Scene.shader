@@ -106,7 +106,7 @@ Shader "DCL/Scene"
             // -------------------------------------
             // Material Keywords
             //#pragma shader_feature_local _NORMALMAP
-            //#pragma shader_feature_local _PARALLAXMAP
+            #pragma dynamic_branch_local_fragment _PARALLAXMAP
             //#pragma shader_feature_local _RECEIVE_SHADOWS_OFF
             //#pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local_fragment _SURFACE_TYPE_TRANSPARENT
@@ -188,6 +188,7 @@ Shader "DCL/Scene"
             // Material Keywords
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+            #pragma dynamic_branch_local_fragment _PARALLAXMAP
             #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
 
             //--------------------------------------
@@ -240,6 +241,7 @@ Shader "DCL/Scene"
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
             #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
+            #pragma dynamic_branch_local_fragment _PARALLAXMAP
 
             // -------------------------------------
             // Unity defined keywords
@@ -285,6 +287,7 @@ Shader "DCL/Scene"
             //#pragma shader_feature_local _NORMALMAP
             //#pragma shader_feature_local _PARALLAXMAP
             #pragma dynamic_branch_local_fragment _METALLICSPECGLOSSMAP
+            #pragma dynamic_branch_local_fragment _PARALLAXMAP
             //#pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             //#pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
