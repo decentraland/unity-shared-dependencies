@@ -11,6 +11,14 @@ namespace DCL.Helpers
 
         public static void OptimizeMaterial(Material material)
         {
+            #if UNITY_EDITOR
+                if (UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup != UnityEditor.BuildTargetGroup.WebGL)
+                    return;
+            #else
+                if (Application.platform != RuntimePlatform.WebGLPlayer)
+                    return;
+            #endif
+
             if (!material.IsKeywordEnabled(ShaderUtils.KEYWORD_ALPHA_TEST) && material.HasProperty(ShaderUtils.Cutoff))
                 material.SetFloat(ShaderUtils.Cutoff, 0);
 
