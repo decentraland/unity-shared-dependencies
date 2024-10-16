@@ -72,7 +72,13 @@ namespace DCL.GLTFast.Wrappers
             SetAlphaMode(gltfMaterial.GetAlphaMode(), gltfMaterial.alphaCutoff);
             SetDoubleSided(gltfMaterial.doubleSided);
 
-            SRPBatchingHelper.OptimizeMaterial(material);
+            #if UNITY_EDITOR
+                if (UnityEditor.EditorUserBuildSettings.selectedBuildTargetGroup == UnityEditor.BuildTargetGroup.WebGL)
+                    SRPBatchingHelper.OptimizeMaterial(material);
+            #else
+                if (Application.platform == RuntimePlatform.WebGLPlayer)
+                    SRPBatchingHelper.OptimizeMaterial(material);
+            #endif
 
             return material;
         }
