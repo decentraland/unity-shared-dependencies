@@ -241,6 +241,7 @@ namespace DCL.GLTFast.Wrappers
                     material.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
                     material.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
                     material.SetInt(ShaderUtils.ZWrite, 1);
+                    material.SetInt("_Surface", 0);
                     material.SetFloat(ShaderUtils.AlphaClip, 1);
                     material.EnableKeyword(ShaderUtils.KEYWORD_ALPHA_TEST);
                     material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_PREMULTIPLY);
@@ -256,8 +257,9 @@ namespace DCL.GLTFast.Wrappers
                     material.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.SrcAlpha);
                     material.SetInt(ShaderUtils.DstBlend, (int)BlendMode.OneMinusSrcAlpha);
                     material.SetInt(ShaderUtils.ZWrite, 0);
+                    material.SetInt("_Surface", 1);
                     material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_TEST);
-                    material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_PREMULTIPLY);
+                    material.EnableKeyword(ShaderUtils.KEYWORD_ALPHA_PREMULTIPLY);
                     material.renderQueue = (int)RenderQueue.Transparent;
                     material.SetFloat(ShaderUtils.Cutoff, 0);
                     break;
@@ -266,6 +268,7 @@ namespace DCL.GLTFast.Wrappers
                     material.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
                     material.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
                     material.SetInt(ShaderUtils.ZWrite, 1);
+                    material.SetInt("_Surface", 0);
                     material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_TEST);
                     material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_PREMULTIPLY);
                     material.renderQueue = (int)RenderQueue.Geometry;
