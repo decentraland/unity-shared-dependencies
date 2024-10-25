@@ -76,7 +76,7 @@ half SampleOcclusion(float2 uv)
 
 void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 {
-    if (_METALLICSPECGLOSSMAP) // using HRM texture, so RGB == Height, Roughness, Metallic
+    if (_PARALLAXMAP) // using HRM texture, so RGB == Height, Roughness, Metallic
     {
         uv += ParallaxMapping(TEXTURE2D_ARGS(_MetallicGlossMap, sampler_MetallicGlossMap), viewDirTS, _Parallax, uv);
     }
