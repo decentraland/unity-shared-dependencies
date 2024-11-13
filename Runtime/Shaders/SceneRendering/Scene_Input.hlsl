@@ -21,6 +21,8 @@ UNITY_DEFINE_INSTANCED_PROP(half, _OcclusionStrength)
 UNITY_DEFINE_INSTANCED_PROP(half, _Surface)
 UNITY_DEFINE_INSTANCED_PROP(float4, _PlaneClipping)
 UNITY_DEFINE_INSTANCED_PROP(float4, _VerticalClipping)
+UNITY_DEFINE_INSTANCED_PROP(float4, _BumpMap_ST)
+UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionMap_ST)
 UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 
 #define _BaseMap_ST             UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST)
@@ -36,6 +38,8 @@ UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 #define _Surface                UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Surface)
 #define _PlaneClipping          UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _PlaneClipping)
 #define _VerticalClipping       UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _VerticalClipping)
+#define _BumpMap_ST             UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BumpMap_ST)
+#define _EmissionMap_ST         UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _EmissionMap_ST)
 
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
 //TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
@@ -91,10 +95,12 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Sc
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.g;
-    
-    outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+
+    float2 bumpmapUV = TRANSFORM_TEX(uv, _BumpMap);
+    float2 emissionmapUV = TRANSFORM_TEX(uv, _EmissionMap);
+    outSurfaceData.normalTS = SampleNormal(bumpmapUV, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
     outSurfaceData.occlusion = SampleOcclusion(uv);
-    outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission(emissionmapUV, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
     outSurfaceData.height = specGloss.r;
 }
 

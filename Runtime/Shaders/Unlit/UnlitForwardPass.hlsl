@@ -108,7 +108,8 @@ void UnlitPassFragment(
     half3 color = texColor.rgb * _BaseColor.rgb;
     half alpha = texColor.a * _BaseColor.a;
 
-    half4 alphaTexture = SAMPLE_TEXTURE2D(_AlphaTexture, sampler_AlphaTexture, uv);
+    float2 alphatextureUV = TRANSFORM_TEX(uv, _AlphaTexture);
+    half4 alphaTexture = SAMPLE_TEXTURE2D(_AlphaTexture, sampler_AlphaTexture, alphatextureUV);
     alpha *= saturate(length(alphaTexture.rgb));
     
     alpha = AlphaDiscard(alpha, _Cutoff);
