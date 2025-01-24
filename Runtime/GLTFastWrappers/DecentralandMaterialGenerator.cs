@@ -239,7 +239,7 @@ namespace DCL.GLTFast.Wrappers
                     material.SetInt(ShaderUtils.SrcBlend, (int)BlendMode.One);
                     material.SetInt(ShaderUtils.DstBlend, (int)BlendMode.Zero);
                     material.SetInt(ShaderUtils.ZWrite, 1);
-                    material.SetInt("_Surface", 0);
+                    material.SetInt("_Surface", 1);
                     material.SetFloat(ShaderUtils.AlphaClip, 1);
                     material.EnableKeyword(ShaderUtils.KEYWORD_ALPHA_TEST);
                     material.DisableKeyword(ShaderUtils.KEYWORD_ALPHA_PREMULTIPLY);
