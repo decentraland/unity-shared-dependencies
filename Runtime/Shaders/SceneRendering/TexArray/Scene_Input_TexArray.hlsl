@@ -113,4 +113,42 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Sc
     outSurfaceData.height = specGloss.r;
 }
 
+#ifdef _GPU_INSTANCER_BATCHER
+float3 TransformObjectToWorld_PerInstance(float3 positionOS, uint _instanceID)
+{
+    #if defined(SHADER_STAGE_RAY_TRACING)
+    return mul(ObjectToWorld3x4(), float4(positionOS, 1.0)).xyz;
+    #else
+    return mul(_PerInstanceBuffer[_instanceID].instMatrix, float4(positionOS, 1.0)).xyz;
+    #endif
+}
+
+VertexPositionInputs GetVertexPositionInputs_PerInstance(float3 positionOS, uint _instanceID)
+{
+    VertexPositionInputs input;
+    input.positionWS = TransformObjectToWorld_PerInstance(positionOS, _instanceID);
+    input.positionVS = TransformWorldToView(input.positionWS);
+    input.positionCS = TransformWorldToHClip(input.positionWS);
+
+    float4 ndc = input.positionCS * 0.5f;
+    input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
+    input.positionNDC.zw = input.positionCS.zw;
+
+    return input;
+}
+#endif
+
+VertexPositionInputs GetVertexPositionInputs_Scene(float3 _positionOS, uint _svInstanceID)
+{
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint cmdID = GetCommandID(0);
+    uint instanceID = GetIndirectInstanceID(_svInstanceID);
+    VertexPositionInputs vertexInput = GetVertexPositionInputs_PerInstance(_positionOS, instanceID);
+    return vertexInput;
+    #else
+    VertexPositionInputs vertexInput = GetVertexPositionInputs(_positionOS);
+    return vertexInput;
+    #endif
+}
+
 #endif // UNIVERSAL_INPUT_SURFACE_PBR_INCLUDED

@@ -29,10 +29,10 @@ struct Varyings
     float2 uv           : TEXCOORD1;
 };
 
-float4 GetShadowPositionHClip(Attributes input)
+float4 GetShadowPositionHClip(Attributes input, uint _svInstanceID)
 {
-    float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
-    float3 normalWS = TransformObjectToWorldNormal(input.normalOS);
+    float3 positionWS = TransformObjectToWorld_Scene(input.positionOS.xyz, _svInstanceID);
+    float3 normalWS = TransformObjectToWorldNormal_Scene(input.normalOS, _svInstanceID);
 
 #if _CASTING_PUNCTUAL_LIGHT_SHADOW
     float3 lightDirectionWS = normalize(_LightPosition - positionWS);
@@ -51,14 +51,14 @@ float4 GetShadowPositionHClip(Attributes input)
     return positionCS;
 }
 
-Varyings ShadowPassVertex(Attributes input)
+Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
-    output.positionCS = GetShadowPositionHClip(input);
-    output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
+    output.positionCS = GetShadowPositionHClip(input, svInstanceID);
+    output.positionWS = TransformObjectToWorld_Scene(input.positionOS.xyz, svInstanceID);
     return output;
 }
 

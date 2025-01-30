@@ -23,15 +23,15 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-Varyings DepthOnlyVertex(Attributes input)
+Varyings DepthOnlyVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
     Varyings output = (Varyings)0;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
-    output.positionCS = TransformObjectToHClip(input.position.xyz);
-    output.positionWS = TransformObjectToWorld(input.position.xyz);
+    output.positionCS = TransformObjectToHClip_Scene(input.position.xyz, svInstanceID);
+    output.positionWS = TransformObjectToWorld_Scene(input.position.xyz, svInstanceID);
     return output;
 }
 

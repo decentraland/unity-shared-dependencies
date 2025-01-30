@@ -206,6 +206,7 @@ Shader "DCL/Scene"
 
             // This is used during shadow map generation to differentiate between directional and punctual light shadows, as they use different formulas to apply Normal Bias
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+            #pragma shader_feature_local _GPU_INSTANCER_BATCHER
 
             // -------------------------------------
             // Includes
@@ -250,6 +251,7 @@ Shader "DCL/Scene"
 
             //--------------------------------------
             // GPU Instancing
+            #pragma shader_feature_local _GPU_INSTANCER_BATCHER
             #pragma multi_compile_instancing
             //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
@@ -303,6 +305,7 @@ Shader "DCL/Scene"
 
             //--------------------------------------
             // GPU Instancing
+            #pragma shader_feature_local _GPU_INSTANCER_BATCHER
             #pragma multi_compile_instancing
             //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 

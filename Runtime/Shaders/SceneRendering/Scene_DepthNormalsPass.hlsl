@@ -47,18 +47,17 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-
-Varyings DepthNormalsVertex(Attributes input)
+Varyings DepthNormalsVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
     Varyings output = (Varyings)0;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
     output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
-    output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-    output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
+    output.positionCS = TransformObjectToHClip_Scene(input.positionOS.xyz, svInstanceID);
+    output.positionWS = TransformObjectToWorld_Scene(input.positionOS.xyz, svInstanceID);
 
-    VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
+    VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);
 
     half3 viewDirWS = GetWorldSpaceNormalizeViewDir(vertexInput.positionWS);

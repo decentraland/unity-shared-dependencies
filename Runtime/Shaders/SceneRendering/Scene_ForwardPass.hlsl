@@ -8,10 +8,7 @@
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
 
-#ifdef _GPU_INSTANCER_BATCHER
-#define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
-#include "UnityIndirect.cginc"
-#endif
+
 
 
 
@@ -78,8 +75,6 @@ struct Varyings
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-
-
 void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inputData)
 {
     inputData = (InputData_Scene)0;
@@ -144,54 +139,18 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
 //                  Vertex and Fragment functions                            //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef _GPU_INSTANCER_BATCHER
-struct PerInstanceBuffer
-{
-    float4x4 instMatrix;
-    float3 instColourTint;
-};
-StructuredBuffer<PerInstanceBuffer> _PerInstanceBuffer;
-#endif
-
-#ifdef _GPU_INSTANCER_BATCHER
-float3 TransformObjectToWorld_PerInstance(float3 positionOS, uint _instanceID)
-{
-    #if defined(SHADER_STAGE_RAY_TRACING)
-    return mul(ObjectToWorld3x4(), float4(positionOS, 1.0)).xyz;
-    #else
-    return mul(_PerInstanceBuffer[_instanceID].instMatrix, float4(positionOS, 1.0)).xyz;
-    #endif
-}
-
-VertexPositionInputs GetVertexPositionInputs_PerInstance(float3 positionOS, uint _instanceID)
-{
-    VertexPositionInputs input;
-    input.positionWS = TransformObjectToWorld_PerInstance(positionOS, _instanceID);
-    input.positionVS = TransformWorldToView(input.positionWS);
-    input.positionCS = TransformWorldToHClip(input.positionWS);
-
-    float4 ndc = input.positionCS * 0.5f;
-    input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
-    input.positionNDC.zw = input.positionCS.zw;
-
-    return input;
-}
-#endif
-
 // Used in Standard (Physically Based) shader
 Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
     Varyings output = (Varyings)0;
 
+    VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
+    
     #ifdef _GPU_INSTANCER_BATCHER
-        uint cmdID = GetCommandID(0);
         uint instanceID = GetIndirectInstanceID(svInstanceID);
-        VertexPositionInputs vertexInput = GetVertexPositionInputs_PerInstance(input.positionOS.xyz, instanceID);
         output.tintColour = _PerInstanceBuffer[instanceID].instColourTint;
-    #else
-        VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
     #endif
-
+    
     //UNITY_SETUP_INSTANCE_ID(input);
     //UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
