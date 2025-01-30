@@ -67,7 +67,7 @@ struct Varyings
 #endif
 
 #ifdef _GPU_INSTANCER_BATCHER
-    float3 tintColour               : TEXCOORD8;
+    float3 tintColour               : TEXCOORD10;
 #endif
     
     float4 positionCS               : SV_POSITION;
