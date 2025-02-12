@@ -50,6 +50,13 @@ struct PerInstanceBuffer
     float3 instColourTint;
 };
 StructuredBuffer<PerInstanceBuffer> _PerInstanceBuffer;
+
+struct PerInstanceLookUpAndDither
+{
+    uint instanceID;
+    uint ditherLevel;
+};
+RWStructuredBuffer<PerInstanceLookUpAndDither> _PerInstanceLookUpAndDitherBuffer;
 #endif
 
 half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
@@ -118,7 +125,8 @@ float3 TransformObjectToWorld_PerInstance(float3 positionOS, uint _instanceID)
     #if defined(SHADER_STAGE_RAY_TRACING)
     return mul(ObjectToWorld3x4(), float4(positionOS, 1.0)).xyz;
     #else
-    return mul(_PerInstanceBuffer[_instanceID].instMatrix, float4(positionOS, 1.0)).xyz;
+    uint instID = _PerInstanceLookUpAndDitherBuffer[_instanceID].instanceID;
+    return mul(_PerInstanceBuffer[instID].instMatrix, float4(positionOS, 1.0)).xyz;
     #endif
 }
 
@@ -142,7 +150,8 @@ float4 TransformObjectToHClip_Scene(float3 _positionOS, uint _svInstanceID)
     #ifdef _GPU_INSTANCER_BATCHER
     uint cmdID = GetCommandID(0);
     uint instanceID = GetIndirectInstanceID(_svInstanceID);
-    return mul(GetWorldToHClipMatrix(), mul(_PerInstanceBuffer[instanceID].instMatrix, float4(_positionOS, 1.0)));
+    uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+    return mul(GetWorldToHClipMatrix(), mul(_PerInstanceBuffer[instID].instMatrix, float4(_positionOS, 1.0)));
     #else
     return TransformObjectToHClip(_positionOS);
     #endif
@@ -153,7 +162,8 @@ float3 TransformObjectToWorld_Scene(float3 _positionOS, uint _svInstanceID)
     #ifdef _GPU_INSTANCER_BATCHER
     uint cmdID = GetCommandID(0);
     uint instanceID = GetIndirectInstanceID(_svInstanceID);
-    return mul(_PerInstanceBuffer[instanceID].instMatrix, float4(_positionOS, 1.0)).xyz;
+    uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+    return mul(_PerInstanceBuffer[instID].instMatrix, float4(_positionOS, 1.0)).xyz;
     #else
     return TransformObjectToWorld(_positionOS);
     #endif
@@ -164,7 +174,8 @@ float3 TransformObjectToWorldDir_Scene(float3 dirOS, uint _svInstanceID, bool do
     #ifdef _GPU_INSTANCER_BATCHER
         uint cmdID = GetCommandID(0);
         uint instanceID = GetIndirectInstanceID(_svInstanceID);
-        float4x4 ObjToWorldMatrix = _PerInstanceBuffer[instanceID].instMatrix;
+        uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+        float4x4 ObjToWorldMatrix = _PerInstanceBuffer[instID].instMatrix;
         float3 dirWS = mul((float3x3)ObjToWorldMatrix, dirOS);
     #else
         #ifndef SHADER_STAGE_RAY_TRACING
@@ -228,7 +239,8 @@ float3 TransformObjectToWorldNormal_Scene(float3 normalOS, uint _svInstanceID, b
         #ifdef _GPU_INSTANCER_BATCHER
             uint cmdID = GetCommandID(0);
             uint instanceID = GetIndirectInstanceID(_svInstanceID);
-            float4x4 ObjToWorldMatrix = _PerInstanceBuffer[instanceID].instMatrix;
+            uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+            float4x4 ObjToWorldMatrix = _PerInstanceBuffer[instID].instMatrix;
             float3 normalWS = mul(normalOS, (float3x3)inverse(ObjToWorldMatrix));
         #else
             float3 normalWS = mul(normalOS, (float3x3)GetWorldToObjectMatrix());

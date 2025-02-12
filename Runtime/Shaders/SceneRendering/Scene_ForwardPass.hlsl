@@ -148,7 +148,8 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     
     #ifdef _GPU_INSTANCER_BATCHER
         uint instanceID = GetIndirectInstanceID(svInstanceID);
-        output.tintColour = _PerInstanceBuffer[instanceID].instColourTint;
+        uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+        output.tintColour = _PerInstanceBuffer[instID].instColourTint;
     #endif
     
     //UNITY_SETUP_INSTANCE_ID(input);

@@ -119,7 +119,8 @@ float3 TransformObjectToWorld_PerInstance(float3 positionOS, uint _instanceID)
     #if defined(SHADER_STAGE_RAY_TRACING)
     return mul(ObjectToWorld3x4(), float4(positionOS, 1.0)).xyz;
     #else
-    return mul(_PerInstanceBuffer[_instanceID].instMatrix, float4(positionOS, 1.0)).xyz;
+    uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+    return mul(_PerInstanceBuffer[instID].instMatrix, float4(positionOS, 1.0)).xyz;
     #endif
 }
 
