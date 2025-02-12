@@ -149,7 +149,7 @@ float4 TransformObjectToHClip_Scene(float3 _positionOS, uint _svInstanceID)
 {
     #ifdef _GPU_INSTANCER_BATCHER
     uint cmdID = GetCommandID(0);
-    uint instanceID = GetIndirectInstanceID(_svInstanceID);
+    uint instanceID = GetIndirectInstanceID_Base(_svInstanceID);
     uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
     return mul(GetWorldToHClipMatrix(), mul(_PerInstanceBuffer[instID].instMatrix, float4(_positionOS, 1.0)));
     #else
@@ -161,7 +161,7 @@ float3 TransformObjectToWorld_Scene(float3 _positionOS, uint _svInstanceID)
 {
     #ifdef _GPU_INSTANCER_BATCHER
     uint cmdID = GetCommandID(0);
-    uint instanceID = GetIndirectInstanceID(_svInstanceID);
+    uint instanceID = GetIndirectInstanceID_Base(_svInstanceID);
     uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
     return mul(_PerInstanceBuffer[instID].instMatrix, float4(_positionOS, 1.0)).xyz;
     #else
@@ -173,7 +173,7 @@ float3 TransformObjectToWorldDir_Scene(float3 dirOS, uint _svInstanceID, bool do
 {
     #ifdef _GPU_INSTANCER_BATCHER
         uint cmdID = GetCommandID(0);
-        uint instanceID = GetIndirectInstanceID(_svInstanceID);
+        uint instanceID = GetIndirectInstanceID_Base(_svInstanceID);
         uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
         float4x4 ObjToWorldMatrix = _PerInstanceBuffer[instID].instMatrix;
         float3 dirWS = mul((float3x3)ObjToWorldMatrix, dirOS);
@@ -238,7 +238,7 @@ float3 TransformObjectToWorldNormal_Scene(float3 normalOS, uint _svInstanceID, b
         // Normal need to be multiply by inverse transpose
         #ifdef _GPU_INSTANCER_BATCHER
             uint cmdID = GetCommandID(0);
-            uint instanceID = GetIndirectInstanceID(_svInstanceID);
+            uint instanceID = GetIndirectInstanceID_Base(_svInstanceID);
             uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
             float4x4 ObjToWorldMatrix = _PerInstanceBuffer[instID].instMatrix;
             float3 normalWS = mul(normalOS, (float3x3)inverse(ObjToWorldMatrix));
@@ -256,7 +256,7 @@ VertexPositionInputs GetVertexPositionInputs_Scene(float3 _positionOS, uint _svI
 {
     #ifdef _GPU_INSTANCER_BATCHER
     uint cmdID = GetCommandID(0);
-    uint instanceID = GetIndirectInstanceID(_svInstanceID);
+    uint instanceID = GetIndirectInstanceID_Base(_svInstanceID);
     VertexPositionInputs vertexInput = GetVertexPositionInputs_PerInstance(_positionOS, instanceID);
     return vertexInput;
     #else
