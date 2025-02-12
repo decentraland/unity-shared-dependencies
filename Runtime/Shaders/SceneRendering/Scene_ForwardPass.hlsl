@@ -1,6 +1,11 @@
 #ifndef SCENE_FORWARD_PASS_INCLUDED
 #define SCENE_FORWARD_PASS_INCLUDED
 
+#ifdef _GPU_INSTANCER_BATCHER
+#define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
+#include "UnityIndirect.cginc"
+#endif
+
 #include "Scene_InputData.hlsl"
 #include "Scene_Lighting.hlsl"
 #include "Scene_PlaneClipping.hlsl"
@@ -142,6 +147,9 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
 // Used in Standard (Physically Based) shader
 Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    InitIndirectDrawArgs(0);
+    #endif
     Varyings output = (Varyings)0;
 
     VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);

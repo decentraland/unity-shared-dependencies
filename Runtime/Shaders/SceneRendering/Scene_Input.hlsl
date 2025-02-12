@@ -56,7 +56,7 @@ struct PerInstanceLookUpAndDither
     uint instanceID;
     uint ditherLevel;
 };
-RWStructuredBuffer<PerInstanceLookUpAndDither> _PerInstanceLookUpAndDitherBuffer;
+StructuredBuffer<PerInstanceLookUpAndDither> _PerInstanceLookUpAndDitherBuffer;
 #endif
 
 half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
