@@ -4,6 +4,7 @@
 #ifdef _GPU_INSTANCER_BATCHER
 #define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
 #include "UnityIndirect.cginc"
+#include "Scene_Dither.hlsl"
 #endif
 
 #include "Scene_InputData.hlsl"
@@ -12,10 +13,6 @@
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
-
-
-
-
 
 // GLES2 has limited amount of interpolators
 //#if defined(_PARALLAXMAP) && !defined(SHADER_API_GLES)
@@ -73,6 +70,7 @@ struct Varyings
 
 #ifdef _GPU_INSTANCER_BATCHER
     float3 tintColour               : TEXCOORD10;
+    uint nDither                    : TEXCOORD11;
 #endif
     
     float4 positionCS               : SV_POSITION;
@@ -151,13 +149,14 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     InitIndirectDrawArgs(0);
     #endif
     Varyings output = (Varyings)0;
-
+    
     VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
     
     #ifdef _GPU_INSTANCER_BATCHER
         uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
         uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
         output.tintColour = _PerInstanceBuffer[instID].instColourTint;
+        output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #endif
     
     //UNITY_SETUP_INSTANCE_ID(input);
@@ -227,6 +226,9 @@ void LitPassFragment(
 #endif
 )
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    Dithering( input.positionCS, input.nDither);
+    #endif
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_INSTANCE_ID(input);

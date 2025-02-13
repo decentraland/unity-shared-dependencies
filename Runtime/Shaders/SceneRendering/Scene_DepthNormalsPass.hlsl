@@ -7,6 +7,12 @@
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
 
+#ifdef _GPU_INSTANCER_BATCHER
+#define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
+#include "UnityIndirect.cginc"
+#include "Scene_Dither.hlsl"
+#endif
+
 // GLES2 has limited amount of interpolators
 //#if defined(_PARALLAXMAP)
 #define REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR
@@ -43,15 +49,28 @@ struct Varyings
 
     float3 positionWS   : TEXCOORD9;
 
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint nDither        : TEXCOORD10;
+    #endif
+
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
 Varyings DepthNormalsVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    InitIndirectDrawArgs(0);
+    #endif
+    
     Varyings output = (Varyings)0;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
+    output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #endif
 
     output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
     output.positionCS = TransformObjectToHClip_Scene(input.positionOS.xyz, svInstanceID);
@@ -81,6 +100,9 @@ Varyings DepthNormalsVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
 void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    Dithering( input.positionCS, input.nDither);
+    #endif
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);

@@ -8,6 +8,12 @@
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 #endif
 
+#ifdef _GPU_INSTANCER_BATCHER
+#define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
+#include "UnityIndirect.cginc"
+#include "Scene_Dither.hlsl"
+#endif
+
 // Shadow Casting Light geometric parameters. These variables are used when applying the shadow Normal Bias and are set by UnityEngine.Rendering.Universal.ShadowUtils.SetupShadowCasterConstantBuffer in com.unity.render-pipelines.universal/Runtime/ShadowUtils.cs
 // For Directional lights, _LightDirection is used when applying shadow Normal Bias.
 // For Spot lights and Point lights, _LightPosition is used to compute the actual light direction because it is different at each shadow caster geometry vertex.
@@ -27,6 +33,9 @@ struct Varyings
     float4 positionCS   : SV_POSITION;
     float3 positionWS   : TEXCOORD0;
     float2 uv           : TEXCOORD1;
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint nDither        : TEXCOORD2;
+    #endif
 };
 
 float4 GetShadowPositionHClip(Attributes input, uint _svInstanceID)
@@ -53,8 +62,17 @@ float4 GetShadowPositionHClip(Attributes input, uint _svInstanceID)
 
 Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    InitIndirectDrawArgs(0);
+    #endif
+    
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
+
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
+    output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #endif
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     output.positionCS = GetShadowPositionHClip(input, svInstanceID);
@@ -64,6 +82,9 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    Dithering( input.positionCS, input.nDither);
+    #endif
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
