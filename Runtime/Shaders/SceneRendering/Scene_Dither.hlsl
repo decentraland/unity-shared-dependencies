@@ -5,6 +5,7 @@
 
 void Dithering( float4 positionCS, uint nDither)
 {
+    return;
     float4 ndc = positionCS * 0.5f;
     float4 positionNDC; // Homogeneous normalized device coordinates
     positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
