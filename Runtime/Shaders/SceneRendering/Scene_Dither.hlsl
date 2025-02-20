@@ -5,15 +5,13 @@
 
 void Dithering( float4 positionCS, uint nDither)
 {
-    return;
     float4 ndc = positionCS * 0.5f;
     float4 positionNDC; // Homogeneous normalized device coordinates
     positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
     positionNDC.zw = positionCS.zw;
-
-
-    uint twofivefive = 255;
-    float hideAmount = nDither / twofivefive;
+    
+    float twofivefive = 255;
+    float hideAmount = (255.0f-(float)nDither) / twofivefive;
     
     // Screen-door transparency: Discard pixel if below threshold.
     float DITHER_THRESHOLDS[16] =
