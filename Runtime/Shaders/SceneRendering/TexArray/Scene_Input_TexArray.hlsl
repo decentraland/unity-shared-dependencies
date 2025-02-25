@@ -97,11 +97,11 @@ void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 #endif
 }
 
-inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Scene outSurfaceData)
+inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanceColour, out SurfaceData_Scene outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv);
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff);
-    outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb, outSurfaceData.alpha);
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor * _PerInstanceColour, _Cutoff);
+    outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.metallic = specGloss.b;

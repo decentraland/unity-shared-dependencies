@@ -47,7 +47,7 @@ TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 struct PerInstanceBuffer
 {
     float4x4 instMatrix;
-    float3 instColourTint;
+    float4 instColourTint;
 };
 StructuredBuffer<PerInstanceBuffer> _PerInstanceBuffer;
 

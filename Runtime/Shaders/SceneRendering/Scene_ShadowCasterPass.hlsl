@@ -70,7 +70,7 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
     #ifdef _GPU_INSTANCER_BATCHER
     uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
-    output.tintColour = _PerInstanceLookUpAndDitherBuffer[instanceID].tin;
+    output.tintColour = _PerInstanceBuffer[_PerInstanceLookUpAndDitherBuffer[instanceID].instanceID].instColourTint;
     output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #else
     output.tintColour = float4(1.0f, 1.0f, 1.0f, 1.0f);
