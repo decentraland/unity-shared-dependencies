@@ -1,6 +1,7 @@
 #ifndef SCENE_SHADOW_CASTER_PASS_INCLUDED
 #define SCENE_SHADOW_CASTER_PASS_INCLUDED
 
+#include "Scene_Dither.hlsl"
 #include "Scene_Core.hlsl"
 #include "Scene_Shadows.hlsl"
 #include "Scene_PlaneClipping.hlsl"
@@ -11,7 +12,6 @@
 #ifdef _GPU_INSTANCER_BATCHER
 #define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
 #include "UnityIndirect.cginc"
-#include "Scene_Dither.hlsl"
 #endif
 
 // Shadow Casting Light geometric parameters. These variables are used when applying the shadow Normal Bias and are set by UnityEngine.Rendering.Universal.ShadowUtils.SetupShadowCasterConstantBuffer in com.unity.render-pipelines.universal/Runtime/ShadowUtils.cs
@@ -33,9 +33,7 @@ struct Varyings
     float4 positionCS   : SV_POSITION;
     float3 positionWS   : TEXCOORD0;
     float2 uv           : TEXCOORD1;
-    #ifdef _GPU_INSTANCER_BATCHER
     uint nDither        : TEXCOORD2;
-    #endif
 };
 
 float4 GetShadowPositionHClip(Attributes input, uint _svInstanceID)
@@ -72,6 +70,8 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     #ifdef _GPU_INSTANCER_BATCHER
     uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
     output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #else
+    output.nDither = 255;
     #endif
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
@@ -82,9 +82,8 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
-    #ifdef _GPU_INSTANCER_BATCHER
     Dithering( input.positionCS, input.nDither);
-    #endif
+
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);

@@ -1,6 +1,7 @@
 #ifndef SCENE_DEPTH_ONLY_PASS_INCLUDED
 #define SCENE_DEPTH_ONLY_PASS_INCLUDED
 
+#include "Scene_Dither.hlsl"
 #include "Scene_Core.hlsl"
 #include "Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
@@ -10,7 +11,6 @@
 #ifdef _GPU_INSTANCER_BATCHER
 #define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
 #include "UnityIndirect.cginc"
-#include "Scene_Dither.hlsl"
 #endif
 
 struct Attributes
@@ -25,9 +25,8 @@ struct Varyings
     float4 positionCS   : SV_POSITION;
     float3 positionWS   : TEXCOORD0;
     float2 uv           : TEXCOORD1;
-    #ifdef _GPU_INSTANCER_BATCHER
     uint nDither        : TEXCOORD2;
-    #endif
+
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -45,6 +44,8 @@ Varyings DepthOnlyVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     #ifdef _GPU_INSTANCER_BATCHER
     uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
     output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #else
+    output.nDither = 255;
     #endif
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
@@ -55,9 +56,8 @@ Varyings DepthOnlyVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
 half DepthOnlyFragment(Varyings input) : SV_TARGET
 {
-    #ifdef _GPU_INSTANCER_BATCHER
     Dithering( input.positionCS, input.nDither);
-    #endif
+
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);

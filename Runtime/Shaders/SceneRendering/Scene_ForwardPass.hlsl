@@ -4,9 +4,9 @@
 #ifdef _GPU_INSTANCER_BATCHER
 #define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
 #include "UnityIndirect.cginc"
-#include "Scene_Dither.hlsl"
 #endif
 
+#include "Scene_Dither.hlsl"
 #include "Scene_InputData.hlsl"
 #include "Scene_Lighting.hlsl"
 #include "Scene_PlaneClipping.hlsl"
@@ -67,11 +67,9 @@ struct Varyings
 #ifdef DYNAMICLIGHTMAP_ON
     float2  dynamicLightmapUV : TEXCOORD9; // Dynamic lightmap UVs
 #endif
-
-#ifdef _GPU_INSTANCER_BATCHER
+    
     float3 tintColour               : TEXCOORD10;
     uint nDither                    : TEXCOORD11;
-#endif
     
     float4 positionCS               : SV_POSITION;
     UNITY_VERTEX_INPUT_INSTANCE_ID
@@ -157,6 +155,9 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
         output.tintColour = _PerInstanceBuffer[instID].instColourTint;
         output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #else
+        output.tintColour = float3(1.0f, 1.0f, 1.0f);
+        output.nDither = 255;
     #endif
     
     //UNITY_SETUP_INSTANCE_ID(input);
@@ -226,9 +227,8 @@ void LitPassFragment(
 #endif
 )
 {
-    #ifdef _GPU_INSTANCER_BATCHER
     Dithering( input.positionCS, input.nDither);
-    #endif
+
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_INSTANCE_ID(input);
