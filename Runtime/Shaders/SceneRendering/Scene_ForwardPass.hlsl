@@ -68,7 +68,7 @@ struct Varyings
     float2  dynamicLightmapUV : TEXCOORD9; // Dynamic lightmap UVs
 #endif
     
-    float3 tintColour               : TEXCOORD10;
+    float4 tintColour               : TEXCOORD10;
     uint nDither                    : TEXCOORD11;
     
     float4 positionCS               : SV_POSITION;
@@ -156,7 +156,7 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         output.tintColour = _PerInstanceBuffer[instID].instColourTint;
         output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #else
-        output.tintColour = float3(1.0f, 1.0f, 1.0f);
+        output.tintColour = float4(1.0f, 1.0f, 1.0f, 1.0f);
         output.nDither = 255;
     #endif
     
@@ -245,7 +245,7 @@ void LitPassFragment(
 //#endif
 
     SurfaceData_Scene surfaceData;
-    InitializeStandardLitSurfaceData_Scene(input.uv, surfaceData);
+    InitializeStandardLitSurfaceData_Scene(input.uv, input.tintColour, surfaceData);
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

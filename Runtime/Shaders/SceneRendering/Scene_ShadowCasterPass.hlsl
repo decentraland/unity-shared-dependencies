@@ -33,7 +33,8 @@ struct Varyings
     float4 positionCS   : SV_POSITION;
     float3 positionWS   : TEXCOORD0;
     float2 uv           : TEXCOORD1;
-    uint nDither        : TEXCOORD2;
+    float4 tintColour   : TEXCOORD2;
+    uint nDither        : TEXCOORD3;
 };
 
 float4 GetShadowPositionHClip(Attributes input, uint _svInstanceID)
@@ -69,8 +70,10 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
     #ifdef _GPU_INSTANCER_BATCHER
     uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
+    output.tintColour = _PerInstanceLookUpAndDitherBuffer[instanceID].tin;
     output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #else
+    output.tintColour = float4(1.0f, 1.0f, 1.0f, 1.0f);
     output.nDither = 255;
     #endif
 
@@ -86,7 +89,7 @@ half4 ShadowPassFragment(Varyings input) : SV_TARGET
 
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor * input.tintColour, _Cutoff);
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);
