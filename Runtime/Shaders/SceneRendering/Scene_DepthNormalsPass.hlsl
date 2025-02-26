@@ -69,7 +69,7 @@ Varyings DepthNormalsVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
     output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #else
-    output.nDither = 255;
+    output.nDither = 0;
     #endif
 
     output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);

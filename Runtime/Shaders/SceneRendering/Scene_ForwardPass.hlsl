@@ -157,7 +157,7 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #else
         output.tintColour = float4(1.0f, 1.0f, 1.0f, 1.0f);
-        output.nDither = 255;
+        output.nDither = 0;
     #endif
     
     //UNITY_SETUP_INSTANCE_ID(input);

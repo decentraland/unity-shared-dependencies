@@ -74,7 +74,7 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
     #else
     output.tintColour = float4(1.0f, 1.0f, 1.0f, 1.0f);
-    output.nDither = 255;
+    output.nDither = 0;
     #endif
 
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
