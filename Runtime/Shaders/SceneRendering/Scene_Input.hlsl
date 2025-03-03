@@ -55,6 +55,8 @@ struct PerInstanceLookUpAndDither
 {
     uint instanceID;
     uint ditherLevel;
+    uint padding0;
+    uint padding1;
 };
 StructuredBuffer<PerInstanceLookUpAndDither> _PerInstanceLookUpAndDitherBuffer;
 #endif
