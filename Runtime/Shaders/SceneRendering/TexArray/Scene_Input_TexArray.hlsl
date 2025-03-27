@@ -97,11 +97,11 @@ void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 #endif
 }
 
-inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Scene outSurfaceData)
+inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanceColour, out SurfaceData_Scene outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv);
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff);
-    outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb, outSurfaceData.alpha);
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor * _PerInstanceColour, _Cutoff);
+    outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.metallic = specGloss.b;
@@ -111,6 +111,45 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, out SurfaceData_Sc
     outSurfaceData.occlusion = SampleOcclusion(uv);
     outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
     outSurfaceData.height = specGloss.r;
+}
+
+#ifdef _GPU_INSTANCER_BATCHER
+float3 TransformObjectToWorld_PerInstance(float3 positionOS, uint _instanceID)
+{
+    #if defined(SHADER_STAGE_RAY_TRACING)
+    return mul(ObjectToWorld3x4(), float4(positionOS, 1.0)).xyz;
+    #else
+    uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+    return mul(_PerInstanceBuffer[instID].instMatrix, float4(positionOS, 1.0)).xyz;
+    #endif
+}
+
+VertexPositionInputs GetVertexPositionInputs_PerInstance(float3 positionOS, uint _instanceID)
+{
+    VertexPositionInputs input;
+    input.positionWS = TransformObjectToWorld_PerInstance(positionOS, _instanceID);
+    input.positionVS = TransformWorldToView(input.positionWS);
+    input.positionCS = TransformWorldToHClip(input.positionWS);
+
+    float4 ndc = input.positionCS * 0.5f;
+    input.positionNDC.xy = float2(ndc.x, ndc.y * _ProjectionParams.x) + ndc.w;
+    input.positionNDC.zw = input.positionCS.zw;
+
+    return input;
+}
+#endif
+
+VertexPositionInputs GetVertexPositionInputs_Scene(float3 _positionOS, uint _svInstanceID)
+{
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint cmdID = GetCommandID(0);
+    uint instanceID = GetIndirectInstanceID(_svInstanceID);
+    VertexPositionInputs vertexInput = GetVertexPositionInputs_PerInstance(_positionOS, instanceID);
+    return vertexInput;
+    #else
+    VertexPositionInputs vertexInput = GetVertexPositionInputs(_positionOS);
+    return vertexInput;
+    #endif
 }
 
 #endif // UNIVERSAL_INPUT_SURFACE_PBR_INCLUDED

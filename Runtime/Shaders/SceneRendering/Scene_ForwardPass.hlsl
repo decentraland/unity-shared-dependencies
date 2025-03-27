@@ -1,6 +1,12 @@
 #ifndef SCENE_FORWARD_PASS_INCLUDED
 #define SCENE_FORWARD_PASS_INCLUDED
 
+#ifdef _GPU_INSTANCER_BATCHER
+#define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
+#include "UnityIndirect.cginc"
+#endif
+
+#include "Scene_Dither.hlsl"
 #include "Scene_InputData.hlsl"
 #include "Scene_Lighting.hlsl"
 #include "Scene_PlaneClipping.hlsl"
@@ -61,13 +67,14 @@ struct Varyings
 #ifdef DYNAMICLIGHTMAP_ON
     float2  dynamicLightmapUV : TEXCOORD9; // Dynamic lightmap UVs
 #endif
-
+    
+    float4 tintColour               : TEXCOORD10;
+    uint nDither                    : TEXCOORD11;
+    
     float4 positionCS               : SV_POSITION;
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
-
-
 
 void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inputData)
 {
@@ -134,15 +141,28 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
 ///////////////////////////////////////////////////////////////////////////////
 
 // Used in Standard (Physically Based) shader
-Varyings LitPassVertex(Attributes input)
+Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    InitIndirectDrawArgs(0);
+    #endif
     Varyings output = (Varyings)0;
-
-    UNITY_SETUP_INSTANCE_ID(input);
-    UNITY_TRANSFER_INSTANCE_ID(input, output);
+    
+    VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
+    
+    #ifdef _GPU_INSTANCER_BATCHER
+        uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
+        uint instID = _PerInstanceLookUpAndDitherBuffer[instanceID].instanceID;
+        output.tintColour = _PerInstanceBuffer[instID].instColourTint;
+        output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #else
+        output.tintColour = float4(1.0f, 1.0f, 1.0f, 1.0f);
+        output.nDither = 0;
+    #endif
+    
+    //UNITY_SETUP_INSTANCE_ID(input);
+    //UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-    VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
 
     // normalWS and tangentWS already normalize.
     // this is required to avoid skewing the direction during interpolation
@@ -207,6 +227,8 @@ void LitPassFragment(
 #endif
 )
 {
+    Dithering( input.positionCS, input.nDither);
+
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_INSTANCE_ID(input);
@@ -223,7 +245,7 @@ void LitPassFragment(
 //#endif
 
     SurfaceData_Scene surfaceData;
-    InitializeStandardLitSurfaceData_Scene(input.uv, surfaceData);
+    InitializeStandardLitSurfaceData_Scene(input.uv, input.tintColour, surfaceData);
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

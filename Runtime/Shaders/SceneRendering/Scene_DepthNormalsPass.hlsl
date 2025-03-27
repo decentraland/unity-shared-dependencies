@@ -1,10 +1,16 @@
 #ifndef SCENE_DEPTH_NORMALS_PASS_INCLUDED
 #define SCENE_DEPTH_NORMALS_PASS_INCLUDED
 
+#include "Scene_Dither.hlsl"
 #include "Scene_Lighting.hlsl"
 #include "Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
+#endif
+
+#ifdef _GPU_INSTANCER_BATCHER
+#define UNITY_INDIRECT_DRAW_ARGS IndirectDrawIndexedArgs
+#include "UnityIndirect.cginc"
 #endif
 
 // GLES2 has limited amount of interpolators
@@ -42,23 +48,35 @@ struct Varyings
     //#endif
 
     float3 positionWS   : TEXCOORD9;
+    
+    uint nDither        : TEXCOORD10;
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
-
-Varyings DepthNormalsVertex(Attributes input)
+Varyings DepthNormalsVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 {
+    #ifdef _GPU_INSTANCER_BATCHER
+    InitIndirectDrawArgs(0);
+    #endif
+    
     Varyings output = (Varyings)0;
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
-    output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
-    output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
-    output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
+    #ifdef _GPU_INSTANCER_BATCHER
+    uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
+    output.nDither = _PerInstanceLookUpAndDitherBuffer[instanceID].ditherLevel;
+    #else
+    output.nDither = 0;
+    #endif
 
-    VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
+    output.uv         = TRANSFORM_TEX(input.texcoord, _BaseMap);
+    output.positionCS = TransformObjectToHClip_Scene(input.positionOS.xyz, svInstanceID);
+    output.positionWS = TransformObjectToWorld_Scene(input.positionOS.xyz, svInstanceID);
+
+    VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);
 
     half3 viewDirWS = GetWorldSpaceNormalizeViewDir(vertexInput.positionWS);
@@ -82,6 +100,8 @@ Varyings DepthNormalsVertex(Attributes input)
 
 void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
 {
+    Dithering( input.positionCS, input.nDither);
+
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
