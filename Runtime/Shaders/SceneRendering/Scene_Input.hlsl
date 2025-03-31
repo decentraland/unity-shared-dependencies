@@ -6,36 +6,102 @@
 #include "../URP/Constants.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 #include "Scene_SurfaceInput.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/DebugMipmapStreamingMacros.hlsl"
 
-UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
-UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
-UNITY_DEFINE_INSTANCED_PROP(half4, _BaseColor)
-UNITY_DEFINE_INSTANCED_PROP(half4, _SpecColor)
-UNITY_DEFINE_INSTANCED_PROP(half4, _EmissionColor)
-UNITY_DEFINE_INSTANCED_PROP(half, _Cutoff)
-UNITY_DEFINE_INSTANCED_PROP(half, _Smoothness)
-UNITY_DEFINE_INSTANCED_PROP(half, _Metallic)
-UNITY_DEFINE_INSTANCED_PROP(half, _BumpScale)
-UNITY_DEFINE_INSTANCED_PROP(half, _Parallax)
-UNITY_DEFINE_INSTANCED_PROP(half, _OcclusionStrength)
-UNITY_DEFINE_INSTANCED_PROP(half, _Surface)
-UNITY_DEFINE_INSTANCED_PROP(float4, _PlaneClipping)
-UNITY_DEFINE_INSTANCED_PROP(float4, _VerticalClipping)
-UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
+// NOTE: Do not ifdef the properties here as SRP batcher can not handle different layouts.
+CBUFFER_START(UnityPerMaterial)
+float4 _BaseMap_ST;
+half4 _BaseColor;
+half4 _SpecColor;
+half4 _EmissionColor;
+half _Cutoff;
+half _Smoothness;
+half _Metallic;
+half _BumpScale;
+half _Parallax;
+half _OcclusionStrength;
+half _Surface;
+float4 _PlaneClipping;
+float4 _VerticalClipping;
+UNITY_TEXTURE_STREAMING_DEBUG_VARS;
+CBUFFER_END
 
-#define _BaseMap_ST             UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseMap_ST)
-#define _BaseColor              UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor)
-#define _SpecColor              UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _SpecColor)
-#define _EmissionColor          UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _EmissionColor)
-#define _Cutoff                 UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff)
-#define _Smoothness             UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Smoothness)
-#define _Metallic               UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Metallic)
-#define _BumpScale              UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BumpScale)
-#define _Parallax               UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Parallax)
-#define _OcclusionStrength      UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _OcclusionStrength)
-#define _Surface                UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Surface)
-#define _PlaneClipping          UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _PlaneClipping)
-#define _VerticalClipping       UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _VerticalClipping)
+// NOTE: Do not ifdef the properties for dots instancing, but ifdef the actual usage.
+// Otherwise you might break CPU-side as property constant-buffer offsets change per variant.
+// NOTE: Dots instancing is orthogonal to the constant buffer above.
+#ifdef UNITY_DOTS_INSTANCING_ENABLED
+
+UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
+    UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
+    UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
+    UNITY_DOTS_INSTANCED_PROP(float4, _EmissionColor)
+    UNITY_DOTS_INSTANCED_PROP(float , _Cutoff)
+    UNITY_DOTS_INSTANCED_PROP(float , _Smoothness)
+    UNITY_DOTS_INSTANCED_PROP(float , _Metallic)
+    UNITY_DOTS_INSTANCED_PROP(float , _BumpScale)
+    UNITY_DOTS_INSTANCED_PROP(float , _Parallax)
+    UNITY_DOTS_INSTANCED_PROP(float , _OcclusionStrength)
+    UNITY_DOTS_INSTANCED_PROP(float , _Surface)
+    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
+    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
+UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+
+// Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
+// #define _BaseColor UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor0)
+//
+// It would be simpler, but it can cause the compiler to regenerate the property loading code for each use of _BaseColor.
+//
+// To avoid this, the property loads are cached in some static values at the beginning of the shader.
+// The properties such as _BaseColor are then overridden so that it expand directly to the static value like this:
+// #define _BaseColor unity_DOTS_Sampled_BaseColor
+//
+// This simple fix happened to improve GPU performances by ~10% on Meta Quest 2 with URP on some scenes.
+static float4 unity_DOTS_Sampled_BaseColor;
+static float4 unity_DOTS_Sampled_SpecColor;
+static float4 unity_DOTS_Sampled_EmissionColor;
+static float  unity_DOTS_Sampled_Cutoff;
+static float  unity_DOTS_Sampled_Smoothness;
+static float  unity_DOTS_Sampled_Metallic;
+static float  unity_DOTS_Sampled_BumpScale;
+static float  unity_DOTS_Sampled_Parallax;
+static float  unity_DOTS_Sampled_OcclusionStrength;
+static float  unity_DOTS_Sampled_Surface;
+static float4  unity_DOTS_Sampled_PlaneClipping;
+static float4  unity_DOTS_Sampled_VerticalClipping;
+
+void SetupDOTSLitMaterialPropertyCaches()
+{
+    unity_DOTS_Sampled_BaseColor            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor);
+    unity_DOTS_Sampled_SpecColor            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor);
+    unity_DOTS_Sampled_EmissionColor        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _EmissionColor);
+    unity_DOTS_Sampled_Cutoff               = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Cutoff);
+    unity_DOTS_Sampled_Smoothness           = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Smoothness);
+    unity_DOTS_Sampled_Metallic             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Metallic);
+    unity_DOTS_Sampled_BumpScale            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _BumpScale);
+    unity_DOTS_Sampled_Parallax             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Parallax);
+    unity_DOTS_Sampled_OcclusionStrength    = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _OcclusionStrength);
+    unity_DOTS_Sampled_Surface              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Surface);
+    unity_DOTS_Sampled_PlaneClipping        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _PlaneClipping);
+    unity_DOTS_Sampled_VerticalClipping     = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _VerticalClipping);
+}
+
+#undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES
+#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSLitMaterialPropertyCaches()
+
+#define _BaseColor              unity_DOTS_Sampled_BaseColor
+#define _SpecColor              unity_DOTS_Sampled_SpecColor
+#define _EmissionColor          unity_DOTS_Sampled_EmissionColor
+#define _Cutoff                 unity_DOTS_Sampled_Cutoff
+#define _Smoothness             unity_DOTS_Sampled_Smoothness
+#define _Metallic               unity_DOTS_Sampled_Metallic
+#define _BumpScale              unity_DOTS_Sampled_BumpScale
+#define _Parallax               unity_DOTS_Sampled_Parallax
+#define _OcclusionStrength      unity_DOTS_Sampled_OcclusionStrength
+#define _Surface                unity_DOTS_Sampled_Surface
+#define _PlaneClipping          unity_DOTS_Sampled_PlaneClipping
+#define _VerticalClipping       unity_DOTS_Sampled_VerticalClipping
+
+#endif
 
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
 //TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);

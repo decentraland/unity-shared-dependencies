@@ -133,7 +133,7 @@ Shader "DCL/Scene"
             //#pragma multi_compile_fragment _ _DBUFFER_MRT1 _DBUFFER_MRT2 _DBUFFER_MRT3
             #pragma multi_compile_fragment _ _LIGHT_LAYERS
             #pragma multi_compile_fragment _ _LIGHT_COOKIES
-            #pragma multi_compile_fragment _ _FORWARD_PLUS
+            #pragma multi_compile _ _FORWARD_PLUS
             //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RenderingLayers.hlsl"
 
 
@@ -153,8 +153,7 @@ Shader "DCL/Scene"
             #pragma multi_compile_local_vertex _ _GPU_INSTANCER_BATCHER
             #pragma multi_compile_instancing
             #pragma instancing_options renderinglayer
-            #pragma multi_compile _ DOTS_INSTANCING_ON
-            //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             #include "Scene_Input.hlsl"
             #include "Scene_ForwardPass.hlsl"
@@ -195,7 +194,7 @@ Shader "DCL/Scene"
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
-            //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             // -------------------------------------
             // Universal Pipeline keywords
@@ -253,7 +252,7 @@ Shader "DCL/Scene"
             // GPU Instancing
             #pragma multi_compile_local_vertex _ _GPU_INSTANCER_BATCHER
             #pragma multi_compile_instancing
-            //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             // -------------------------------------
             // Includes
@@ -307,7 +306,7 @@ Shader "DCL/Scene"
             // GPU Instancing
             #pragma multi_compile_local_vertex _ _GPU_INSTANCER_BATCHER
             #pragma multi_compile_instancing
-            //#include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
+            #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
             // -------------------------------------
             // Includes
