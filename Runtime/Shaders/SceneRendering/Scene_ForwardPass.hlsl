@@ -167,7 +167,11 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     // normalWS and tangentWS already normalize.
     // this is required to avoid skewing the direction during interpolation
     // also required for per-vertex lighting and SH evaluation
-    VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
+    #ifdef _GPU_INSTANCER_BATCHER
+        VertexNormalInputs normalInput = GetVertexNormalInputs_Scene(input.normalOS, input.tangentOS, svInstanceID);
+    #else
+        VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS, input.tangentOS);
+    #endif
 
     half3 vertexLight = VertexLighting(vertexInput.positionWS, normalInput.normalWS);
 

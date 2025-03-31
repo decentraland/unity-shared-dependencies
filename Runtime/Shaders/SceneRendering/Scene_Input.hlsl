@@ -254,6 +254,18 @@ float3 TransformObjectToWorldNormal_Scene(float3 normalOS, uint _svInstanceID, b
     #endif
 }
 
+VertexNormalInputs GetVertexNormalInputs_Scene(float3 normalOS, float4 tangentOS, uint _svInstanceID)
+{
+    VertexNormalInputs tbn;
+
+    // mikkts space compliant. only normalize when extracting normal at frag.
+    real sign = real(tangentOS.w) * GetOddNegativeScale();
+    tbn.normalWS = TransformObjectToWorldNormal_Scene(normalOS, _svInstanceID);
+    tbn.tangentWS = real3(TransformObjectToWorldDir_Scene(tangentOS.xyz, _svInstanceID));
+    tbn.bitangentWS = real3(cross(tbn.normalWS, float3(tbn.tangentWS))) * sign;
+    return tbn;
+}
+
 VertexPositionInputs GetVertexPositionInputs_Scene(float3 _positionOS, uint _svInstanceID)
 {
     #ifdef _GPU_INSTANCER_BATCHER
