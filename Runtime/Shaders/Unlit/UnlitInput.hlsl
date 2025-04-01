@@ -2,6 +2,7 @@
 #define UNIVERSAL_UNLIT_INPUT_INCLUDED
 
 #include "SurfaceInput.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/DebugMipmapStreamingMacros.hlsl"
 
 CBUFFER_START(UnityPerMaterial)
     float4 _BaseMap_ST;
@@ -9,6 +10,7 @@ CBUFFER_START(UnityPerMaterial)
     half _Cutoff;
     half _Surface;
     float4 _AlphaTexture_ST;
+    UNITY_TEXTURE_STREAMING_DEBUG_VARS;
 CBUFFER_END
 
 #ifdef UNITY_DOTS_INSTANCING_ENABLED
@@ -16,7 +18,7 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float , _Cutoff)
     UNITY_DOTS_INSTANCED_PROP(float , _Surface)
-    UNITY_DEFINE_INSTANCED_PROP(float4, _AlphaTexture_ST)
+    UNITY_DOTS_INSTANCED_PROP(float4, _AlphaTexture_ST)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 
 static float4 unity_DOTS_Sampled_BaseColor;
