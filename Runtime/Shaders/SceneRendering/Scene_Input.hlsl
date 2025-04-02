@@ -14,6 +14,8 @@ float4 _BaseMap_ST;
 half4 _BaseColor;
 half4 _SpecColor;
 half4 _EmissionColor;
+float4 _PlaneClipping;
+float4 _VerticalClipping;
 half _Cutoff;
 half _Smoothness;
 half _Metallic;
@@ -21,8 +23,6 @@ half _BumpScale;
 half _Parallax;
 half _OcclusionStrength;
 half _Surface;
-float4 _PlaneClipping;
-float4 _VerticalClipping;
 UNITY_TEXTURE_STREAMING_DEBUG_VARS;
 CBUFFER_END
 
@@ -35,6 +35,8 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _EmissionColor)
+    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
+    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
     UNITY_DOTS_INSTANCED_PROP(float , _Cutoff)
     UNITY_DOTS_INSTANCED_PROP(float , _Smoothness)
     UNITY_DOTS_INSTANCED_PROP(float , _Metallic)
@@ -42,8 +44,6 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float , _Parallax)
     UNITY_DOTS_INSTANCED_PROP(float , _OcclusionStrength)
     UNITY_DOTS_INSTANCED_PROP(float , _Surface)
-    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
-    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
@@ -59,6 +59,8 @@ UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 static float4 unity_DOTS_Sampled_BaseColor;
 static float4 unity_DOTS_Sampled_SpecColor;
 static float4 unity_DOTS_Sampled_EmissionColor;
+static float4 unity_DOTS_Sampled_PlaneClipping;
+static float4 unity_DOTS_Sampled_VerticalClipping;
 static float  unity_DOTS_Sampled_Cutoff;
 static float  unity_DOTS_Sampled_Smoothness;
 static float  unity_DOTS_Sampled_Metallic;
@@ -66,14 +68,14 @@ static float  unity_DOTS_Sampled_BumpScale;
 static float  unity_DOTS_Sampled_Parallax;
 static float  unity_DOTS_Sampled_OcclusionStrength;
 static float  unity_DOTS_Sampled_Surface;
-static float4  unity_DOTS_Sampled_PlaneClipping;
-static float4  unity_DOTS_Sampled_VerticalClipping;
 
-void SetupDOTSLitMaterialPropertyCaches()
+void SetupDOTSSceneMaterialPropertyCaches()
 {
     unity_DOTS_Sampled_BaseColor            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor);
     unity_DOTS_Sampled_SpecColor            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor);
     unity_DOTS_Sampled_EmissionColor        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _EmissionColor);
+    unity_DOTS_Sampled_PlaneClipping        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _PlaneClipping);
+    unity_DOTS_Sampled_VerticalClipping     = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _VerticalClipping);
     unity_DOTS_Sampled_Cutoff               = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Cutoff);
     unity_DOTS_Sampled_Smoothness           = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Smoothness);
     unity_DOTS_Sampled_Metallic             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Metallic);
@@ -81,16 +83,16 @@ void SetupDOTSLitMaterialPropertyCaches()
     unity_DOTS_Sampled_Parallax             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Parallax);
     unity_DOTS_Sampled_OcclusionStrength    = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _OcclusionStrength);
     unity_DOTS_Sampled_Surface              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Surface);
-    unity_DOTS_Sampled_PlaneClipping        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _PlaneClipping);
-    unity_DOTS_Sampled_VerticalClipping     = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _VerticalClipping);
 }
 
 #undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES
-#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSLitMaterialPropertyCaches()
+#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSSceneMaterialPropertyCaches()
 
 #define _BaseColor              unity_DOTS_Sampled_BaseColor
 #define _SpecColor              unity_DOTS_Sampled_SpecColor
 #define _EmissionColor          unity_DOTS_Sampled_EmissionColor
+#define _PlaneClipping          unity_DOTS_Sampled_PlaneClipping
+#define _VerticalClipping       unity_DOTS_Sampled_VerticalClipping
 #define _Cutoff                 unity_DOTS_Sampled_Cutoff
 #define _Smoothness             unity_DOTS_Sampled_Smoothness
 #define _Metallic               unity_DOTS_Sampled_Metallic
@@ -98,8 +100,6 @@ void SetupDOTSLitMaterialPropertyCaches()
 #define _Parallax               unity_DOTS_Sampled_Parallax
 #define _OcclusionStrength      unity_DOTS_Sampled_OcclusionStrength
 #define _Surface                unity_DOTS_Sampled_Surface
-#define _PlaneClipping          unity_DOTS_Sampled_PlaneClipping
-#define _VerticalClipping       unity_DOTS_Sampled_VerticalClipping
 
 #endif
 
