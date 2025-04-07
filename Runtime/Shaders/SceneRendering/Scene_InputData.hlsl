@@ -1,6 +1,11 @@
 #ifndef SCENE_INPUT_DATA_INCLUDED
 #define SCENE_INPUT_DATA_INCLUDED
 
+// URP package specific shader input variables and defines.
+// Unity Engine specific built-in shader input variables are defined in .universal/ShaderLibrary/UnityInput.hlsl
+
+#include "Packages/com.unity.render-pipelines.universal-config/Runtime/ShaderConfig.cs.hlsl"
+
 #define MAX_VISIBLE_LIGHTS_UBO  32
 #define MAX_VISIBLE_LIGHTS_SSBO 256
 
@@ -11,12 +16,13 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Deprecated.hlsl"
 
 // Must match: UniversalRenderPipeline.maxVisibleAdditionalLights
-#if defined(SHADER_API_MOBILE) && (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30))
-    #define MAX_VISIBLE_LIGHTS 16
-#elif defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround because SHADER_API_GLCORE is also defined when SHADER_API_SWITCH is
-    #define MAX_VISIBLE_LIGHTS 32
+#if defined(SHADER_API_MOBILE) && defined(SHADER_API_GLES30)
+    #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHT_COUNT_LOW_END_MOBILE
+// WebGPU's minimal limits are based on mobile rather than desktop, so it will need to assume mobile.
+#elif defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES3) || defined(SHADER_API_WEBGPU) // Workaround because SHADER_API_GLCORE is also defined when SHADER_API_SWITCH is
+    #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHT_COUNT_MOBILE
 #else
-    #define MAX_VISIBLE_LIGHTS 256
+    #define MAX_VISIBLE_LIGHTS MAX_VISIBLE_LIGHT_COUNT_DESKTOP
 #endif
 
 // Match with values in UniversalRenderPipeline.cs
@@ -72,6 +78,17 @@ struct InputData_Scene
     // z = desired on screen mip level
     // w = loaded mip level
     float4 mipInfo;
+
+    // streamInfo :
+    // x = streaming priority
+    // y = time stamp of the latest texture upload
+    // z = streaming status
+    // w = 0
+    float4 streamInfo;
+
+    float3 originalColor;
+
+    float4 probeOcclusion;
     #endif
 };
 
@@ -114,6 +131,8 @@ float _RenderingLayerRcpMaxInt;
 // Screen coord override.
 float4 _ScreenCoordScaleBias;
 float4 _ScreenSizeOverride;
+
+uint _EnableProbeVolumes;
 
 #if USE_FORWARD_PLUS
 float4 _FPParams0;
@@ -167,7 +186,6 @@ CBUFFER_START(urp_TileBuffer)
 CBUFFER_END
 
 TEXTURE2D(urp_ReflProbes_Atlas);
-SAMPLER(samplerurp_ReflProbes_Atlas);
 float urp_ReflProbes_Count;
 
 #ifndef SHADER_API_GLES3

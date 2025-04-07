@@ -67,6 +67,10 @@ struct Varyings
 #ifdef DYNAMICLIGHTMAP_ON
     float2  dynamicLightmapUV : TEXCOORD9; // Dynamic lightmap UVs
 #endif
+
+    #ifdef USE_APV_PROBE_OCCLUSION
+    float4 probeOcclusion : TEXCOORD10;
+    #endif
     
     float4 tintColour               : TEXCOORD10;
     uint nDither                    : TEXCOORD11;
@@ -83,6 +87,10 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
 #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
     inputData.positionWS = input.positionWS;
 #endif
+
+    #if defined(DEBUG_DISPLAY)
+    inputData.positionCS = input.positionCS;
+    #endif
 
     half3 viewDirWS = GetWorldSpaceNormalizeViewDir(input.positionWS);
 //#if defined(_NORMALMAP) || defined(_DETAIL)
@@ -133,6 +141,9 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
     #else
     inputData.vertexSH = input.vertexSH;
     #endif
+    #if defined(USE_APV_PROBE_OCCLUSION)
+    inputData.probeOcclusion = input.probeOcclusion;
+    #endif
     #endif
 }
 
@@ -160,8 +171,8 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         output.nDither = 0;
     #endif
     
-    //UNITY_SETUP_INSTANCE_ID(input);
-    //UNITY_TRANSFER_INSTANCE_ID(input, output);
+    UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
     // normalWS and tangentWS already normalize.
