@@ -319,7 +319,7 @@ inline void InitializeBRDFData(half3 albedo, half metallic, half3 specular, half
     half oneMinusReflectivity = OneMinusReflectivityMetallic(metallic);
     half reflectivity = 1.0 - oneMinusReflectivity;
     half3 brdfDiffuse = albedo * oneMinusReflectivity;
-    half3 brdfSpecular = lerp(kDieletricSpec.rgb, albedo, metallic);
+    half3 brdfSpecular = lerp(kDielectricSpec.rgb, albedo, metallic);
 #endif
 
     InitializeBRDFDataDirect(brdfDiffuse, brdfSpecular, reflectivity, oneMinusReflectivity, smoothness, alpha, outBRDFData);
