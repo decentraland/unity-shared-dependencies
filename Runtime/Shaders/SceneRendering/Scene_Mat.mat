@@ -122,6 +122,7 @@ Material:
     - _PlaneClipping: {r: -2.1474836e+9, g: 2.1474836e+9, b: -2.1474836e+9, a: 2.1474836e+9}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &4822083616055690545
 MonoBehaviour:
   m_ObjectHideFlags: 11
