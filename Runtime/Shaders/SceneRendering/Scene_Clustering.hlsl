@@ -70,7 +70,7 @@ ClusterIterator ClusterInit(float2 normalizedScreenSpaceUV, float3 positionWS, i
     state.zBinOffset = zBinBaseIndex + 2;
 
 #if !URP_FP_DISABLE_ZBINNING
-    uint header = Select4(asuint(URP_ZBins[zBinHeaderIndex / 4]), zBinHeaderIndex % 4);
+    uint header = Select4(asuint(urp_ZBins[zBinHeaderIndex / 4]), zBinHeaderIndex % 4);
 #else
     uint header = headerIndex == 0 ? ((URP_FP_PROBES_BEGIN - 1) << 16) : (((URP_FP_WORDS_PER_TILE * 32 - 1) << 16) | URP_FP_PROBES_BEGIN);
 #endif
@@ -83,7 +83,7 @@ ClusterIterator ClusterInit(float2 normalizedScreenSpaceUV, float3 positionWS, i
     {
         state.tileMask =
             Select4(asuint(urp_Tiles[tileIndex / 4]), tileIndex % 4) &
-            Select4(asuint(URP_ZBins[zBinIndex / 4]), zBinIndex % 4) &
+            Select4(asuint(urp_ZBins[zBinIndex / 4]), zBinIndex % 4) &
             (0xFFFFFFFFu << (header & 0x1F)) & (0xFFFFFFFFu >> (31 - (header >> 16)));
     }
 #endif
@@ -96,7 +96,7 @@ bool ClusterNext(inout ClusterIterator it, out uint entityIndex)
 {
 #if MAX_LIGHTS_PER_TILE > 32 || !defined(_ENVIRONMENTREFLECTIONS_OFF)
     uint maxIndex = it.entityIndexNextMax >> 16;
-    while (it.tileMask == 0 && (it.entityIndexNextMax & 0xFFFF) <= maxIndex)
+    [loop] while (it.tileMask == 0 && (it.entityIndexNextMax & 0xFFFF) <= maxIndex)
     {
         // Extract the lower 16 bits and shift by 5 to divide by 32.
         uint wordIndex = ((it.entityIndexNextMax & 0xFFFF) >> 5);
@@ -107,7 +107,7 @@ bool ClusterNext(inout ClusterIterator it, out uint entityIndex)
             Select4(asuint(urp_Tiles[tileIndex / 4]), tileIndex % 4) &
 #endif
 #if !URP_FP_DISABLE_ZBINNING
-            Select4(asuint(URP_ZBins[zBinIndex / 4]), zBinIndex % 4) &
+            Select4(asuint(urp_ZBins[zBinIndex / 4]), zBinIndex % 4) &
 #endif
             // Mask out the beginning and end of the word.
             (0xFFFFFFFFu << (it.entityIndexNextMax & 0x1F)) & (0xFFFFFFFFu >> (31 - min(31, maxIndex - wordIndex * 32)));

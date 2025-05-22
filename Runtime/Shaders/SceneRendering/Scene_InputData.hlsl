@@ -1,5 +1,9 @@
 #ifndef SCENE_INPUT_DATA_INCLUDED
 #define SCENE_INPUT_DATA_INCLUDED
+// URP package specific shader input variables and defines.
+// Unity Engine specific built-in shader input variables are defined in .universal/ShaderLibrary/UnityInput.hlsl
+
+#include "Packages/com.unity.render-pipelines.universal-config/Runtime/ShaderConfig.cs.hlsl"
 
 // URP package specific shader input variables and defines.
 // Unity Engine specific built-in shader input variables are defined in .universal/ShaderLibrary/UnityInput.hlsl
@@ -55,13 +59,15 @@ struct InputData_Scene
     half4   shadowMask;
     half3x3 tangentToWorld;
 
-    #if defined(DEBUG_DISPLAY)
+#if defined(DEBUG_DISPLAY)
     half2   dynamicLightmapUV;
     half2   staticLightmapUV;
     float3  vertexSH;
 
     half3 brdfDiffuse;
     half3 brdfSpecular;
+
+    // Mipmap Streaming Debug
     float2 uv;
     uint mipCount;
 
@@ -89,7 +95,7 @@ struct InputData_Scene
     float3 originalColor;
 
     float4 probeOcclusion;
-    #endif
+#endif
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -119,7 +125,8 @@ half4 _MainLightColor;
 half4 _MainLightOcclusionProbes;
 uint _MainLightLayerMask;
 
-// xyz are currently unused
+// x: SSAO Enabled/Disabled (Needed for situations when OFF keyword is stripped out but feature disabled in runtime)
+// yz are currently unused
 // w: directLightStrength
 half4 _AmbientOcclusionParam;
 
@@ -178,8 +185,8 @@ CBUFFER_END
 
 #if USE_FORWARD_PLUS
 
-CBUFFER_START(URP_ZBinBuffer)
-        float4 URP_ZBins[MAX_ZBIN_VEC4S];
+CBUFFER_START(urp_ZBinBuffer)
+        float4 urp_ZBins[MAX_ZBIN_VEC4S];
 CBUFFER_END
 CBUFFER_START(urp_TileBuffer)
         float4 urp_Tiles[MAX_TILE_VEC4S];
@@ -187,6 +194,9 @@ CBUFFER_END
 
 TEXTURE2D(urp_ReflProbes_Atlas);
 float urp_ReflProbes_Count;
+
+// 2023.3 Deprecated. This is for backwards compatibility. Remove in the future.
+#define samplerurp_ReflProbes_Atlas sampler_LinearClamp
 
 #ifndef SHADER_API_GLES3
 CBUFFER_START(urp_ReflectionProbeBuffer)
