@@ -302,7 +302,10 @@ bool CanDebugOverrideOutputColor(inout InputData_Scene inputData, inout SurfaceD
 #else
 
 // When "DEBUG_DISPLAY" isn't defined this macro does nothing - there's no debug-data to set-up...
-#define SETUP_DEBUG_TEXTURE_DATA(inputData, uv, texture)
+#define SETUP_DEBUG_TEXTURE_DATA(inputData, uv)
+#define SETUP_DEBUG_TEXTURE_DATA_NO_UV(inputData)
+#define SETUP_DEBUG_TEXTURE_DATA_FOR_TEX(inputData, uv, texture)
+#define SETUP_DEBUG_TEXTURE_DATA_FOR_TERRAIN(inputData)
 
 #endif
 

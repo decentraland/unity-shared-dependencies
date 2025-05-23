@@ -1,7 +1,7 @@
 #ifndef SCENE_BSDF_INCLUDED
 #define SCENE_BSDF_INCLUDED
 
-#if SHADER_API_MOBILE || SHADER_API_GLES || SHADER_API_GLES3
+#if SHADER_API_MOBILE || SHADER_API_GLES3 || SHADER_API_SWITCH || defined(UNITY_UNIFIED_SHADER_PRECISION_MODEL)
 #pragma warning (disable : 3205) // conversion of larger type to smaller
 #endif
 
@@ -658,8 +658,8 @@ real3 D_KajiyaKay(real3 T, real3 H, real specularExponent)
     return dirAttn * norm * PositivePow(sinTHSq, 0.5 * n);
 }
 
-#if SHADER_API_MOBILE || SHADER_API_GLES || SHADER_API_GLES3
+#if SHADER_API_MOBILE || SHADER_API_GLES3 || SHADER_API_SWITCH
 #pragma warning (enable : 3205) // conversion of larger type to smaller
 #endif
 
-#endif // UNITY_BSDF_INCLUDED
+#endif // SCENE_BSDF_INCLUDED
