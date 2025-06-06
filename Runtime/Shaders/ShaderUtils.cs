@@ -106,6 +106,10 @@ namespace DCL.Shaders
 
         public static readonly int SrcBlend = Shader.PropertyToID("_SrcBlend");
         public static readonly int DstBlend = Shader.PropertyToID("_DstBlend");
+        public static readonly int SrcBlendAlpha = Shader.PropertyToID("_SrcBlendAlpha");
+        public static readonly int DstBlendAlpha = Shader.PropertyToID("_DstBlendAlpha");
+        public static readonly int BlendOp = Shader.PropertyToID("_BlendOp");
+        public static readonly int BlendOpAlpha = Shader.PropertyToID("_BlendOpAlpha");
         public static readonly int ZWrite = Shader.PropertyToID("_ZWrite");
         public static readonly int AlphaClip = Shader.PropertyToID("_AlphaClip");
         public static readonly int Cull = Shader.PropertyToID("_Cull");
