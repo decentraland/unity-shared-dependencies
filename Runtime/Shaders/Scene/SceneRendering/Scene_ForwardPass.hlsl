@@ -206,7 +206,11 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         fogFactor = ComputeFogFactor(vertexInput.positionCS.z);
     #endif
 
-    output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
+    #ifdef _GPU_INSTANCER_BATCHER
+        output.uv = TransformTex_PerInstance(input.texcoord, svInstanceID);
+    #else
+        output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
+    #endif
 
     // already normalized from normal transform to WS.
     output.normalWS = normalInput.normalWS;
