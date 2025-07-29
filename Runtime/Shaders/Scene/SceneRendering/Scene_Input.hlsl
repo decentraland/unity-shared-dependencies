@@ -114,6 +114,8 @@ struct PerInstanceBuffer
 {
     float4x4 instMatrix;
     float4 instColourTint;
+    float2 instTiling;
+    float2 instOffset;
 };
 StructuredBuffer<PerInstanceBuffer> _PerInstanceBuffer;
 
@@ -331,6 +333,18 @@ VertexPositionInputs GetVertexPositionInputs_Scene(float3 _positionOS, uint _svI
     VertexPositionInputs vertexInput = GetVertexPositionInputs(_positionOS);
     return vertexInput;
     #endif
+}
+
+float2 TransformTex_PerInstance(float2 uv, uint _svInstanceID)
+{
+    float2 uv_trans = uv;
+    #ifdef _GPU_INSTANCER_BATCHER
+        uint instID = _PerInstanceLookUpAndDitherBuffer[_svInstanceID].instanceID;
+        float2 uv_tiling = _PerInstanceBuffer[instID].instTiling;
+        float2 uv_offset = _PerInstanceBuffer[instID].instOffset;
+        uv_trans = (uv_trans * uv_tiling) + uv_offset;
+    #endif
+    return uv_trans;
 }
 
 #endif // UNIVERSAL_INPUT_SURFACE_PBR_INCLUDED
