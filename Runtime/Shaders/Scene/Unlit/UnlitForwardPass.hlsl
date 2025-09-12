@@ -2,6 +2,7 @@
 #ifndef URP_UNLIT_FORWARD_PASS_INCLUDED
 #define URP_UNLIT_FORWARD_PASS_INCLUDED
 
+#include "../SceneRendering/Scene_PlaneClipping.hlsl"
 #include "Unlit.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
@@ -26,9 +27,9 @@ struct Varyings
     float2 uv : TEXCOORD0;
     float fogCoord : TEXCOORD1;
     float4 positionCS : SV_POSITION;
+    float3 positionWS : TEXCOORD2;
 
     #if defined(DEBUG_DISPLAY)
-    float3 positionWS : TEXCOORD2;
     float3 normalWS : TEXCOORD3;
     float3 viewDirWS : TEXCOORD4;
     #endif
@@ -100,6 +101,8 @@ void UnlitPassFragment(
 #endif
 )
 {
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
