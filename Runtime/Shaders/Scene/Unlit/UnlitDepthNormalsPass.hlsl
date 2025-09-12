@@ -23,7 +23,7 @@ struct Varyings
         float2 uv       : TEXCOORD0;
     #endif
     float3 normalWS     : TEXCOORD1;
-    float4 positionWS   : TEXCOORD2;
+    float3 positionWS   : TEXCOORD2;
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
