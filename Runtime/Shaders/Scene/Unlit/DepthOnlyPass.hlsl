@@ -1,6 +1,7 @@
 #ifndef UNIVERSAL_DEPTH_ONLY_PASS_INCLUDED
 #define UNIVERSAL_DEPTH_ONLY_PASS_INCLUDED
 
+#include "../SceneRendering/Scene_PlaneClipping.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -19,6 +20,7 @@ struct Varyings
     float2 uv       : TEXCOORD0;
     #endif
     float4 positionCS   : SV_POSITION;
+    float3 positionWS   : TEXCOORD1;
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -34,11 +36,14 @@ Varyings DepthOnlyVertex(Attributes input)
     output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     #endif
     output.positionCS = TransformObjectToHClip(input.position.xyz);
+    output.positionWS = TransformObjectToWorld(input.position.xyz);
     return output;
 }
 
 half DepthOnlyFragment(Varyings input) : SV_TARGET
 {
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 

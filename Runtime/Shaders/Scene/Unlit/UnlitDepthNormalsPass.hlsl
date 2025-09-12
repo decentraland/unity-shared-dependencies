@@ -1,6 +1,7 @@
 #ifndef UNIVERSAL_UNLIT_DEPTH_NORMALS_PASS_INCLUDED
 #define UNIVERSAL_UNLIT_DEPTH_NORMALS_PASS_INCLUDED
 
+#include "../SceneRendering/Scene_PlaneClipping.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -22,6 +23,7 @@ struct Varyings
         float2 uv       : TEXCOORD0;
     #endif
     float3 normalWS     : TEXCOORD1;
+    float3 positionWS   : TEXCOORD2;
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -38,6 +40,7 @@ Varyings DepthNormalsVertex(Attributes input)
         output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
     #endif
     output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
+    output.positionWS = TransformObjectToWorld(input.positionOS.xyz);
 
     VertexNormalInputs normalInput = GetVertexNormalInputs(input.normal, input.tangentOS);
     output.normalWS = NormalizeNormalPerVertex(normalInput.normalWS);
@@ -53,6 +56,8 @@ void DepthNormalsFragment(
 #endif
 )
 {
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
