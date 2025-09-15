@@ -335,6 +335,21 @@ VertexPositionInputs GetVertexPositionInputs_Scene(float3 _positionOS, uint _svI
     #endif
 }
 
+VertexNormalInputs GetVertexNormalInputs_Scene(float3 normalOS, float4 tangentOS, uint _svInstanceID)
+{
+    VertexNormalInputs tbn;
+    #ifdef _GPU_INSTANCER_BATCHER
+        // Use per-instance transformations for GPU instancing
+        tbn.normalWS = TransformObjectToWorldNormal_Scene(normalOS, _svInstanceID);
+        tbn.tangentWS = TransformObjectToWorldDir_Scene(tangentOS.xyz, _svInstanceID);
+        tbn.bitangentWS = cross(tbn.normalWS, tbn.tangentWS) * tangentOS.w;
+    #else
+        // Use standard transformations for non-instanced rendering
+        tbn = GetVertexNormalInputs(normalOS, tangentOS);
+    #endif
+    return tbn;
+}
+
 float2 TransformTex_PerInstance(float2 uv, uint _svInstanceID)
 {
     float2 uv_trans = uv;
