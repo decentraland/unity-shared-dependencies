@@ -70,6 +70,7 @@ Varyings UnlitPassVertex(Attributes input)
     VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
 
     output.positionCS = vertexInput.positionCS;
+	output.positionWS = vertexInput.positionWS;
     output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
     #if defined(_FOG_FRAGMENT)
     output.fogCoord = vertexInput.positionVS.z;
@@ -85,7 +86,6 @@ Varyings UnlitPassVertex(Attributes input)
     half3 viewDirWS = GetWorldSpaceViewDir(vertexInput.positionWS);
 
     // already normalized from normal transform to WS.
-    output.positionWS = vertexInput.positionWS;
     output.normalWS = normalInput.normalWS;
     output.viewDirWS = viewDirWS;
     #endif
