@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Runtime.Avatar
+namespace Runtime.Wearables
 {
     public static class WearableUtils
     {
