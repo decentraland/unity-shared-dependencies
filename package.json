@@ -1,6 +1,6 @@
 {
   "name": "com.decentraland.unity-shared-dependencies",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "displayName": "Decentraland.SharedDependencies",
   "description": "This package contains shared dependencies between unity-renderer and asset-bundle-converter repositories, this includes gltf importer wrappers and shaders",
   "unity": "2021.3",
