@@ -1,6 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Runtime.Avatar
+namespace Runtime.Wearables
 {
     public static class WearableCategories
     {
