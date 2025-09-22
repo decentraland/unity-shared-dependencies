@@ -55,7 +55,7 @@ VertexOutput vert_highlight (VertexInput v)
     #endif
     
     float Set_Outline_Width = _Highlight_Width * 0.001f * smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos));
-    Set_Outline_Width *= (1.0f - _HightLight_ZOverDrawMode);
+    Set_Outline_Width *= (1.0f - _Hightlight_ZOverDrawMode);
 
     float4 _ClipCameraPos = mul(UNITY_MATRIX_VP, float4(_WorldSpaceCameraPos.xyz, 1));
     
