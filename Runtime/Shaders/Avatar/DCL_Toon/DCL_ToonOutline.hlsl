@@ -44,8 +44,6 @@ VertexOutput vert (VertexInput v)
     o.uv0 = v.texcoord0;
     float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
     float2 Set_UV0 = o.uv0;
-    float4 _Outline_Sampler_var = float4(1,1,1,1);//tex2Dlod(_Outline_Sampler,float4(TRANSFORM_TEX(Set_UV0, _Outline_Sampler),0.0,0));
-    //v.2.0.4.3 baked Normal Texture for Outline
 
     #ifdef _DCL_COMPUTE_SKINNING
     o.normalDir = UnityObjectToWorldNormal(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz);
@@ -59,45 +57,26 @@ VertexOutput vert (VertexInput v)
     #endif
     
     float3x3 tangentTransform = float3x3( o.tangentDir, o.bitangentDir, o.normalDir);
-    //UnpackNormal() can't be used, and so as follows. Do not specify a bump for the texture to be used.
-    float4 _BakedNormal_var = (float4(1,1,1,1) * 2 - 1);//(tex2Dlod(_BakedNormal,float4(TRANSFORM_TEX(Set_UV0, _BakedNormal),0.0,0)) * 2 - 1);
-    float3 _BakedNormalDir = normalize(mul(_BakedNormal_var.rgb, tangentTransform));
-    //end
-    float Set_Outline_Width = (_Outline_Width*0.001*smoothstep( _Farthest_Distance, _Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos) )*_Outline_Sampler_var.rgb).r;
+
+    float Set_Outline_Width = _Outline_Width * 0.001f * smoothstep( _Farthest_Distance, _Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos));
     Set_Outline_Width *= (1.0f - _ZOverDrawMode);
-    //v.2.0.7.5
     float4 _ClipCameraPos = mul(UNITY_MATRIX_VP, float4(_WorldSpaceCameraPos.xyz, 1));
     
-    //v.2.0.7
     #if defined(UNITY_REVERSED_Z)
-        //v.2.0.4.2 (DX)
-        float fOffset_Z = _Offset_Z * -0.01;
+        float fOffset_Z = _Offset_Z * -0.01f;
     #else
-        //OpenGL
-        float fOffset_Z = _Offset_Z * 0.01;
+        float fOffset_Z = _Offset_Z * 0.01f;
     #endif
     
-    //v2.0.4
-    #ifdef _OUTLINE_NML
-        //v.2.0.4.3 baked Normal Texture for Outline
-        #ifdef _DCL_COMPUTE_SKINNING
-            o.pos = UnityObjectToClipPos(lerp(float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz + _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz * Set_Outline_Width,1), float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz + _BakedNormalDir*Set_Outline_Width,1),_Is_BakedNormal));
-            float3 positionWS = TransformObjectToWorld(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz);
-        #else
-            o.pos = UnityObjectToClipPos(lerp(float4(v.vertex.xyz + v.normal*Set_Outline_Width,1), float4(v.vertex.xyz + _BakedNormalDir*Set_Outline_Width,1),_Is_BakedNormal));
-            float3 positionWS = TransformObjectToWorld(v.vertex.xyz);
-        #endif
-    #elif _OUTLINE_POS
-        Set_Outline_Width = Set_Outline_Width*2;
-        float signVar = dot(normalize(v.vertex.xyz),normalize(v.normal))<0 ? -1 : 1;
-        o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
-        #ifdef _DCL_COMPUTE_SKINNING
-            float3 positionWS = TransformObjectToWorld(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz);
-        #else
-            float3 positionWS = TransformObjectToWorld(v.vertex.xyz);
-        #endif
+    Set_Outline_Width = Set_Outline_Width * 2.0f;
+    float signVar = dot(normalize(v.vertex.xyz),normalize(v.normal))<0 ? -1 : 1;
+    o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
+    #ifdef _DCL_COMPUTE_SKINNING
+        float3 positionWS = TransformObjectToWorld(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz);
+    #else
+        float3 positionWS = TransformObjectToWorld(v.vertex.xyz);
     #endif
-    //v.2.0.7.5
+
     o.pos.z = o.pos.z + fOffset_Z * _ClipCameraPos.z;
     o.positionCS = TransformWorldToHClip(positionWS);
     return o;
