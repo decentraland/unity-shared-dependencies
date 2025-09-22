@@ -38,17 +38,20 @@ VertexOutput vert_highlight (VertexInput v)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
     float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
-    float2 Set_UV0 = o.uv0;
+
+    float3 normalDir;
+    float3 tangentDir;
+    float3 bitangentDir;
 
     #ifdef _DCL_COMPUTE_SKINNING
-    o.normalDir = UnityObjectToWorldNormal(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz);
+    normalDir = UnityObjectToWorldNormal(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz);
     float4 skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
-    o.tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
-    o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * skinnedTangent.w);
+    tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
+    bitangentDir = normalize(cross(normalDir, tangentDir) * skinnedTangent.w);
     #else
-    o.normalDir = UnityObjectToWorldNormal(v.normal);
-    o.tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
-    o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
+    normalDir = UnityObjectToWorldNormal(v.normal);
+    tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
+    bitangentDir = normalize(cross(normalDir, tangentDir) * v.tangent.w);
     #endif
     
     float Set_Outline_Width = _Highlight_Width * 0.001f * smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos));
