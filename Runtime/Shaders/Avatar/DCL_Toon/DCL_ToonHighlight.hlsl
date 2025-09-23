@@ -45,24 +45,25 @@ VertexOutput vert_highlight (VertexInput v)
 
     float Set_Outline_Width = _Highlight_Width;
     Set_Outline_Width *= 0.001f;
-    Set_Outline_Width *= smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos))
+    Set_Outline_Width *= smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos));
     Set_Outline_Width *= (1.0f - _Highlight_ZOverDrawMode);
-    Set_Outline_Width = Set_Outline_Width*50;
+    Set_Outline_Width *= 50.0f;
 
     #ifdef _DCL_COMPUTE_SKINNING
-    float4 vVert = float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz, 1.0f);
-    float3 vNormal = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz;
-    normalDir = UnityObjectToWorldNormal(vNormal);
-    float4 skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
-    tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
-    bitangentDir = normalize(cross(normalDir, tangentDir) * skinnedTangent.w);
-    float signVar = dot(normalize(vVert.xyz),normalize(vNormal))<0 ? -1 : 1;
-    o.pos = UnityObjectToClipPos(float4(vVert.xyz + signVar*normalize(vVert - _Highlight_ObjectOffset)*Set_Outline_Width, 1));
+        float4 vVert = float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz, 1.0f);
+        float3 vNormal = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz;
+        normalDir = UnityObjectToWorldNormal(vNormal);
+        float4 skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
+        tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
+        bitangentDir = normalize(cross(normalDir, tangentDir) * skinnedTangent.w);
+        float signVar = dot(normalize(vVert.xyz),normalize(vNormal))<0 ? -1 : 1;
+        o.pos = UnityObjectToClipPos(float4(vVert.xyz + signVar*normalize(vVert - _Highlight_ObjectOffset)*Set_Outline_Width, 1));
     #else
-    normalDir = UnityObjectToWorldNormal(v.normal);
-    tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
-    bitangentDir = normalize(cross(normalDir, tangentDir) * v.tangent.w);
-    o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
+        normalDir = UnityObjectToWorldNormal(v.normal);
+        tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
+        bitangentDir = normalize(cross(normalDir, tangentDir) * v.tangent.w);
+        float signVar = dot(normalize(v.vertex.xyz),normalize(v.normal))<0 ? -1 : 1;
+        o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
     #endif
 
     // float2 offset = normalize(clipNormal.xy) / _ScreenParams.xy * _Highlight_Width * clipPosition.w * 2.0f;
