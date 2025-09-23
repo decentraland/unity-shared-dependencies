@@ -43,19 +43,34 @@ VertexOutput vert_highlight (VertexInput v)
     float3 tangentDir;
     float3 bitangentDir;
 
+    float Set_Outline_Width = _Highlight_Width;
+    Set_Outline_Width *= 0.001f;
+    Set_Outline_Width *= smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos))
+    Set_Outline_Width *= (1.0f - _Highlight_ZOverDrawMode);
+    Set_Outline_Width = Set_Outline_Width*50;
+
     #ifdef _DCL_COMPUTE_SKINNING
-    normalDir = UnityObjectToWorldNormal(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz);
+    float4 vVert = float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz, 1.0f);
+    float3 vNormal = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz;
+    normalDir = UnityObjectToWorldNormal(vNormal);
     float4 skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
     tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
     bitangentDir = normalize(cross(normalDir, tangentDir) * skinnedTangent.w);
+    float signVar = dot(normalize(vVert.xyz),normalize(vNormal))<0 ? -1 : 1;
+    o.pos = UnityObjectToClipPos(float4(vVert.xyz + signVar*normalize(vVert - _Highlight_ObjectOffset)*Set_Outline_Width, 1));
     #else
     normalDir = UnityObjectToWorldNormal(v.normal);
     tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
     bitangentDir = normalize(cross(normalDir, tangentDir) * v.tangent.w);
+    o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
     #endif
+
+    // float2 offset = normalize(clipNormal.xy) / _ScreenParams.xy * _Highlight_Width * clipPosition.w * 2.0f;
+    // clipPosition.xy += offset;
+    //
+    // o.pos = clipPosition;
     
-    float Set_Outline_Width = _Highlight_Width * 0.001f * smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos));
-    Set_Outline_Width *= (1.0f - _Highlight_ZOverDrawMode);
+    
 
     float4 _ClipCameraPos = mul(UNITY_MATRIX_VP, float4(_WorldSpaceCameraPos.xyz, 1));
     
@@ -63,16 +78,6 @@ VertexOutput vert_highlight (VertexInput v)
         float fOffset_Z = _Highlight_Offset_Z * -0.01;
     #else
         float fOffset_Z = _Highlight_Offset_Z * 0.01;
-    #endif
-    
-    Set_Outline_Width = Set_Outline_Width*50;
-    float signVar = dot(normalize(v.vertex.xyz),normalize(v.normal))<0 ? -1 : 1;
-    float4 vertOffset = _Highlight_ObjectOffset;
-    #ifdef _DCL_COMPUTE_SKINNING
-        float4 vVert = float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz, 1.0f);
-        o.pos = UnityObjectToClipPos(float4(vVert.xyz + signVar*normalize(vVert - vertOffset)*Set_Outline_Width, 1));
-    #else
-        o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
     #endif
 
     o.pos.z = o.pos.z + fOffset_Z * _ClipCameraPos.z;
