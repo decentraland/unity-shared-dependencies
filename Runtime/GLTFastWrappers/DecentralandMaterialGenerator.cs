@@ -45,7 +45,7 @@ namespace DCL.GLTFast.Wrappers
             {
                 var specGloss = gltfMaterial.extensions.KHR_materials_pbrSpecularGlossiness;
 
-                SetColor(specGloss.DiffuseColor);
+                SetColor(specGloss.DiffuseColor.gamma);
                 SetSpecularColor(specGloss.SpecularColor);
                 SetGlossiness(specGloss.glossinessFactor);
                 SetBaseMapTexture(specGloss.diffuseTexture, gltf);
@@ -60,7 +60,7 @@ namespace DCL.GLTFast.Wrappers
 
                 if (roughness != null)
                 {
-                    SetColor(roughness.BaseColor);
+                    SetColor(roughness.BaseColor.gamma);
                     SetBaseMapTexture(roughness.baseColorTexture, gltf);
                     SetMetallic(roughness.metallicFactor);
                     SetMetallicRoughnessTexture(gltf, roughness.metallicRoughnessTexture, roughness.roughnessFactor);
