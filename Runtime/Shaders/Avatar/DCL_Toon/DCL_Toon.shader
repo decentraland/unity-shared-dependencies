@@ -391,6 +391,8 @@ Shader "DCL/DCL_Toon"
 	    
             #pragma shader_feature_local _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
+            #pragma dynamic_branch _IS_CLIPPING_OFF _IS_CLIPPING_MODE _IS_CLIPPING_TRANSMODE
+
             #pragma multi_compile_instancing
             //#pragma instancing_options renderinglayer
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
