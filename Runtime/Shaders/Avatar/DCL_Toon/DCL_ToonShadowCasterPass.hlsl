@@ -79,6 +79,16 @@ Varyings ShadowPassVertex(Attributes input)
 
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
+	float2 Set_UV0 = input.uv;
+    int nMainTexArrID = _MainTexArr_ID;
+    float2 uv_maintex = TRANSFORM_TEX(Set_UV0, _MainTex);
+    float4 _MainTex_var = SAMPLE_MAINTEX(uv_maintex,nMainTexArrID);
+    if (_IS_CLIPPING_MODE || _IS_CLIPPING_TRANSMODE)
+    {
+        float fAlphaClip = _MainTex_var.a * _BaseColor.a;
+        AlphaClip(fAlphaClip, _Clipping_Level);
+    }
+
     Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, _Cutoff);
 
 #ifdef LOD_FADE_CROSSFADE
