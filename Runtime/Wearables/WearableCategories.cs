@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace Runtime.Wearables
 {
@@ -63,7 +63,9 @@ namespace Runtime.Wearables
         {
             Categories.EYES,
             Categories.HAIR,
-            Categories.BODY_SHAPE
+            Categories.BODY_SHAPE,
+            Categories.EYEBROWS,
+            Categories.FACIAL_HAIR
         };
 
         public static readonly Dictionary<string, string> READABLE_CATEGORIES = new Dictionary<string, string>()
