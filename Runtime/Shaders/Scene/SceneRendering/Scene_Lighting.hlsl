@@ -273,7 +273,7 @@ half4 UniversalFragmentPBR(InputData_Scene inputData, SurfaceData_Scene surfaceD
     BRDFData brdfData;
 
     // NOTE: can modify "surfaceData"...
-    InitializeBRDFData(surfaceData, brdfData);
+    InitializeBRDFData_Scene(surfaceData, brdfData);
 
     #if defined(DEBUG_DISPLAY)
     half4 debugColor;
@@ -285,11 +285,11 @@ half4 UniversalFragmentPBR(InputData_Scene inputData, SurfaceData_Scene surfaceD
     #endif
 
     // Clear-coat calculation...
-    BRDFData brdfDataClearCoat = CreateClearCoatBRDFData(surfaceData, brdfData);
-    half4 shadowMask = CalculateShadowMask(inputData);
-    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+    BRDFData brdfDataClearCoat = CreateClearCoatBRDFData_Scene(surfaceData, brdfData);
+    half4 shadowMask = CalculateShadowMask_Scene(inputData);
+    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor_Scene(inputData, surfaceData);
     uint meshRenderingLayers = GetMeshRenderingLayer();
-    Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
+    Light mainLight = GetMainLight_Scene(inputData, shadowMask, aoFactor);
 
     // NOTE: We don't apply AO to the GI here because it's done in the lighting calculation below...
     MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI);
@@ -317,7 +317,7 @@ half4 UniversalFragmentPBR(InputData_Scene inputData, SurfaceData_Scene surfaceD
     {
         FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
 
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+        Light light = GetAdditionalLight(ScenelightIndex, inputData, shadowMask, aoFactor);
 
 #ifdef _LIGHT_LAYERS
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
@@ -331,7 +331,7 @@ half4 UniversalFragmentPBR(InputData_Scene inputData, SurfaceData_Scene surfaceD
     #endif
 
     LIGHT_LOOP_BEGIN(pixelLightCount)
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+        Light light = GetAdditionalLight_Scene(lightIndex, inputData, shadowMask, aoFactor);
 
 #ifdef _LIGHT_LAYERS
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
@@ -388,9 +388,9 @@ half4 UniversalFragmentBlinnPhong(InputData_Scene inputData, SurfaceData_Scene s
     #endif
 
     uint meshRenderingLayers = GetMeshRenderingLayer();
-    half4 shadowMask = CalculateShadowMask(inputData);
-    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
-    Light mainLight = GetMainLight(inputData, shadowMask, aoFactor);
+    half4 shadowMask = CalculateShadowMask_Scene(inputData);
+    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor_Scene(inputData, surfaceData);
+    Light mainLight = GetMainLight_Scene(inputData, shadowMask, aoFactor);
 
     MixRealtimeAndBakedGI(mainLight, inputData.normalWS, inputData.bakedGI, aoFactor);
 
@@ -412,7 +412,7 @@ half4 UniversalFragmentBlinnPhong(InputData_Scene inputData, SurfaceData_Scene s
     {
         FORWARD_PLUS_SUBTRACTIVE_LIGHT_CHECK
 
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+        Light light = GetAdditionalLight_Scene(lightIndex, inputData, shadowMask, aoFactor);
 #ifdef _LIGHT_LAYERS
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
@@ -423,7 +423,7 @@ half4 UniversalFragmentBlinnPhong(InputData_Scene inputData, SurfaceData_Scene s
     #endif
 
     LIGHT_LOOP_BEGIN(pixelLightCount)
-        Light light = GetAdditionalLight(lightIndex, inputData, shadowMask, aoFactor);
+        Light light = GetAdditionalLight_Scene(lightIndex, inputData, shadowMask, aoFactor);
 #ifdef _LIGHT_LAYERS
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
 #endif
@@ -470,7 +470,7 @@ half4 UniversalFragmentBakedLit(InputData_Scene inputData, SurfaceData_Scene sur
     }
     #endif
 
-    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor(inputData, surfaceData);
+    AmbientOcclusionFactor aoFactor = CreateAmbientOcclusionFactor_Scene(inputData, surfaceData);
     LightingData lightingData = CreateLightingData(inputData, surfaceData);
 
     if (IsLightingFeatureEnabled(DEBUGLIGHTINGFEATUREFLAGS_AMBIENT_OCCLUSION))

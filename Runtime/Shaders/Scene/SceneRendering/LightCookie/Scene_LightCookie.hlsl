@@ -3,8 +3,7 @@
 
 // Includes
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-#include "../Scene_InputData.hlsl"
-#include "LightCookie/Scene_LightCookieInput.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LightCookie/LightCookie.hlsl"
 
 #if defined(_LIGHT_COOKIES)
     #ifndef REQUIRES_WORLD_SPACE_POS_INTERPOLATOR

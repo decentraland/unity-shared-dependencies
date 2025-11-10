@@ -1,9 +1,9 @@
 #ifndef SCENE_INPUT_INCLUDED
 #define SCENE_INPUT_INCLUDED
 
-#include "Scene_Core.hlsl"
+#include "Scene_InputData.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
-#include "../URP/Constants.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 #include "Scene_SurfaceInput.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/DebugMipmapStreamingMacros.hlsl"
@@ -178,9 +178,9 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanc
     outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.g;
     
-    outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+    outSurfaceData.normalTS = SampleNormal_Scene(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
     outSurfaceData.occlusion = SampleOcclusion(uv);
-    outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission_Scene(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
     outSurfaceData.height = specGloss.r;
 }
 

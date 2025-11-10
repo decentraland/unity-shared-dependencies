@@ -1,7 +1,8 @@
 #ifndef SCENE_INPUT_INCLUDED
 #define SCENE_INPUT_INCLUDED
 
-#include "../Scene_Core.hlsl"
+#include "../Scene_InputData.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "../../URP/Constants.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"

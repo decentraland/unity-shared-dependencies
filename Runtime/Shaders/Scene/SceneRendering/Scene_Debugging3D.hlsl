@@ -10,7 +10,7 @@
 #include "Scene_BRDF.hlsl"
 #include "Scene_GlobalIllumination.hlsl"
 #include "Scene_RealtimeLights.hlsl"
-#include "Scene_Shadows.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 #include "Scene_SurfaceData.hlsl"
 
 #define SETUP_DEBUG_TEXTURE_DATA(inputData, uv, texture)    SetupDebugDataTexture(inputData, uv, texture##_TexelSize, texture##_MipInfo, GetMipCount(TEXTURE2D_ARGS(texture, sampler##texture)))
