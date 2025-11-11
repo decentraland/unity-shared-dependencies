@@ -180,6 +180,10 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     #endif
     Varyings output = (Varyings)0;
     
+    UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
     VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
     
     #ifdef _GPU_INSTANCER_BATCHER
@@ -192,10 +196,6 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         output.nDither = 0;
     #endif
     
-    UNITY_SETUP_INSTANCE_ID(input);
-    UNITY_TRANSFER_INSTANCE_ID(input, output);
-    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
     // normalWS and tangentWS already normalize.
     // this is required to avoid skewing the direction during interpolation
     // also required for per-vertex lighting and SH evaluation
