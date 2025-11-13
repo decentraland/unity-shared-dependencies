@@ -263,12 +263,11 @@ void LitPassFragment(
 #endif
 )
 {
-    Dithering( input.positionCS, input.nDither);
-
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
-
-    UNITY_SETUP_INSTANCE_ID(input);
+	UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    
+	Dithering( input.positionCS, input.nDither);
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
 //#if defined(_PARALLAXMAP)
 //#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)

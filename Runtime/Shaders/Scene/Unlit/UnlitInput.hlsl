@@ -21,9 +21,12 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float , _Cutoff)
     UNITY_DOTS_INSTANCED_PROP(float , _Surface)
     UNITY_DOTS_INSTANCED_PROP(float4, _AlphaTexture_ST)
+UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+
+UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
     UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
-UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 static float4 unity_DOTS_Sampled_BaseColor;
 static float  unity_DOTS_Sampled_Cutoff;
