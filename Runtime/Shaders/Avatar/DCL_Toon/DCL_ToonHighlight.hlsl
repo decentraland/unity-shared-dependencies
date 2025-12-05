@@ -51,8 +51,8 @@ VertexOutput vert_highlight (VertexInput v)
     float3 bitangentDir;
 
     float Set_Outline_Width = _Highlight_Width;
-    int lastWearableVertCount = _lastWearableVertCount2;
-    int lastAvatarVertCount = _lastAvatarVertCount2;
+    int lastWearableVertCount = _lastWearableVertCount;
+    int lastAvatarVertCount = _lastAvatarVertCount;
 
     #ifdef _DCL_COMPUTE_SKINNING
         vVert = float4(_GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].position.xyz, 1.0f);
