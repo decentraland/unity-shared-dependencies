@@ -11,6 +11,9 @@ struct VertexInfo
 StructuredBuffer<VertexInfo> _GlobalAvatarBuffer;
 #endif
 
+int _lastWearableVertCount2;
+int _lastAvatarVertCount2;
+
 struct VertexInput
 {
     uint index : SV_VertexID;
@@ -48,17 +51,14 @@ VertexOutput vert_highlight (VertexInput v)
     float3 bitangentDir;
 
     float Set_Outline_Width = _Highlight_Width;
-    Set_Outline_Width *= 2.0f;
-    //Set_Outline_Width *= smoothstep( _Highlight_Farthest_Distance, _Highlight_Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos));
-    //Set_Outline_Width *= (1.0f - _Highlight_ZOverDrawMode);
-    //Set_Outline_Width *= 50.0f;
-    //Set_Outline_Width = 2.0f;
+    int lastWearableVertCount = _lastWearableVertCount;
+    int lastAvatarVertCount = _lastAvatarVertCount;
 
     #ifdef _DCL_COMPUTE_SKINNING
-        vVert = float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz, 1.0f);
-        vNormal = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz;
+        vVert = float4(_GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].position.xyz, 1.0f);
+        vNormal = _GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].normal.xyz;
         normalDir = UnityObjectToWorldNormal(vNormal);
-        skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
+        skinnedTangent = _GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].tangent;
         tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
         bitangentDir = normalize(cross(normalDir, tangentDir) * skinnedTangent.w);
 
