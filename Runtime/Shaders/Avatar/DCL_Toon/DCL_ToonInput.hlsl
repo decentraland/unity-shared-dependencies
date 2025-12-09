@@ -44,9 +44,6 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _Emissive_Color)
-    UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
-    UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
-    UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _Clipping_Level)
     UNITY_DOTS_INSTANCED_PROP(float, _Tweak_transparency)
     UNITY_DOTS_INSTANCED_PROP(int, _MainTexArr_ID) 
@@ -57,6 +54,12 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(int, _lastWearableVertCount)
     UNITY_DOTS_INSTANCED_PROP(int, _lastAvatarVertCount)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+
+UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
+    UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
+    UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
+    UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
+UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
 // #define _BaseColor UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor0)
@@ -90,32 +93,32 @@ static int unity_DOTS_Sampled_lastWearableVertCount;
 static int unity_DOTS_Sampled_lastAvatarVertCount;
 
 
-void SetupDOTSLitMaterialPropertyCaches()
+void SetupDOTSToonMaterialPropertyCaches()
 {
-    unity_DOTS_Sampled_MainTex_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MainTex_ST); 
-    unity_DOTS_Sampled_NormalMap_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _NormalMap_ST); 
-    unity_DOTS_Sampled_MatCap_Sampler_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MatCap_Sampler_ST); 
-    unity_DOTS_Sampled_Emissive_Tex_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Tex_ST); 
-    unity_DOTS_Sampled_BaseMap_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseMap_ST); 
-    unity_DOTS_Sampled_BaseColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor); 
-    unity_DOTS_Sampled_SpecColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor); 
-    unity_DOTS_Sampled_Emissive_Color = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Color); 
-    unity_DOTS_Sampled_EndFadeDistance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance); 
-    unity_DOTS_Sampled_StartFadeDistance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance); 
-    unity_DOTS_Sampled_FadeDistance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance); 
-    unity_DOTS_Sampled_Clipping_Level = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Clipping_Level); 
-    unity_DOTS_Sampled_Tweak_transparency = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency); 
-    unity_DOTS_Sampled_MainTexArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID); 
-    unity_DOTS_Sampled_NormalMapArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _NormalMapArr_ID); 
-    unity_DOTS_Sampled_MatCap_SamplerArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MatCap_SamplerArr_ID); 
-    unity_DOTS_Sampled_Emissive_TexArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _Emissive_TexArr_ID); 
-    unity_DOTS_Sampled_MetallicGlossMapArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID); 
-    unity_DOTS_Sampled_lastWearableVertCount = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount); 
-    unity_DOTS_Sampled_lastAvatarVertCount = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount); 
+    unity_DOTS_Sampled_MainTex_ST                   = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MainTex_ST); 
+    unity_DOTS_Sampled_NormalMap_ST                 = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _NormalMap_ST); 
+    unity_DOTS_Sampled_MatCap_Sampler_ST            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MatCap_Sampler_ST); 
+    unity_DOTS_Sampled_Emissive_Tex_ST              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Tex_ST); 
+    unity_DOTS_Sampled_BaseMap_ST                   = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseMap_ST); 
+    unity_DOTS_Sampled_BaseColor                    = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor); 
+    unity_DOTS_Sampled_SpecColor                    = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor); 
+    unity_DOTS_Sampled_Emissive_Color               = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Color); 
+    unity_DOTS_Sampled_EndFadeDistance              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance); 
+    unity_DOTS_Sampled_StartFadeDistance            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance); 
+    unity_DOTS_Sampled_FadeDistance                 = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance); 
+    unity_DOTS_Sampled_Clipping_Level               = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Clipping_Level); 
+    unity_DOTS_Sampled_Tweak_transparency           = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency); 
+    unity_DOTS_Sampled_MainTexArr_ID                = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID); 
+    unity_DOTS_Sampled_NormalMapArr_ID              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _NormalMapArr_ID); 
+    unity_DOTS_Sampled_MatCap_SamplerArr_ID         = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MatCap_SamplerArr_ID); 
+    unity_DOTS_Sampled_Emissive_TexArr_ID           = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _Emissive_TexArr_ID); 
+    unity_DOTS_Sampled_MetallicGlossMapArr_ID       = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID); 
+    unity_DOTS_Sampled_lastWearableVertCount        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount); 
+    unity_DOTS_Sampled_lastAvatarVertCount          = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount); 
 }
 
 #undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES
-#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSLitMaterialPropertyCaches()
+#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSToonMaterialPropertyCaches()
 
 #define _MainTex_ST                         unity_DOTS_Sampled_MainTex_ST
 #define _NormalMap_ST                       unity_DOTS_Sampled_NormalMap_ST
