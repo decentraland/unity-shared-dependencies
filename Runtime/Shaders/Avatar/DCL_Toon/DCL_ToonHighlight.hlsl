@@ -11,8 +11,8 @@ struct VertexInfo
 StructuredBuffer<VertexInfo> _GlobalAvatarBuffer;
 #endif
 
-int _lastWearableVertCount2;
-int _lastAvatarVertCount2;
+float4 _Highlight_Colour;
+float _Highlight_Width;
 
 struct VertexInput
 {
