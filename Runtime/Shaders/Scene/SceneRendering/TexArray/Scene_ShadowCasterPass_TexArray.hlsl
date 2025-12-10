@@ -1,8 +1,8 @@
 #ifndef SCENE_SHADOW_CASTER_PASS_INCLUDED
 #define SCENE_SHADOW_CASTER_PASS_INCLUDED
 
-#include "../Scene_Core.hlsl"
-#include "../Scene_Shadows.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 #include "../Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"

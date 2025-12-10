@@ -101,10 +101,10 @@ void UnlitPassFragment(
 #endif
 )
 {
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
-
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
     half2 uv = input.uv;
     half4 texColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, uv);

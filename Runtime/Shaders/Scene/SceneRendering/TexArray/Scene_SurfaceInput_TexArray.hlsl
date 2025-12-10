@@ -1,7 +1,8 @@
 #ifndef SCENE_SURFACE_INPUT_INCLUDED
 #define SCENE_SURFACE_INPUT_INCLUDED
 
-#include "../Scene_Core.hlsl"
+#include "../Scene_InputData.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "../Scene_SurfaceData.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"

@@ -16,13 +16,6 @@ float4 _BaseMap_ST; // Per Material
 half4 _BaseColor;
 half4 _SpecColor;
 float4 _Emissive_Color;
-float4 _Highlight_Colour;
-float4 _Highlight_ObjectOffset;
-float _Highlight_Width;
-float _Highlight_Nearest_Distance;
-float _Highlight_Farthest_Distance;
-float _Highlight_ZOverDrawMode;
-float _Highlight_Offset_Z;
 float _EndFadeDistance;
 float _StartFadeDistance;
 float _FadeDistance;
@@ -51,26 +44,22 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _Emissive_Color)
-    UNITY_DOTS_INSTANCED_PROP(float4, _Highlight_Colour)
-    UNITY_DOTS_INSTANCED_PROP(float4, _Highlight_ObjectOffset)
-    UNITY_DOTS_INSTANCED_PROP(float, _Highlight_Width)
-    UNITY_DOTS_INSTANCED_PROP(float, _Highlight_Nearest_Distance)
-    UNITY_DOTS_INSTANCED_PROP(float, _Highlight_Farthest_Distance)
-    UNITY_DOTS_INSTANCED_PROP(float, _Highlight_ZOverDrawMode)
-    UNITY_DOTS_INSTANCED_PROP(float, _Highlight_Offset_Z)
+    UNITY_DOTS_INSTANCED_PROP(float, _Clipping_Level)
+    UNITY_DOTS_INSTANCED_PROP(float, _Tweak_transparency)
+    UNITY_DOTS_INSTANCED_PROP(int, _lastWearableVertCount)
+    UNITY_DOTS_INSTANCED_PROP(int, _lastAvatarVertCount)
+UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+
+UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
-    UNITY_DOTS_INSTANCED_PROP(float, _Clipping_Level)
-    UNITY_DOTS_INSTANCED_PROP(float, _Tweak_transparency)
-    UNITY_DOTS_INSTANCED_PROP(int, _MainTexArr_ID) 
+	UNITY_DOTS_INSTANCED_PROP(int, _MainTexArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _NormalMapArr_ID)
     UNITY_DOTS_INSTANCED_PROP(int, _MatCap_SamplerArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _Emissive_TexArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _MetallicGlossMapArr_ID)
-    UNITY_DOTS_INSTANCED_PROP(int, _lastWearableVertCount)
-    UNITY_DOTS_INSTANCED_PROP(int, _lastAvatarVertCount)
-UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
 // #define _BaseColor UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor0)
@@ -90,13 +79,6 @@ static float4 unity_DOTS_Sampled_BaseMap_ST;
 static float4 unity_DOTS_Sampled_BaseColor;
 static float4 unity_DOTS_Sampled_SpecColor;
 static float4 unity_DOTS_Sampled_Emissive_Color;
-static float4 unity_DOTS_Sampled_Highlight_Colour;
-static float4 unity_DOTS_Sampled_Highlight_ObjectOffset;
-static float unity_DOTS_Sampled_Highlight_Width;
-static float unity_DOTS_Sampled_Highlight_Nearest_Distance;
-static float unity_DOTS_Sampled_Highlight_Farthest_Distance;
-static float unity_DOTS_Sampled_Highlight_ZOverDrawMode;
-static float unity_DOTS_Sampled_Highlight_Offset_Z;
 static float unity_DOTS_Sampled_EndFadeDistance;
 static float unity_DOTS_Sampled_StartFadeDistance;
 static float unity_DOTS_Sampled_FadeDistance;
@@ -111,39 +93,32 @@ static int unity_DOTS_Sampled_lastWearableVertCount;
 static int unity_DOTS_Sampled_lastAvatarVertCount;
 
 
-void SetupDOTSLitMaterialPropertyCaches()
+void SetupDOTSToonMaterialPropertyCaches()
 {
-    unity_DOTS_Sampled_MainTex_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MainTex_ST); 
-    unity_DOTS_Sampled_NormalMap_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _NormalMap_ST); 
-    unity_DOTS_Sampled_MatCap_Sampler_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MatCap_Sampler_ST); 
-    unity_DOTS_Sampled_Emissive_Tex_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Tex_ST); 
-    unity_DOTS_Sampled_BaseMap_ST = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseMap_ST); 
-    unity_DOTS_Sampled_BaseColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor); 
-    unity_DOTS_Sampled_SpecColor = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor); 
-    unity_DOTS_Sampled_Emissive_Color = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Color); 
-    unity_DOTS_Sampled_Highlight_Colour = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Highlight_Colour);
-    unity_DOTS_Sampled_Highlight_ObjectOffset = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Highlight_ObjectOffset);
-    unity_DOTS_Sampled_Highlight_Width = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Highlight_Width);
-    unity_DOTS_Sampled_Highlight_Nearest_Distance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Highlight_Nearest_Distance);
-    unity_DOTS_Sampled_Highlight_Farthest_Distance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Highlight_Farthest_Distance);
-    unity_DOTS_Sampled_Highlight_ZOverDrawMode = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Highlight_ZOverDrawMode);
-    unity_DOTS_Sampled_Highlight_Offset_Z = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Highlight_Offset_Z);
-    unity_DOTS_Sampled_EndFadeDistance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance); 
-    unity_DOTS_Sampled_StartFadeDistance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance); 
-    unity_DOTS_Sampled_FadeDistance = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance); 
-    unity_DOTS_Sampled_Clipping_Level = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Clipping_Level); 
-    unity_DOTS_Sampled_Tweak_transparency = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency); 
-    unity_DOTS_Sampled_MainTexArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID); 
-    unity_DOTS_Sampled_NormalMapArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _NormalMapArr_ID); 
-    unity_DOTS_Sampled_MatCap_SamplerArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MatCap_SamplerArr_ID); 
-    unity_DOTS_Sampled_Emissive_TexArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _Emissive_TexArr_ID); 
-    unity_DOTS_Sampled_MetallicGlossMapArr_ID = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID); 
-    unity_DOTS_Sampled_lastWearableVertCount = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount); 
-    unity_DOTS_Sampled_lastAvatarVertCount = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount); 
+    unity_DOTS_Sampled_MainTex_ST 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MainTex_ST); 
+    unity_DOTS_Sampled_NormalMap_ST 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _NormalMap_ST); 
+    unity_DOTS_Sampled_MatCap_Sampler_ST 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MatCap_Sampler_ST); 
+    unity_DOTS_Sampled_Emissive_Tex_ST 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Tex_ST); 
+    unity_DOTS_Sampled_BaseMap_ST 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseMap_ST); 
+    unity_DOTS_Sampled_BaseColor 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor); 
+    unity_DOTS_Sampled_SpecColor 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor); 
+    unity_DOTS_Sampled_Emissive_Color 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Color); 
+    unity_DOTS_Sampled_EndFadeDistance 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance); 
+    unity_DOTS_Sampled_StartFadeDistance 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance); 
+    unity_DOTS_Sampled_FadeDistance 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance); 
+    unity_DOTS_Sampled_Clipping_Level 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Clipping_Level); 
+    unity_DOTS_Sampled_Tweak_transparency 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency); 
+    unity_DOTS_Sampled_MainTexArr_ID 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID); 
+    unity_DOTS_Sampled_NormalMapArr_ID 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _NormalMapArr_ID); 
+    unity_DOTS_Sampled_MatCap_SamplerArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MatCap_SamplerArr_ID); 
+    unity_DOTS_Sampled_Emissive_TexArr_ID 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _Emissive_TexArr_ID); 
+    unity_DOTS_Sampled_MetallicGlossMapArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID); 
+    unity_DOTS_Sampled_lastWearableVertCount 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount); 
+    unity_DOTS_Sampled_lastAvatarVertCount 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount); 
 }
 
 #undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES
-#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSLitMaterialPropertyCaches()
+#define UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES() SetupDOTSToonMaterialPropertyCaches()
 
 #define _MainTex_ST                         unity_DOTS_Sampled_MainTex_ST
 #define _NormalMap_ST                       unity_DOTS_Sampled_NormalMap_ST
@@ -153,13 +128,6 @@ void SetupDOTSLitMaterialPropertyCaches()
 #define _BaseColor                          unity_DOTS_Sampled_BaseColor
 #define _SpecColor                          unity_DOTS_Sampled_SpecColor
 #define _Emissive_Color                     unity_DOTS_Sampled_Emissive_Color
-#define _Highlight_Colour                   unity_DOTS_Sampled_Highlight_Colour
-#define _Highlight_ObjectOffset             unity_DOTS_Sampled_Highlight_ObjectOffset
-#define _Highlight_Width                    unity_DOTS_Sampled_Highlight_Width
-#define _Highlight_Nearest_Distance         unity_DOTS_Sampled_Highlight_Nearest_Distance
-#define _Highlight_Farthest_Distance        unity_DOTS_Sampled_Highlight_Farthest_Distance
-#define _Highlight_ZOverDrawMode            unity_DOTS_Sampled_Highlight_ZOverDrawMode
-#define _Highlight_Offset_Z                 unity_DOTS_Sampled_Highlight_Offset_Z
 #define _EndFadeDistance                    unity_DOTS_Sampled_EndFadeDistance
 #define _StartFadeDistance                  unity_DOTS_Sampled_StartFadeDistance
 #define _FadeDistance                       unity_DOTS_Sampled_FadeDistance

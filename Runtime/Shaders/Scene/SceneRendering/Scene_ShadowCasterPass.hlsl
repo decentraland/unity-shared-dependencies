@@ -2,8 +2,9 @@
 #define SCENE_SHADOW_CASTER_PASS_INCLUDED
 
 #include "Scene_Dither.hlsl"
-#include "Scene_Core.hlsl"
-#include "Scene_Shadows.hlsl"
+#include "Scene_InputData.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
 #include "Scene_PlaneClipping.hlsl"
 #if defined(LOD_FADE_CROSSFADE)
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -35,6 +36,7 @@ struct Varyings
     float2 uv           : TEXCOORD1;
     float4 tintColour   : TEXCOORD2;
     uint nDither        : TEXCOORD3;
+    UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 float4 GetShadowPositionHClip(Attributes input, uint _svInstanceID)
@@ -67,6 +69,7 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     
     Varyings output;
     UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
 
     #ifdef _GPU_INSTANCER_BATCHER
     uint instanceID = GetIndirectInstanceID_Base(svInstanceID);
@@ -85,6 +88,8 @@ Varyings ShadowPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
+    UNITY_SETUP_INSTANCE_ID(input);
+    
     Dithering( input.positionCS, input.nDither);
 
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);

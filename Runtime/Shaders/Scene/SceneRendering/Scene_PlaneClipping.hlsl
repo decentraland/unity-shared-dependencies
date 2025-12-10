@@ -9,17 +9,22 @@ void ClipFragmentViaPlaneTests(const float3 _positionWS, const float _PlaneClipp
 {
     // Horizontal clipping planes
     float distanceX = dot(_positionWS, _PlaneX);
-    clip(distanceX - _PlaneClippingPosX);
-    clip(-distanceX + _PlaneClippingNegX);
-
+    if ((distanceX - _PlaneClippingPosX) <= 0.0)
+        clip(-1);
+    if ((-distanceX + _PlaneClippingNegX) <= 0.0)
+        clip(-1);
     float distanceZ = dot(_positionWS, _PlaneZ);
-    clip(distanceZ - _PlaneClippingPosZ);
-    clip(-distanceZ + _PlaneClippingNegZ);
+    if ((distanceZ - _PlaneClippingPosZ) <= 0.0)
+        clip(-1);
+    if ((-distanceZ + _PlaneClippingNegZ) <= 0.0)
+        clip(-1);
 
     // Vertical clipping planes
     float distanceY = dot(_positionWS, _PlaneY);
-    clip(distanceY - _PlaneClippingPosY);
-    clip(-distanceY + _PlaneClippingNegY);
+    if ((distanceY - _PlaneClippingPosY) <= 0.0)
+        clip(-1);
+    if ((-distanceY + _PlaneClippingNegY) <= 0.0)
+        clip(-1);
 }
 
 #endif

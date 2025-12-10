@@ -1,9 +1,9 @@
 #ifndef SCENE_INPUT_INCLUDED
 #define SCENE_INPUT_INCLUDED
 
-#include "Scene_Core.hlsl"
+#include "Scene_InputData.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
-#include "../URP/Constants.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 #include "Scene_SurfaceInput.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/DebugMipmapStreamingMacros.hlsl"
@@ -35,8 +35,6 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _EmissionColor)
-    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
-    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
     UNITY_DOTS_INSTANCED_PROP(float , _Cutoff)
     UNITY_DOTS_INSTANCED_PROP(float , _Smoothness)
     UNITY_DOTS_INSTANCED_PROP(float , _Metallic)
@@ -45,6 +43,11 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float , _OcclusionStrength)
     UNITY_DOTS_INSTANCED_PROP(float , _Surface)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+
+UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
+    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
+    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
+UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
 // #define _BaseColor UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor0)
@@ -178,9 +181,9 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanc
     outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.g;
     
-    outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+    outSurfaceData.normalTS = SampleNormal_Scene(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
     outSurfaceData.occlusion = SampleOcclusion(uv);
-    outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission_Scene(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
     outSurfaceData.height = specGloss.r;
 }
 

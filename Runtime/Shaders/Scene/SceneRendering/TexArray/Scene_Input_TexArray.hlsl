@@ -1,7 +1,8 @@
 #ifndef SCENE_INPUT_INCLUDED
 #define SCENE_INPUT_INCLUDED
 
-#include "../Scene_Core.hlsl"
+#include "../Scene_InputData.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/CommonMaterial.hlsl"
 #include "../../URP/Constants.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
@@ -35,8 +36,6 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _EmissionColor)
-    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
-    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
     UNITY_DOTS_INSTANCED_PROP(float , _Cutoff)
     UNITY_DOTS_INSTANCED_PROP(float , _Smoothness)
     UNITY_DOTS_INSTANCED_PROP(float , _Metallic)
@@ -44,8 +43,13 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float , _Parallax)
     UNITY_DOTS_INSTANCED_PROP(float , _OcclusionStrength)
     UNITY_DOTS_INSTANCED_PROP(float , _Surface)
-    UNITY_DOTS_INSTANCED_PROP(int, _BaseMapArr_ID)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
+
+UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
+    UNITY_DOTS_INSTANCED_PROP(float4, _PlaneClipping)
+    UNITY_DOTS_INSTANCED_PROP(float4, _VerticalClipping)
+    UNITY_DOTS_INSTANCED_PROP(int, _BaseMapArr_ID)
+UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
 // #define _BaseColor UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor0)
@@ -85,7 +89,7 @@ void SetupDOTSSceneTexArrayMaterialPropertyCaches()
     unity_DOTS_Sampled_Parallax             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Parallax);
     unity_DOTS_Sampled_OcclusionStrength    = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _OcclusionStrength);
     unity_DOTS_Sampled_Surface              = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _Surface);
-    unity_DOTS_BaseMapArr_ID                = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float , _BaseMapArr_ID);
+    unity_DOTS_Sampled_BaseMapArr_ID        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int , _BaseMapArr_ID);
 }
 
 #undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES

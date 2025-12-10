@@ -123,13 +123,15 @@ void InitializeInputData(Varyings input, half3 normalTS, out InputData_Scene inp
     inputData.fogCoord = InitializeInputDataFog(float4(input.positionWS, 1.0), input.fogFactor);
 #endif
 
-#if defined(DYNAMICLIGHTMAP_ON)
-    inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.dynamicLightmapUV, input.vertexSH, inputData.normalWS);
-#else
-    inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.vertexSH, inputData.normalWS);
-#endif
-
     inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(input.positionCS);
+    
+// #if defined(DYNAMICLIGHTMAP_ON)
+//     inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.dynamicLightmapUV, input.vertexSH, inputData.normalWS);
+// #else
+//     inputData.bakedGI = SAMPLE_GI(input.staticLightmapUV, input.vertexSH, inputData.normalWS);
+// #endif
+
+    
     //inputData.shadowMask = SAMPLE_SHADOWMASK(input.staticLightmapUV);
 
     #if defined(DEBUG_DISPLAY)
@@ -178,6 +180,10 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     #endif
     Varyings output = (Varyings)0;
     
+    UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_TRANSFER_INSTANCE_ID(input, output);
+    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
     VertexPositionInputs vertexInput = GetVertexPositionInputs_Scene(input.positionOS.xyz, svInstanceID);
     
     #ifdef _GPU_INSTANCER_BATCHER
@@ -190,10 +196,6 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
         output.nDither = 0;
     #endif
     
-    UNITY_SETUP_INSTANCE_ID(input);
-    UNITY_TRANSFER_INSTANCE_ID(input, output);
-    UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
     // normalWS and tangentWS already normalize.
     // this is required to avoid skewing the direction during interpolation
     // also required for per-vertex lighting and SH evaluation
@@ -261,12 +263,11 @@ void LitPassFragment(
 #endif
 )
 {
-    Dithering( input.positionCS, input.nDither);
-
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
-
-    UNITY_SETUP_INSTANCE_ID(input);
+	UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+    
+	Dithering( input.positionCS, input.nDither);
+    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
 
 //#if defined(_PARALLAXMAP)
 //#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)

@@ -472,6 +472,8 @@ VertexOutput vert (VertexInput v)
 
 float4 frag(VertexOutput i, half facing : VFACE) : SV_TARGET
 {
+    UNITY_SETUP_INSTANCE_ID(i);
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
     Dithering(_FadeDistance, i.positionCS, _EndFadeDistance, _StartFadeDistance);
     return fragDoubleShadeFeather(i, facing);
 }
