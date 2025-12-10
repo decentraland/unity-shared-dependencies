@@ -11,6 +11,9 @@ struct VertexInfo
 StructuredBuffer<VertexInfo> _GlobalAvatarBuffer;
 #endif
 
+int _lastWearableVertCount2;
+int _lastAvatarVertCount2;
+
 struct VertexInput
 {
     uint index : SV_VertexID;
@@ -25,10 +28,6 @@ struct VertexInput
 struct VertexOutput
 {
     float4 pos : SV_POSITION;
-    float2 uv0 : TEXCOORD0;
-    float3 normalDir : TEXCOORD1;
-    float3 tangentDir : TEXCOORD2;
-    float3 bitangentDir : TEXCOORD3;
     float4 positionCS : TEXCOORD4;
 
     UNITY_VERTEX_OUTPUT_STEREO
@@ -41,57 +40,54 @@ VertexOutput vert_highlight (VertexInput v)
     UNITY_SETUP_INSTANCE_ID(v);
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-    o.uv0 = v.texcoord0;
     float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
-    float2 Set_UV0 = o.uv0;
-    float4 _Outline_Sampler_var = float4(1,1,1,1);//tex2Dlod(_Outline_Sampler,float4(TRANSFORM_TEX(Set_UV0, _Outline_Sampler),0.0,0));
-    //v.2.0.4.3 baked Normal Texture for Outline
+
+    float4 vVert;
+    float3 vNormal;
+    float4 vTangent;
+    float3 normalDir;
+    float4 skinnedTangent;
+    float3 tangentDir;
+    float3 bitangentDir;
+
+    float Set_Outline_Width = _Highlight_Width;
+    int lastWearableVertCount = _lastWearableVertCount;
+    int lastAvatarVertCount = _lastAvatarVertCount;
 
     #ifdef _DCL_COMPUTE_SKINNING
-    o.normalDir = UnityObjectToWorldNormal(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz);
-    float4 skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
-    o.tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
-    o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * skinnedTangent.w);
-    #else
-    o.normalDir = UnityObjectToWorldNormal(v.normal);
-    o.tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
-    o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
-    #endif
-    
-    float3x3 tangentTransform = float3x3( o.tangentDir, o.bitangentDir, o.normalDir);
-    //UnpackNormal() can't be used, and so as follows. Do not specify a bump for the texture to be used.
-    float4 _BakedNormal_var = (float4(1,1,1,1) * 2 - 1);//(tex2Dlod(_BakedNormal,float4(TRANSFORM_TEX(Set_UV0, _BakedNormal),0.0,0)) * 2 - 1);
-    float3 _BakedNormalDir = normalize(mul(_BakedNormal_var.rgb, tangentTransform));
-    //end
-    float Set_Outline_Width = (_Outline_Width*0.001*smoothstep( _Farthest_Distance, _Nearest_Distance, distance(objPos.rgb,_WorldSpaceCameraPos) )*_Outline_Sampler_var.rgb).r;
-    Set_Outline_Width *= (1.0f - _ZOverDrawMode);
+        vVert = float4(_GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].position.xyz, 1.0f);
+        vNormal = _GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].normal.xyz;
+        normalDir = UnityObjectToWorldNormal(vNormal);
+        skinnedTangent = _GlobalAvatarBuffer[lastAvatarVertCount + lastWearableVertCount + v.index].tangent;
+        tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
+        bitangentDir = normalize(cross(normalDir, tangentDir) * skinnedTangent.w);
 
-    float4 _ClipCameraPos = mul(UNITY_MATRIX_VP, float4(_WorldSpaceCameraPos.xyz, 1));
-    
-    #if defined(UNITY_REVERSED_Z)
-        float fOffset_Z = _Offset_Z * -0.01;
-    #else
-        float fOffset_Z = _Offset_Z * 0.01;
-    #endif
-    
-    Set_Outline_Width = Set_Outline_Width*50;
-    float signVar = dot(normalize(v.vertex.xyz),normalize(v.normal))<0 ? -1 : 1;
-    float4 vertOffset = _HighlightObjectOffset;
-    //vertOffset = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    #ifdef _DCL_COMPUTE_SKINNING
-        float4 vVert = float4(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].position.xyz, 1.0f);
-        o.pos = UnityObjectToClipPos(float4(vVert.xyz + signVar*normalize(vVert - vertOffset)*Set_Outline_Width, 1));
-    #else
-        o.pos = UnityObjectToClipPos(float4(v.vertex.xyz + signVar*normalize(v.vertex)*Set_Outline_Width, 1));
-    #endif
+        float4 clipPosition = mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, float4(vVert.xyz, 1.0)));
+        float3 clipNormal = mul((float3x3) UNITY_MATRIX_VP, mul((float3x3) UNITY_MATRIX_M, vNormal));
 
-    o.pos.z = o.pos.z + fOffset_Z * _ClipCameraPos.z;
-    o.positionCS = TransformWorldToHClip(o.pos);
-    return o;
+        float2 offset = normalize(clipNormal.xy) / _ScreenParams.xy * Set_Outline_Width * clipPosition.w * 2.0f;
+        clipPosition.xy += offset;
+        
+        o.pos = clipPosition;
+        return o;
+    #else
+        vVert = v.vertex;
+        vNormal = v.normal;
+        vTangent = v.tangent;
+        normalDir = UnityObjectToWorldNormal(vNormal);
+        tangentDir = normalize( mul( unity_ObjectToWorld, float4( vTangent.xyz, 0.0 ) ).xyz );
+        bitangentDir = normalize(cross(normalDir, tangentDir) * vTangent.w);
+
+        float2 offset = normalize(normalDir.xy) / _ScreenParams.xy * Set_Outline_Width * vVert.w * 2.0f;
+        vVert.xy += offset;
+        
+        o.pos = vVert;
+        return o;
+    #endif
 }
 
 float4 frag_highlight(VertexOutput i) : SV_Target
 {
     Dithering(_FadeDistance, i.positionCS, _EndFadeDistance, _StartFadeDistance);
-    return _HighlightColour;
+    return _Highlight_Colour;
 }
