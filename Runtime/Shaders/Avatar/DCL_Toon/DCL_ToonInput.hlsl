@@ -51,14 +51,14 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 
 UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
-    UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
-    UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
-    UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
-	UNITY_DOTS_INSTANCED_PROP(int, _MainTexArr_ID) 
+    UNITY_DOTS_INSTANCED_PROP(int, _MainTexArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _NormalMapArr_ID)
     UNITY_DOTS_INSTANCED_PROP(int, _MatCap_SamplerArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _Emissive_TexArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _MetallicGlossMapArr_ID)
+    UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
+    UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
+    UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
 UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
