@@ -259,10 +259,10 @@ void LitPassFragmentSimple(
 #endif
 )
 {
-    Dithering(_FadeDistance, input.positionCS, _EndFadeDistance, _StartFadeDistance);
-    
     UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+    Dithering(_FadeDistance, input.positionCS, _EndFadeDistance, _StartFadeDistance);
 
     SurfaceData surfaceData;
     InitializeSimpleLitSurfaceData(input.uv, surfaceData);
