@@ -52,9 +52,10 @@ Varyings DepthOnlyVertex(Attributes input)
 
 half DepthOnlyFragment(Varyings input) : SV_TARGET
 {
-    Dithering(_FadeDistance, input.positionCS, _EndFadeDistance, _StartFadeDistance);
-    
+    UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+    Dithering(_FadeDistance, input.positionCS, _EndFadeDistance, _StartFadeDistance);
 
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
 

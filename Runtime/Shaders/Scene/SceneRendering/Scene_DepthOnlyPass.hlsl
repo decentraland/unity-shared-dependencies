@@ -59,11 +59,12 @@ Varyings DepthOnlyVertex(Attributes input, uint svInstanceID : SV_InstanceID)
 
 half DepthOnlyFragment(Varyings input) : SV_TARGET
 {
+    UNITY_SETUP_INSTANCE_ID(input);
+    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
     Dithering( input.positionCS, input.nDither);
 
     ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
-
-    UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
     Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor, _Cutoff);
 
