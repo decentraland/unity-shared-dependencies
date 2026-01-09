@@ -125,33 +125,33 @@ void SetupDOTSSceneMaterialPropertyCaches()
         half _padding;
     };
     StructuredBuffer<PerMaterial> _GPUBuffer_PerMaterial;
-    float4  Get_BaseMap_ST         (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseMap_ST);
-    half4   Get_BaseColor          (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseColor);
-    half4   Get_SpecColor          (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._SpecColor);
-    half4   Get_EmissionColor      (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._EmissionColor);
-    float4  Get_PlaneClipping      (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._PlaneClipping);
-    float4  Get_VerticalClipping   (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._VerticalClipping);
-    half    Get_Cutoff             (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Cutoff);
-    half    Get_Smoothness         (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Smoothness);
-    half    Get_Metallic           (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Metallic);
-    half    Get_BumpScale          (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BumpScale);
-    half    Get_Parallax           (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Parallax);
-    half    Get_OcclusionStrength  (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._OcclusionStrength);
-    half    Get_Surface            (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Surface);
+    float4  Get_BaseMap_ST()         {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseMap_ST;}
+    half4   Get_BaseColor()          {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseColor;}
+    half4   Get_SpecColor()          {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._SpecColor;}
+    half4   Get_EmissionColor()      {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._EmissionColor;}
+    float4  Get_PlaneClipping()      {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._PlaneClipping;}
+    float4  Get_VerticalClipping()   {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._VerticalClipping;}
+    half    Get_Cutoff()             {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Cutoff;}
+    half    Get_Smoothness()         {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Smoothness;}
+    half    Get_Metallic()           {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Metallic;}
+    half    Get_BumpScale()          {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BumpScale;}
+    half    Get_Parallax()           {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Parallax;}
+    half    Get_OcclusionStrength()  {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._OcclusionStrength;}
+    half    Get_Surface()            {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Surface;}
 #else
-    float4  Get_BaseMap_ST         (return _BaseMap_ST);
-    half4   Get_BaseColor          (return _BaseColor);
-    half4   Get_SpecColor          (return _SpecColor);
-    half4   Get_EmissionColor      (return _EmissionColor);
-    float4  Get_PlaneClipping      (return _PlaneClipping);
-    float4  Get_VerticalClipping   (return _VerticalClipping);
-    half    Get_Cutoff             (return _Cutoff);
-    half    Get_Smoothness         (return _Smoothness);
-    half    Get_Metallic           (return _Metallic);
-    half    Get_BumpScale          (return _BumpScale);
-    half    Get_Parallax           (return _Parallax);
-    half    Get_OcclusionStrength  (return _OcclusionStrength);
-    half    Get_Surface            (return _Surface);
+    float4  Get_BaseMap_ST()         {return _BaseMap_ST;}
+    half4   Get_BaseColor()          {return _BaseColor;}
+    half4   Get_SpecColor()          {return _SpecColor;}
+    half4   Get_EmissionColor()      {return _EmissionColor;}
+    float4  Get_PlaneClipping()      {return _PlaneClipping;}
+    float4  Get_VerticalClipping()   {return _VerticalClipping;}
+    half    Get_Cutoff()             {return _Cutoff;}
+    half    Get_Smoothness()         {return _Smoothness;}
+    half    Get_Metallic()           {return _Metallic;}
+    half    Get_BumpScale()          {return _BumpScale;}
+    half    Get_Parallax()           {return _Parallax;}
+    half    Get_OcclusionStrength()  {return _OcclusionStrength;}
+    half    Get_Surface()            {return _Surface;}
 #endif
 
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
