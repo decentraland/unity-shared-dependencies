@@ -106,6 +106,54 @@ void SetupDOTSSceneMaterialPropertyCaches()
 
 #endif
 
+#ifdef _RSUV
+    struct PerMaterial
+    {
+        float4 _BaseMap_ST;
+        half4 _BaseColor;
+        half4 _SpecColor;
+        half4 _EmissionColor;
+        float4 _PlaneClipping;
+        float4 _VerticalClipping;
+        half _Cutoff;
+        half _Smoothness;
+        half _Metallic;
+        half _BumpScale;
+        half _Parallax;
+        half _OcclusionStrength;
+        half _Surface;
+        half _padding;
+    };
+    StructuredBuffer<PerMaterial> _GPUBuffer_PerMaterial;
+    float4  Get_BaseMap_ST         (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseMap_ST);
+    half4   Get_BaseColor          (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseColor);
+    half4   Get_SpecColor          (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._SpecColor);
+    half4   Get_EmissionColor      (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._EmissionColor);
+    float4  Get_PlaneClipping      (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._PlaneClipping);
+    float4  Get_VerticalClipping   (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._VerticalClipping);
+    half    Get_Cutoff             (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Cutoff);
+    half    Get_Smoothness         (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Smoothness);
+    half    Get_Metallic           (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Metallic);
+    half    Get_BumpScale          (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BumpScale);
+    half    Get_Parallax           (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Parallax);
+    half    Get_OcclusionStrength  (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._OcclusionStrength);
+    half    Get_Surface            (return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Surface);
+#else
+    float4  Get_BaseMap_ST         (return _BaseMap_ST);
+    half4   Get_BaseColor          (return _BaseColor);
+    half4   Get_SpecColor          (return _SpecColor);
+    half4   Get_EmissionColor      (return _EmissionColor);
+    float4  Get_PlaneClipping      (return _PlaneClipping);
+    float4  Get_VerticalClipping   (return _VerticalClipping);
+    half    Get_Cutoff             (return _Cutoff);
+    half    Get_Smoothness         (return _Smoothness);
+    half    Get_Metallic           (return _Metallic);
+    half    Get_BumpScale          (return _BumpScale);
+    half    Get_Parallax           (return _Parallax);
+    half    Get_OcclusionStrength  (return _OcclusionStrength);
+    half    Get_Surface            (return _Surface);
+#endif
+
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
 //TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
@@ -174,8 +222,9 @@ void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanceColour, out SurfaceData_Scene outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor * _PerInstanceColour, _Cutoff);
-    outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * _BaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
+    float4 vBaseColor = Get_BaseColor();
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, vBaseColor * _PerInstanceColour, _Cutoff);
+    outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * vBaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.metallic = specGloss.b;
