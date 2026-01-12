@@ -92,9 +92,11 @@ half4 ShadowPassFragment(Varyings input) : SV_TARGET
     
     Dithering( input.positionCS, input.nDither);
 
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+    float4 vPlaneClipping = Get_PlaneClipping();
+    float4 vVerticalClipping = Get_VerticalClipping();
+    ClipFragmentViaPlaneTests(input.positionWS, vPlaneClipping.x, vPlaneClipping.y, vPlaneClipping.z, vPlaneClipping.w, vVerticalClipping.x, vVerticalClipping.y);  
 
-    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor * input.tintColour, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap)).a, _BaseColor * input.tintColour, Get_Cutoff());
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

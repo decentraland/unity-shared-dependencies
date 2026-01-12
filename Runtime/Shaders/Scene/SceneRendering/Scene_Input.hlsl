@@ -106,12 +106,13 @@ void SetupDOTSSceneMaterialPropertyCaches()
 
 #endif
 
+#define _RSUV
 #ifdef _RSUV
     struct PerMaterial
     {
         float4 _BaseMap_ST;
         half4 _BaseColor;
-        half4 _SpecColor;
+        half4 _SpecColor; // Unnecessary
         half4 _EmissionColor;
         float4 _PlaneClipping;
         float4 _VerticalClipping;
@@ -193,8 +194,8 @@ half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
     else // _METALLICSPECGLOSSMAP
     {
         specGloss.r = 0.0;
-        specGloss.g = _Smoothness;
-        specGloss.b = _Metallic;
+        specGloss.g = Get_Smoothness();
+        specGloss.b = Get_Metallic();
         specGloss.a = 0.0;
     }
 
@@ -205,7 +206,7 @@ half SampleOcclusion(float2 uv)
 {
     #ifdef _OCCLUSIONMAP
         half occ = SAMPLE_TEXTURE2D(_OcclusionMap, sampler_OcclusionMap, uv).g;
-        return LerpWhiteTo(occ, _OcclusionStrength);
+        return LerpWhiteTo(occ, Get_OcclusionStrength());
     #else
         return half(1.0);
     #endif
@@ -215,7 +216,7 @@ void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
 {
     if (_PARALLAXMAP) // using HRM texture, so RGB == Height, Roughness, Metallic
     {
-        uv += ParallaxMapping(TEXTURE2D_ARGS(_MetallicGlossMap, sampler_MetallicGlossMap), viewDirTS, _Parallax, uv);
+        uv += ParallaxMapping(TEXTURE2D_ARGS(_MetallicGlossMap, sampler_MetallicGlossMap), viewDirTS, Get_Parallax(), uv);
     }
 }
 
@@ -223,16 +224,16 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanc
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
     float4 vBaseColor = Get_BaseColor();
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, vBaseColor * _PerInstanceColour, _Cutoff);
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, vBaseColor * _PerInstanceColour, Get_Cutoff());
     outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * vBaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.g;
     
-    outSurfaceData.normalTS = SampleNormal_Scene(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+    outSurfaceData.normalTS = SampleNormal_Scene(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), Get_BumpScale());
     outSurfaceData.occlusion = SampleOcclusion(uv);
-    outSurfaceData.emission = SampleEmission_Scene(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission_Scene(uv, Get_EmissionColor().rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
     outSurfaceData.height = specGloss.r;
 }
 

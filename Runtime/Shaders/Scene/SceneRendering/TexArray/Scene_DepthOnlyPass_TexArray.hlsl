@@ -38,11 +38,13 @@ Varyings DepthOnlyVertex(Attributes input)
 
 half DepthOnlyFragment(Varyings input) : SV_TARGET
 {
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+    float4 vPlaneClipping = Get_PlaneClipping();
+    float4 vVerticalClipping = Get_VerticalClipping();
+    ClipFragmentViaPlaneTests(input.positionWS, vPlaneClipping.x, vPlaneClipping.y, vPlaneClipping.z, vPlaneClipping.w, vVerticalClipping.x, vVerticalClipping.y);  
 
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-    Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, Get_Cutoff());
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

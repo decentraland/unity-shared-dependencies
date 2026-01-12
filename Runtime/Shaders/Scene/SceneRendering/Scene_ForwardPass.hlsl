@@ -267,7 +267,9 @@ void LitPassFragment(
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
     
 	Dithering( input.positionCS, input.nDither);
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+    float4 vPlaneClipping = Get_PlaneClipping();
+    float4 vVerticalClipping = Get_VerticalClipping();
+    ClipFragmentViaPlaneTests(input.positionWS, vPlaneClipping.x, vPlaneClipping.y, vPlaneClipping.z, vPlaneClipping.w, vVerticalClipping.x, vVerticalClipping.y);  
 
 //#if defined(_PARALLAXMAP)
 //#if defined(REQUIRES_TANGENT_SPACE_VIEW_DIR_INTERPOLATOR)
@@ -298,7 +300,7 @@ void LitPassFragment(
     
     half4 color = UniversalFragmentPBR(inputData, surfaceData);
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
-    color.a = OutputAlpha(color.a, IsSurfaceTypeTransparent(_Surface));
+    color.a = OutputAlpha(color.a, IsSurfaceTypeTransparent(Get_Surface()));
 
     outColor = color;
 

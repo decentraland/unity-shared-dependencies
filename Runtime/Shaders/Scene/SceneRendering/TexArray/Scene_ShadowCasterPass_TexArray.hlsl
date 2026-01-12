@@ -64,9 +64,11 @@ Varyings ShadowPassVertex(Attributes input)
 
 half4 ShadowPassFragment(Varyings input) : SV_TARGET
 {
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+    float4 vPlaneClipping = Get_PlaneClipping();
+    float4 vVerticalClipping = Get_VerticalClipping();
+    ClipFragmentViaPlaneTests(input.positionWS, vPlaneClipping.x, vPlaneClipping.y, vPlaneClipping.z, vPlaneClipping.w, vVerticalClipping.x, vVerticalClipping.y);  
 
-    Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, Get_Cutoff());
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);

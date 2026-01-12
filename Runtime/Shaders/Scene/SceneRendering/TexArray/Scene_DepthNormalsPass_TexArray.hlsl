@@ -82,11 +82,13 @@ Varyings DepthNormalsVertex(Attributes input)
 
 void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
 {
-    ClipFragmentViaPlaneTests(input.positionWS, _PlaneClipping.x, _PlaneClipping.y, _PlaneClipping.z, _PlaneClipping.w, _VerticalClipping.x, _VerticalClipping.y);
+    float4 vPlaneClipping = Get_PlaneClipping();
+    float4 vVerticalClipping = Get_VerticalClipping();
+    ClipFragmentViaPlaneTests(input.positionWS, vPlaneClipping.x, vPlaneClipping.y, vPlaneClipping.z, vPlaneClipping.w, vVerticalClipping.x, vVerticalClipping.y);  
 
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-    Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, _Cutoff);
+    Alpha(SampleAlbedoAlpha(input.uv).a, _BaseColor, Get_Cutoff());
 
     #ifdef LOD_FADE_CROSSFADE
         LODFadeCrossFade(input.positionCS);
@@ -112,7 +114,7 @@ void DepthNormalsFragment(Varyings input, out half4 outNormalWS : SV_Target0)
         #if defined(_NORMALMAP) || defined(_DETAIL)
             float sgn = input.tangentWS.w;      // should be either +1 or -1
             float3 bitangent = sgn * cross(input.normalWS.xyz, input.tangentWS.xyz);
-            float3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+            float3 normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), Get_BumpScale());
 
             #if defined(_DETAIL)
                 half detailMask = SAMPLE_TEXTURE2D(_DetailMask, sampler_DetailMask, uv).a;
