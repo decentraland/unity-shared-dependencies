@@ -211,7 +211,8 @@ Varyings LitPassVertex(Attributes input, uint svInstanceID : SV_InstanceID)
     #ifdef _GPU_INSTANCER_BATCHER
         output.uv = TransformTex_PerInstance(input.texcoord, svInstanceID);
     #else
-        output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
+        //output.uv = TRANSFORM_TEX(input.texcoord, _BaseMap);
+        output.uv = input.texcoord.xy * Get_BaseMap_ST().xy + Get_BaseMap_ST().zw;
     #endif
 
     // already normalized from normal transform to WS.

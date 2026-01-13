@@ -189,7 +189,7 @@ half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
 	    specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
 	    //ARM Texture - Provides Height in R, Metallic in B and Roughness in G
 	    specGloss.g = 1.0 - specGloss.g; //Conversion from RoughnessToSmoothness
-	    specGloss.b *= _Metallic;
+	    specGloss.b *= Get_Metallic();
 	}
     else // _METALLICSPECGLOSSMAP
     {
