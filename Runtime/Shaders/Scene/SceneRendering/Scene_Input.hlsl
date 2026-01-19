@@ -106,39 +106,38 @@ void SetupDOTSSceneMaterialPropertyCaches()
 
 #endif
 
-#define _RSUV
 #ifdef _RSUV
-    struct PerMaterial
+    struct PerRSUVMaterial // 128 bytes
     {
-        float4 _BaseMap_ST;
-        half4 _BaseColor;
-        half4 _SpecColor; // Unnecessary
-        half4 _EmissionColor;
-        float4 _PlaneClipping;
-        float4 _VerticalClipping;
-        half _Cutoff;
-        half _Smoothness;
-        half _Metallic;
-        half _BumpScale;
-        half _Parallax;
-        half _OcclusionStrength;
-        half _Surface;
-        half _padding;
+        float4 _RS_BaseMap_ST;
+        float4 _RS_BaseColor;
+        float4 _RS_SpecColor; // Unnecessary
+        float4 _RS_EmissionColor;
+        float4 _RS_PlaneClipping;
+        float4 _RS_VerticalClipping;
+        float _RS_Cutoff;
+        float _RS_Smoothness;
+        float _RS_Metallic;
+        float _RS_BumpScale;
+        float _RS_Parallax;
+        float _RS_OcclusionStrength;
+        float _RS_Surface;
+        float _RS_padding;
     };
-    StructuredBuffer<PerMaterial> _GPUBuffer_PerMaterial;
-    float4  Get_BaseMap_ST()         {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseMap_ST;}
-    half4   Get_BaseColor()          {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BaseColor;}
-    half4   Get_SpecColor()          {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._SpecColor;}
-    half4   Get_EmissionColor()      {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._EmissionColor;}
-    float4  Get_PlaneClipping()      {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._PlaneClipping;}
-    float4  Get_VerticalClipping()   {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._VerticalClipping;}
-    half    Get_Cutoff()             {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Cutoff;}
-    half    Get_Smoothness()         {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Smoothness;}
-    half    Get_Metallic()           {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Metallic;}
-    half    Get_BumpScale()          {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._BumpScale;}
-    half    Get_Parallax()           {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Parallax;}
-    half    Get_OcclusionStrength()  {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._OcclusionStrength;}
-    half    Get_Surface()            {return _GPUBuffer_PerMaterial[unity_RendererUserValue]._Surface;}
+    StructuredBuffer<PerRSUVMaterial> _GPUBuffer_PerRSUVMaterial;
+    float4      Get_BaseMap_ST()         {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BaseMap_ST;}
+    float4      Get_BaseColor()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BaseColor;}
+    float4      Get_SpecColor()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_SpecColor;}
+    float4      Get_EmissionColor()      {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_EmissionColor;}
+    float4      Get_PlaneClipping()      {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_PlaneClipping;}
+    float4      Get_VerticalClipping()   {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_VerticalClipping;}
+    float       Get_Cutoff()             {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Cutoff;}
+    float       Get_Smoothness()         {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Smoothness;}
+    float       Get_Metallic()           {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Metallic;}
+    float       Get_BumpScale()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BumpScale;}
+    float       Get_Parallax()           {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Parallax;}
+    float       Get_OcclusionStrength()  {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_OcclusionStrength;}
+    float       Get_Surface()            {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Surface;}
 #else
     float4  Get_BaseMap_ST()         {return _BaseMap_ST;}
     half4   Get_BaseColor()          {return _BaseColor;}
@@ -156,7 +155,6 @@ void SetupDOTSSceneMaterialPropertyCaches()
 #endif
 
 TEXTURE2D(_ParallaxMap);        SAMPLER(sampler_ParallaxMap);
-//TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 
 #define SAMPLE_METALLICSPECULAR(uv) SAMPLE_TEXTURE2D(_MetallicGlossMap, sampler_MetallicGlossMap, uv)
