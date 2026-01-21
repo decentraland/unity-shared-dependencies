@@ -42,7 +42,7 @@ VertexOutput vert (VertexInput v)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
     o.uv0 = v.texcoord0;
-    float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
+    float4 objPos = mul ( UNITY_MATRIX_M, float4(0,0,0,1) );
     float2 Set_UV0 = o.uv0;
     float4 _Outline_Sampler_var = float4(1,1,1,1);//tex2Dlod(_Outline_Sampler,float4(TRANSFORM_TEX(Set_UV0, _Outline_Sampler),0.0,0));
     //v.2.0.4.3 baked Normal Texture for Outline
@@ -50,11 +50,11 @@ VertexOutput vert (VertexInput v)
     #ifdef _DCL_COMPUTE_SKINNING
     o.normalDir = UnityObjectToWorldNormal(_GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].normal.xyz);
     float4 skinnedTangent = _GlobalAvatarBuffer[_lastAvatarVertCount + _lastWearableVertCount + v.index].tangent;
-    o.tangentDir = normalize( mul( unity_ObjectToWorld, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
+    o.tangentDir = normalize( mul( UNITY_MATRIX_M, float4( skinnedTangent.xyz, 0.0 ) ).xyz );
     o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * skinnedTangent.w);
     #else
     o.normalDir = UnityObjectToWorldNormal(v.normal);
-    o.tangentDir = normalize( mul( unity_ObjectToWorld, float4( v.tangent.xyz, 0.0 ) ).xyz );
+    o.tangentDir = normalize( mul( UNITY_MATRIX_M, float4( v.tangent.xyz, 0.0 ) ).xyz );
     o.bitangentDir = normalize(cross(o.normalDir, o.tangentDir) * v.tangent.w);
     #endif
     
