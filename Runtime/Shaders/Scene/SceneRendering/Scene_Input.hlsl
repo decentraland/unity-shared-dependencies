@@ -266,7 +266,11 @@ inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanc
     outSurfaceData.alpha = Alpha(albedoAlpha.a, vBaseColor * _PerInstanceColour, fCutOff);
     outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * vBaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
 
-    half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
+	#ifdef _RSUV
+		half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a, _rsuv_data);
+	#else
+    	half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
+	#endif
     outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.g;
     

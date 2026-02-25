@@ -287,7 +287,11 @@ void LitPassFragment(
 //#endif
 
     SurfaceData_Scene surfaceData;
+    #ifdef _RSUV
+    InitializeStandardLitSurfaceData_Scene(input.uv, input.tintColour, surfaceData, rsuv_data);
+    #else
     InitializeStandardLitSurfaceData_Scene(input.uv, input.tintColour, surfaceData);
+    #endif
 
 #ifdef LOD_FADE_CROSSFADE
     LODFadeCrossFade(input.positionCS);
