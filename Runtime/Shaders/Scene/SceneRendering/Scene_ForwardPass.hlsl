@@ -266,6 +266,10 @@ void LitPassFragment(
 {
 	UNITY_SETUP_INSTANCE_ID(input);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
+
+	#ifdef _RSUV
+		PerRSUVMaterial rsuv_data = Get_RSUV_Data();
+	#endif
     
 	Dithering( input.positionCS, input.nDither);
     float4 vPlaneClipping = _PlaneClipping;//Get_PlaneClipping();

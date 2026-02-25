@@ -125,19 +125,35 @@ void SetupDOTSSceneMaterialPropertyCaches()
         float _RS_padding;
     };
     StructuredBuffer<PerRSUVMaterial> _GPUBuffer_PerRSUVMaterial;
-    float4      Get_BaseMap_ST()         {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BaseMap_ST;}
-    float4      Get_BaseColor()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BaseColor;}
-    float4      Get_SpecColor()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_SpecColor;}
-    float4      Get_EmissionColor()      {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_EmissionColor;}
-    float4      Get_PlaneClipping()      {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_PlaneClipping;}
-    float4      Get_VerticalClipping()   {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_VerticalClipping;}
-    float       Get_Cutoff()             {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Cutoff;}
-    float       Get_Smoothness()         {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Smoothness;}
-    float       Get_Metallic()           {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Metallic;}
-    float       Get_BumpScale()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BumpScale;}
-    float       Get_Parallax()           {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Parallax;}
-    float       Get_OcclusionStrength()  {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_OcclusionStrength;}
-    float       Get_Surface()            {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Surface;}
+    // float4      Get_BaseMap_ST()         {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BaseMap_ST;}
+    // float4      Get_BaseColor()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BaseColor;}
+    // float4      Get_SpecColor()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_SpecColor;}
+    // float4      Get_EmissionColor()      {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_EmissionColor;}
+    // float4      Get_PlaneClipping()      {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_PlaneClipping;}
+    // float4      Get_VerticalClipping()   {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_VerticalClipping;}
+    // float       Get_Cutoff()             {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Cutoff;}
+    // float       Get_Smoothness()         {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Smoothness;}
+    // float       Get_Metallic()           {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Metallic;}
+    // float       Get_BumpScale()          {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_BumpScale;}
+    // float       Get_Parallax()           {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Parallax;}
+    // float       Get_OcclusionStrength()  {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_OcclusionStrength;}
+    // float       Get_Surface()            {return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue]._RS_Surface;}
+
+	float4  Get_BaseMap_ST()         {return _BaseMap_ST;}
+    half4   Get_BaseColor()          {return _BaseColor;}
+    half4   Get_SpecColor()          {return _SpecColor;}
+    half4   Get_EmissionColor()      {return _EmissionColor;}
+    float4  Get_PlaneClipping()      {return _PlaneClipping;}
+    float4  Get_VerticalClipping()   {return _VerticalClipping;}
+    half    Get_Cutoff()             {return _Cutoff;}
+    half    Get_Smoothness()         {return _Smoothness;}
+    half    Get_Metallic()           {return _Metallic;}
+    half    Get_BumpScale()          {return _BumpScale;}
+    half    Get_Parallax()           {return _Parallax;}
+    half    Get_OcclusionStrength()  {return _OcclusionStrength;}
+    half    Get_Surface()            {return _Surface;}
+
+	PerRSUVMaterial Get_RSUV_Data()		{return _GPUBuffer_PerRSUVMaterial[unity_RendererUserValue];}
 #else
     float4  Get_BaseMap_ST()         {return _BaseMap_ST;}
     half4   Get_BaseColor()          {return _BaseColor;}
@@ -179,21 +195,32 @@ struct PerInstanceLookUpAndDither
 StructuredBuffer<PerInstanceLookUpAndDither> _PerInstanceLookUpAndDitherBuffer;
 #endif
 
+#ifdef _RSUV
+half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha, PerRSUVMaterial _rsuv_data)
+#else
 half4 SampleMetallicSpecGloss(float2 uv, half albedoAlpha)
+#endif
 {
     half4 specGloss;
+	#ifdef _RSUV
+		float fMetallic = _rsuv_data._RS_Metallic;
+		float fSmoothness = _rsuv_data._RS_Smoothness;
+	#else
+		half fMetallic = Get_Metallic();
+		half fSmoothness = Get_Smoothness();
+	#endif
 	if (_METALLICSPECGLOSSMAP)
 	{
 	    specGloss = half4(SAMPLE_METALLICSPECULAR(uv));
 	    //ARM Texture - Provides Height in R, Metallic in B and Roughness in G
 	    specGloss.g = 1.0 - specGloss.g; //Conversion from RoughnessToSmoothness
-	    specGloss.b *= Get_Metallic();
+	    specGloss.b *= fMetallic;
 	}
     else // _METALLICSPECGLOSSMAP
     {
         specGloss.r = 0.0;
-        specGloss.g = Get_Smoothness();
-        specGloss.b = Get_Metallic();
+        specGloss.g = fSmoothness;
+        specGloss.b = fMetallic;
         specGloss.a = 0.0;
     }
 
@@ -217,21 +244,35 @@ void ApplyPerPixelDisplacement(half3 viewDirTS, inout float2 uv)
         uv += ParallaxMapping(TEXTURE2D_ARGS(_MetallicGlossMap, sampler_MetallicGlossMap), viewDirTS, Get_Parallax(), uv);
     }
 }
-
+#ifdef _RSUV
+inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanceColour, out SurfaceData_Scene outSurfaceData, PerRSUVMaterial _rsuv_data)
+#else
 inline void InitializeStandardLitSurfaceData_Scene(float2 uv, float4 _PerInstanceColour, out SurfaceData_Scene outSurfaceData)
+#endif
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    float4 vBaseColor = Get_BaseColor();
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, vBaseColor * _PerInstanceColour, Get_Cutoff());
+	#ifdef _RSUV
+		float4 vBaseColor = _rsuv_data._RS_BaseColor;
+		float fCutOff = _rsuv_data._RS_Cutoff;
+		float fBumpScale = _rsuv_data._RS_BumpScale;
+		float4 vEmissionColor = _rsuv_data._RS_EmissionColor;
+	#else
+		float4 vBaseColor = Get_BaseColor();
+		float fCutOff = Get_Cutoff();
+		half fBumpScale = Get_BumpScale();
+		half4 _EmissionColor = Get_EmissionColor();
+	#endif
+    
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, vBaseColor * _PerInstanceColour, fCutOff);
     outSurfaceData.albedo = AlphaModulate(albedoAlpha.rgb * vBaseColor.rgb * _PerInstanceColour.rgb, outSurfaceData.alpha);
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.metallic = specGloss.b;
     outSurfaceData.smoothness = specGloss.g;
     
-    outSurfaceData.normalTS = SampleNormal_Scene(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), Get_BumpScale());
+    outSurfaceData.normalTS = SampleNormal_Scene(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), fBumpScale);
     outSurfaceData.occlusion = SampleOcclusion(uv);
-    outSurfaceData.emission = SampleEmission_Scene(uv, Get_EmissionColor().rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
+    outSurfaceData.emission = SampleEmission_Scene(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
     outSurfaceData.height = specGloss.r;
 }
 
