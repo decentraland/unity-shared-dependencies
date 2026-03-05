@@ -1,7 +1,9 @@
 ﻿using GLTFast;
 using GLTFast.Materials;
+using GLTFast.Schema;
 using System;
 using UnityEngine;
+using Material = UnityEngine.Material;
 
 namespace DCL.GLTFast.Wrappers
 {
