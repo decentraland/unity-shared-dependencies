@@ -35,15 +35,15 @@ namespace DCL.GLTFast.Wrappers
         /// <param name="gltfMaterial"></param>
         /// <param name="gltf"></param>
         /// <returns></returns>
-        public override Material GenerateMaterial(int materialIndex, GLTFastMaterial gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
+        public override Material GenerateMaterial(MaterialBase gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
         {
             material = new Material(_shader);
 
-            SetMaterialName(materialIndex, gltfMaterial);
+            SetMaterialName(gltfMaterial);
 
-            if (gltfMaterial.extensions?.KHR_materials_pbrSpecularGlossiness != null)
+            if (gltfMaterial.Extensions?.KHR_materials_pbrSpecularGlossiness != null)
             {
-                var specGloss = gltfMaterial.extensions.KHR_materials_pbrSpecularGlossiness;
+                var specGloss = gltfMaterial.Extensions.KHR_materials_pbrSpecularGlossiness;
 
                 SetColor(specGloss.DiffuseColor.gamma);
                 SetSpecularColor(specGloss.SpecularColor);
@@ -56,21 +56,21 @@ namespace DCL.GLTFast.Wrappers
             // (according to extension specification)
             else
             {
-                PbrMetallicRoughness roughness = gltfMaterial.pbrMetallicRoughness;
+                PbrMetallicRoughnessBase roughness = gltfMaterial.PbrMetallicRoughness;
 
                 if (roughness != null)
                 {
                     SetColor(roughness.BaseColor.gamma);
-                    SetBaseMapTexture(roughness.baseColorTexture, gltf);
+                    SetBaseMapTexture(roughness.BaseColorTexture, gltf);
                     SetMetallic(roughness.metallicFactor);
-                    SetMetallicRoughnessTexture(gltf, roughness.metallicRoughnessTexture, roughness.roughnessFactor);
+                    SetMetallicRoughnessTexture(gltf, roughness.MetallicRoughnessTexture, roughness.roughnessFactor);
                 }
             }
 
-            SetBumpMapTexture(gltfMaterial.normalTexture, gltf);
-            SetOcclusionTexture(gltfMaterial.occlusionTexture, gltf);
+            SetBumpMapTexture(gltfMaterial.NormalTexture, gltf);
+            SetOcclusionTexture(gltfMaterial.OcclusionTexture, gltf);
             SetEmissiveColor(gltfMaterial.Emissive);
-            SetEmissiveTexture(gltfMaterial.emissiveTexture, gltf);
+            SetEmissiveTexture(gltfMaterial.EmissiveTexture, gltf);
 
             SetAlphaMode(gltfMaterial.GetAlphaMode(), gltfMaterial.alphaCutoff);
             SetDoubleSided(gltfMaterial.doubleSided);
@@ -79,7 +79,7 @@ namespace DCL.GLTFast.Wrappers
         }
 
         // This step is important if we want to keep the functionality of skin and hair colouring
-        private void SetMaterialName(int materialIndex, GLTFastMaterial gltfMaterial)
+        private void SetMaterialName(MaterialBase gltfMaterial)
         {
             material.name = "material";
 
@@ -93,8 +93,6 @@ namespace DCL.GLTFast.Wrappers
                 if (originalName.Contains("hair"))
                     material.name += "_hair";
             }
-
-            material.name += $"_{materialIndex}";
         }
 
         private void SetEmissiveColor(Color gltfMaterialEmissive)
@@ -107,7 +105,7 @@ namespace DCL.GLTFast.Wrappers
             }
         }
 
-        private void SetEmissiveTexture(TextureInfo emissiveTexture, IGltfReadable gltf)
+        private void SetEmissiveTexture(TextureInfoBase emissiveTexture, IGltfReadable gltf)
         {
             if (TrySetTexture(
                     emissiveTexture,
@@ -124,7 +122,7 @@ namespace DCL.GLTFast.Wrappers
             }
         }
 
-        private void SetOcclusionTexture(OcclusionTextureInfo occlusionTexture, IGltfReadable gltf)
+        private void SetOcclusionTexture(OcclusionTextureInfoBase occlusionTexture, IGltfReadable gltf)
         {
             if (TrySetTexture(
                     occlusionTexture,
@@ -141,7 +139,7 @@ namespace DCL.GLTFast.Wrappers
             }
         }
 
-        private void SetBumpMapTexture(NormalTextureInfo textureInfo, IGltfReadable gltf)
+        private void SetBumpMapTexture(NormalTextureInfoBase textureInfo, IGltfReadable gltf)
         {
             if (TrySetTexture(
                     textureInfo,
@@ -159,7 +157,7 @@ namespace DCL.GLTFast.Wrappers
             }
         }
 
-        private void SetMetallicRoughnessTexture(IGltfReadable gltf, TextureInfo textureInfo, float roughnessFactor)
+        private void SetMetallicRoughnessTexture(IGltfReadable gltf, TextureInfoBase textureInfo, float roughnessFactor)
         {
             if (TrySetTexture(
                     textureInfo,
@@ -204,7 +202,7 @@ namespace DCL.GLTFast.Wrappers
             }
         }
 
-        private void SetBaseMapTexture(TextureInfo textureInfo, IGltfReadable gltf)
+        private void SetBaseMapTexture(TextureInfoBase textureInfo, IGltfReadable gltf)
         {
             TrySetTexture(
                 textureInfo,

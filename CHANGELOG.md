@@ -1,3 +1,6 @@
+#1.1.7
+- Updated gltfast to 6.16.1
+
 #1.1.5
 - Updated gltfast to 5.0.0
 
