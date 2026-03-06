@@ -49,6 +49,7 @@ namespace DCL.Shaders
         public const string KEYWORD_SPECULAR_HIGHLIGHTS_OFF = "_SPECULARHIGHLIGHTS_OFF";
         public const string KEYWORD_VERTEX_COLOR_ON = "VERTEX_COLOR_ON";
         public const string KEYWORD_ENV_REFLECTIONS_OFF = "_ENVIRONMENTREFLECTIONS_OFF";
+        private const string KEYWORD_GPU_INSTANCER_BATCHER = "_GPU_INSTANCER_BATCHER";
 
         //Lit properties
         public static readonly int AlphaTexture = Shader.PropertyToID("_AlphaTexture");
