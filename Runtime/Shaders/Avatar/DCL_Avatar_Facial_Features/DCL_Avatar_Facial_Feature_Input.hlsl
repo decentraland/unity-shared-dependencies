@@ -18,6 +18,8 @@ CBUFFER_START(UnityPerMaterial)
     float _EndFadeDistance;
     float _StartFadeDistance;
     float _FadeDistance;
+    float4 _RevealPosition;
+    float _RevealEnabled;
 CBUFFER_END
 
 #ifdef UNITY_DOTS_INSTANCING_ENABLED
@@ -34,6 +36,8 @@ CBUFFER_END
         UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
         UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
         UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
+        UNITY_DOTS_INSTANCED_PROP(float4, _RevealPosition)
+        UNITY_DOTS_INSTANCED_PROP(float, _RevealEnabled)
     UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
 
     static float4 unity_DOTS_Sampled_BaseColor;
@@ -48,6 +52,8 @@ CBUFFER_END
     static float unity_DOTS_Sampled_EndFadeDistance;
     static float unity_DOTS_Sampled_StartFadeDistance;
     static float unity_DOTS_Sampled_FadeDistance;
+    static float4 unity_DOTS_Sampled_RevealPosition;
+    static float unity_DOTS_Sampled_RevealEnabled;
 
     void SetupDOTSFacialFeaturesMaterialPropertyCaches()
     {
@@ -63,6 +69,8 @@ CBUFFER_END
         unity_DOTS_Sampled_EndFadeDistance          = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance);
         unity_DOTS_Sampled_StartFadeDistance        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance);
         unity_DOTS_Sampled_FadeDistance             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance);
+        unity_DOTS_Sampled_RevealPosition           = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _RevealPosition);
+        unity_DOTS_Sampled_RevealEnabled            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _RevealEnabled);
     }
 
     #undef UNITY_SETUP_DOTS_MATERIAL_PROPERTY_CACHES
@@ -80,6 +88,8 @@ CBUFFER_END
     #define _EndFadeDistance        unity_DOTS_Sampled_EndFadeDistance
     #define _StartFadeDistance      unity_DOTS_Sampled_StartFadeDistance
     #define _FadeDistance           unity_DOTS_Sampled_FadeDistance
+    #define _RevealPosition         unity_DOTS_Sampled_RevealPosition
+    #define _RevealEnabled          unity_DOTS_Sampled_RevealEnabled
 #endif
 
 #ifdef _DCL_TEXTURE_ARRAYS

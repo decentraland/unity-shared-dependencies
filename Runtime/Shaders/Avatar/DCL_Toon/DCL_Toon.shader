@@ -18,6 +18,8 @@ Shader "DCL/DCL_Toon"
         [HideInInspector] [PerRendererData] _EndFadeDistance ("EndFadeDistance", Float) = 0
         [HideInInspector] [PerRendererData] _StartFadeDistance ("StartFadeDistance", Float) = 0
         [HideInInspector] [PerRendererData] _FadeDistance ("FadeDistance", Float) = 1
+        [HideInInspector] [PerRendererData] _RevealPosition ("Reveal line Y (object); above = clip)", Vector) = (0, 0, 0, 0)
+        [HideInInspector] [PerRendererData] _RevealEnabled ("Enable reveal clipping", Float) = 0
         
         [HideInInspector] _MainTexArr ("Main Texture Array", 2DArray) = "white" {}
         [HideInInspector] _NormalMapArr ("Normal Texture Array", 2DArray) = "bump" {}

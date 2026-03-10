@@ -19,6 +19,8 @@ float4 _Emissive_Color;
 float _EndFadeDistance;
 float _StartFadeDistance;
 float _FadeDistance;
+float4 _RevealPosition;
+float _RevealEnabled;
 float _Clipping_Level;
 float _Tweak_transparency;
 int _MainTexArr_ID; 
@@ -59,6 +61,8 @@ UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
+    UNITY_DOTS_INSTANCED_PROP(float4, _RevealPosition)
+    UNITY_DOTS_INSTANCED_PROP(float, _RevealEnabled)
 UNITY_DOTS_INSTANCING_END(UserPropertyMetadata)
 
 // Here, we want to avoid overriding a property like e.g. _BaseColor with something like this:
@@ -82,6 +86,8 @@ static float4 unity_DOTS_Sampled_Emissive_Color;
 static float unity_DOTS_Sampled_EndFadeDistance;
 static float unity_DOTS_Sampled_StartFadeDistance;
 static float unity_DOTS_Sampled_FadeDistance;
+static float4 unity_DOTS_Sampled_RevealPosition;
+static float unity_DOTS_Sampled_RevealEnabled;
 static float unity_DOTS_Sampled_Clipping_Level;
 static float unity_DOTS_Sampled_Tweak_transparency;
 static int unity_DOTS_Sampled_MainTexArr_ID;
@@ -106,6 +112,8 @@ void SetupDOTSToonMaterialPropertyCaches()
     unity_DOTS_Sampled_EndFadeDistance 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance); 
     unity_DOTS_Sampled_StartFadeDistance 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance); 
     unity_DOTS_Sampled_FadeDistance 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance); 
+    unity_DOTS_Sampled_RevealPosition 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _RevealPosition);
+    unity_DOTS_Sampled_RevealEnabled 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _RevealEnabled);
     unity_DOTS_Sampled_Clipping_Level 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Clipping_Level); 
     unity_DOTS_Sampled_Tweak_transparency 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency); 
     unity_DOTS_Sampled_MainTexArr_ID 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID); 
@@ -131,6 +139,8 @@ void SetupDOTSToonMaterialPropertyCaches()
 #define _EndFadeDistance                    unity_DOTS_Sampled_EndFadeDistance
 #define _StartFadeDistance                  unity_DOTS_Sampled_StartFadeDistance
 #define _FadeDistance                       unity_DOTS_Sampled_FadeDistance
+#define _RevealPosition                     unity_DOTS_Sampled_RevealPosition
+#define _RevealEnabled                      unity_DOTS_Sampled_RevealEnabled
 #define _Clipping_Level                     unity_DOTS_Sampled_Clipping_Level
 #define _Tweak_transparency                 unity_DOTS_Sampled_Tweak_transparency
 #define _MainTexArr_ID                      unity_DOTS_Sampled_MainTexArr_ID
