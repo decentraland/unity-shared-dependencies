@@ -264,9 +264,12 @@ void LitPassFragmentSimple(
 
     Dithering(_FadeDistance, input.positionCS, _EndFadeDistance, _StartFadeDistance);
 
-    float3 positionOS = mul(GetWorldToObjectMatrix(), float4(input.positionWS, 1.0)).xyz;
-    if (_RevealEnabled > 0.5 && positionOS.y > _RevealPosition.y)
-        clip(-1);
+    if (_RevealEnabled > 0.5)
+    {
+        float3 positionOS = mul(GetWorldToObjectMatrix(), float4(input.positionWS, 1.0)).xyz;
+        if (positionOS.y > _RevealPosition.y)
+            clip(-1);
+    }
 
     SurfaceData surfaceData;
     InitializeSimpleLitSurfaceData(input.uv, surfaceData);
