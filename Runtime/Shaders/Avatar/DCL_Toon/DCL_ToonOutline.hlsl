@@ -30,6 +30,7 @@ struct VertexOutput
     float3 tangentDir : TEXCOORD2;
     float3 bitangentDir : TEXCOORD3;
     float4 positionCS : TEXCOORD4;
+    float3 positionWS : TEXCOORD5;
 
     UNITY_VERTEX_OUTPUT_STEREO
 };
@@ -100,6 +101,7 @@ VertexOutput vert (VertexInput v)
     //v.2.0.7.5
     o.pos.z = o.pos.z + fOffset_Z * _ClipCameraPos.z;
     o.positionCS = TransformWorldToHClip(positionWS);
+    o.positionWS = positionWS;
     return o;
 }
 
@@ -108,6 +110,9 @@ float4 frag(VertexOutput i) : SV_Target
     UNITY_SETUP_INSTANCE_ID(i);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
     Dithering(_FadeDistance, i.positionCS, _StartFadeDistance, _StartFadeDistance);
+    float3 positionOS = mul(GetWorldToObjectMatrix(), float4(i.positionWS, 1.0)).xyz;
+    if (_RevealEnabled > 0.5 && positionOS.y > _RevealPosition.y)
+        clip(-1);
     //v.2.0.5
     // if (_ZOverDrawMode > 0.99f)
     // {
