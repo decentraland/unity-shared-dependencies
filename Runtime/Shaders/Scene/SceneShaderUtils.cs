@@ -29,6 +29,7 @@ namespace DCL.Shaders
             ShaderUtils.FOG_EXP,
             ShaderUtils.FOG_EXP2,
             ShaderUtils.FOG_LINEAR,
+            ShaderUtils.KEYWORD_GPU_INSTANCER_BATCHER,
         };
     }
 }
