@@ -16,26 +16,25 @@ namespace DCL.GLTFast.Wrappers
         // Historically we have no data on why we have this intensity
         private const float EMISSIVE_HDR_INTENSITY = 5f;
 
-        private const string LIT_SHADER = "DCL/Universal Render Pipeline/Lit";
-        private readonly Shader _shader;
-        private readonly bool _preserveMaxAlpha;
+        private readonly Shader shader;
+        private readonly bool preserveMaxAlpha;
 
         private Material material;
 
-        public DecentralandMaterialGenerator(bool preserveMaxAlpha = false)
+        public DecentralandMaterialGenerator(string shaderName, bool preserveMaxAlpha = false)
         {
-            _preserveMaxAlpha = preserveMaxAlpha;
-            _shader = Shader.Find(LIT_SHADER);
+            this.preserveMaxAlpha = preserveMaxAlpha;
+            shader = Shader.Find(shaderName);
         }
 
-        protected override Material GenerateDefaultMaterial(bool pointsSupport = false) => new (_shader);
+        protected override Material GenerateDefaultMaterial(bool pointsSupport = false) => new (shader);
 
         /// <summary>
         /// Here we convert a GLTFMaterial into our Material using our shaders
         /// </summary>
         public override Material GenerateMaterial(int materialIndex, GLTFastMaterial gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
         {
-            material = new Material(_shader);
+            material = new Material(shader);
 
             SetMaterialName(materialIndex, gltfMaterial);
 
@@ -249,7 +248,7 @@ namespace DCL.GLTFast.Wrappers
                     if (material.HasProperty(ShaderUtils.Cutoff))
                         material.SetFloat(ShaderUtils.Cutoff, alphaCutoff);
 
-                    if (_preserveMaxAlpha)
+                    if (preserveMaxAlpha)
                     {
                         material.SetInt(ShaderUtils.SrcBlendAlpha, (int)BlendMode.One);
                         material.SetInt(ShaderUtils.DstBlendAlpha, (int)BlendMode.One);
@@ -269,7 +268,7 @@ namespace DCL.GLTFast.Wrappers
                     material.renderQueue = (int)RenderQueue.Transparent;
                     material.SetFloat(ShaderUtils.Cutoff, 0);
 
-                    if (_preserveMaxAlpha)
+                    if (preserveMaxAlpha)
                     {
                         material.SetInt(ShaderUtils.SrcBlendAlpha, (int)BlendMode.One);
                         material.SetInt(ShaderUtils.DstBlendAlpha, (int)BlendMode.One);
