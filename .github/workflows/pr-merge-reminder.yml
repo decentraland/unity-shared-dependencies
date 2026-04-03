@@ -1,0 +1,30 @@
+name: PR Merge Alignment Reminder
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  add-reminder-comment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add merge alignment reminder
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              '## 🔗 Merge Alignment Reminder',
+              '',
+              'If this PR targets `main`, please make sure the corresponding changes in **[unity-explorer](https://github.com/decentraland/unity-explorer/)** are also ready to merge.',
+              '',
+              'Both repos should be merged in coordination to avoid breaking changes. **Do not merge one without the other being ready.**',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
