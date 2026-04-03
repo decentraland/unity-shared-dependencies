@@ -6,7 +6,7 @@ on:
 
 jobs:
   reminder:
-    uses: decentraland/actions/.github/workflows/pr-comment-reminder.yml@fix/pr-comment-reminder
+    uses: decentraland/actions/.github/workflows/pr-comment-reminder.yml@main
     with:
       message: |
         ## 🔗 Merge Alignment Reminder
