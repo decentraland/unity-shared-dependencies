@@ -1,7 +1,9 @@
 ﻿using GLTFast;
 using GLTFast.Materials;
+using GLTFast.Schema;
 using System;
 using UnityEngine;
+using Material = UnityEngine.Material;
 
 namespace DCL.GLTFast.Wrappers
 {
@@ -13,28 +15,26 @@ namespace DCL.GLTFast.Wrappers
     {
         private const float CUSTOM_EMISSIVE_FACTOR = 5f;
 
-        public override Material GenerateMaterial(int materialIndex, global::GLTFast.Schema.Material gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
+        public override Material GenerateMaterial(MaterialBase gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
         {
-            Material generatedMaterial = base.GenerateMaterial(materialIndex, gltfMaterial, gltf);
+            Material generatedMaterial = base.GenerateMaterial(gltfMaterial, gltf, pointsSupport);
 
-            SetMaterialName(generatedMaterial, materialIndex, gltfMaterial);
+            SetMaterialName(generatedMaterial, gltfMaterial);
 
-            if (gltfMaterial.Emissive != Color.black) { generatedMaterial.SetColor(EmissiveFactorProperty, gltfMaterial.Emissive * CUSTOM_EMISSIVE_FACTOR); }
+            if (gltfMaterial.Emissive != Color.black) { generatedMaterial.SetColor(MaterialProperty.EmissiveFactor, gltfMaterial.Emissive * CUSTOM_EMISSIVE_FACTOR); }
 
             return generatedMaterial;
 
             // This step is important if we want to keep the functionality of skin and hair colouring
-            void SetMaterialName(Material material, int materialIndex, global::GLTFast.Schema.Material gltfMaterial)
+            void SetMaterialName(Material material, MaterialBase materialBase)
             {
                 material.name = "material";
 
-                if (gltfMaterial.name.Contains("skin", StringComparison.InvariantCultureIgnoreCase))
+                if (materialBase.name.Contains("skin", StringComparison.InvariantCultureIgnoreCase))
                     material.name += "_skin";
 
-                if (gltfMaterial.name.Contains("hair", StringComparison.InvariantCultureIgnoreCase))
+                if (materialBase.name.Contains("hair", StringComparison.InvariantCultureIgnoreCase))
                     material.name += "_hair";
-
-                material.name += $"_{materialIndex}";
             }
         }
     }
