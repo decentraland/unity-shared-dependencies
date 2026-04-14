@@ -475,5 +475,11 @@ float4 frag(VertexOutput i, half facing : VFACE) : SV_TARGET
     UNITY_SETUP_INSTANCE_ID(i);
     UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
     Dithering(_FadeDistance, i.positionCS, _EndFadeDistance, _StartFadeDistance);
+    if (_RevealEnabled > 0.5)
+    {
+        float3 positionOS = mul(GetWorldToObjectMatrix(), float4(i.posWorld.xyz, 1.0)).xyz;
+        if (positionOS.y > _RevealPosition.y)
+            clip(-1);
+    }
     return fragDoubleShadeFeather(i, facing);
 }
