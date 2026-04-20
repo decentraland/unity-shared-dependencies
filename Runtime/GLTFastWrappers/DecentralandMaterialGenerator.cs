@@ -112,8 +112,8 @@ namespace DCL.GLTFast.Wrappers
                     material,
                     gltf,
                     ShaderUtils.EmissionMap,
-                    ShaderUtils.EmissionMapRotation,
                     ShaderUtils.EmissionMapScaleTransform,
+                    ShaderUtils.EmissionMapRotation,
                     ShaderUtils.EmissionMapUVChannel
                 ))
             {
@@ -129,8 +129,8 @@ namespace DCL.GLTFast.Wrappers
                     material,
                     gltf,
                     ShaderUtils.OcclusionMap,
-                    ShaderUtils.OcclusionMapRotation,
                     ShaderUtils.OcclusionMapScaleTransform,
+                    ShaderUtils.OcclusionMapRotation,
                     ShaderUtils.OcclusionMapUVChannel
                 ))
             {
@@ -209,8 +209,8 @@ namespace DCL.GLTFast.Wrappers
                 material,
                 gltf,
                 ShaderUtils.BaseMap,
-                ShaderUtils.BaseMapRotation,
                 ShaderUtils.BaseMapScaleTransform,
+                ShaderUtils.BaseMapRotation,
                 ShaderUtils.BaseMapUVs
             );
         }
