@@ -1,3 +1,6 @@
+#1.1.8
+- Reverted gltfast version to 5.0.0
+
 #1.1.7
 - Updated gltfast to 6.16.1
 
