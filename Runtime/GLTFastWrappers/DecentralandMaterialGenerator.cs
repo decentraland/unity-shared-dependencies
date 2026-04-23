@@ -32,9 +32,6 @@ namespace DCL.GLTFast.Wrappers
         /// <summary>
         /// Here we convert a GLTFMaterial into our Material using our shaders
         /// </summary>
-        /// <param name="gltfMaterial"></param>
-        /// <param name="gltf"></param>
-        /// <returns></returns>
         public override Material GenerateMaterial(int materialIndex, GLTFastMaterial gltfMaterial, IGltfReadable gltf, bool pointsSupport = false)
         {
             material = new Material(shader);
