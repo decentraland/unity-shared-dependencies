@@ -15,6 +15,7 @@ CBUFFER_START(UnityPerMaterial)
     int _lastAvatarVertCount;
     int _MainTexArr_ID;
     int _MaskTexArr_ID;
+    int _ExpressionIndex;
     float _EndFadeDistance;
     float _StartFadeDistance;
     float _FadeDistance;
@@ -33,6 +34,7 @@ CBUFFER_END
         UNITY_DOTS_INSTANCED_PROP(int, _lastAvatarVertCount)
         UNITY_DOTS_INSTANCED_PROP(int, _MainTexArr_ID)
         UNITY_DOTS_INSTANCED_PROP(int, _MaskTexArr_ID)
+        UNITY_DOTS_INSTANCED_PROP(int, _ExpressionIndex)
         UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
         UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
         UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
@@ -49,6 +51,7 @@ CBUFFER_END
     static int unity_DOTS_Sampled_lastAvatarVertCount;
     static int unity_DOTS_Sampled_MainTexArr_ID;
     static int unity_DOTS_Sampled_MaskTexArr_ID;
+    static int unity_DOTS_Sampled_ExpressionIndex;
     static float unity_DOTS_Sampled_EndFadeDistance;
     static float unity_DOTS_Sampled_StartFadeDistance;
     static float unity_DOTS_Sampled_FadeDistance;
@@ -66,6 +69,7 @@ CBUFFER_END
         unity_DOTS_Sampled_lastAvatarVertCount      = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount);
         unity_DOTS_Sampled_MainTexArr_ID            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID);
         unity_DOTS_Sampled_MaskTexArr_ID            = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MaskTexArr_ID);
+        unity_DOTS_Sampled_ExpressionIndex          = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _ExpressionIndex);
         unity_DOTS_Sampled_EndFadeDistance          = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance);
         unity_DOTS_Sampled_StartFadeDistance        = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance);
         unity_DOTS_Sampled_FadeDistance             = UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance);
@@ -85,6 +89,7 @@ CBUFFER_END
     #define _lastAvatarVertCount    unity_DOTS_Sampled_lastAvatarVertCount
     #define _MainTexArr_ID          unity_DOTS_Sampled_MainTexArr_ID
     #define _MaskTexArr_ID          unity_DOTS_Sampled_MaskTexArr_ID
+    #define _ExpressionIndex        unity_DOTS_Sampled_ExpressionIndex
     #define _EndFadeDistance        unity_DOTS_Sampled_EndFadeDistance
     #define _StartFadeDistance      unity_DOTS_Sampled_StartFadeDistance
     #define _FadeDistance           unity_DOTS_Sampled_FadeDistance
@@ -112,6 +117,19 @@ CBUFFER_END
 
 TEXTURE2D(_SpecGlossMap);       SAMPLER(sampler_SpecGlossMap);
 
+// Slices the wearable's facial-expression atlas (4x4 cells) by remapping uv into the
+// active cell. _ExpressionIndex < 0 disables slicing so non-atlas wearables sample
+// the full [0,1] base map untouched.
+float2 RemapExpressionUV(float2 uv)
+{
+    if (_ExpressionIndex < 0) return uv;
+    int cellX = _ExpressionIndex & 3;
+    int cellY = _ExpressionIndex >> 2;
+    // Atlas row 0 sits at the top of the image; flip Y so index 0 = top-left.
+    int cellYFlipped = 3 - cellY;
+    return (uv + float2(cellX, cellYFlipped)) * 0.25;
+}
+
 half4 SampleSpecularSmoothness(float2 uv, half alpha, half4 specColor, TEXTURE2D_PARAM(specMap, sampler_specMap))
 {
     half4 specularSmoothness = half4(0, 0, 0, 1);
@@ -131,14 +149,16 @@ half4 SampleSpecularSmoothness(float2 uv, half alpha, half4 specColor, TEXTURE2D
 half4 SampleAlbedoAlpha(float2 uv)
 {
     int nMainTexArrID = _MainTexArr_ID;
-    float4 _MainTex_var = SAMPLE_MAINTEX(uv,nMainTexArrID);
+    float2 atlasUV = RemapExpressionUV(uv);
+    float4 _MainTex_var = SAMPLE_MAINTEX(atlasUV, nMainTexArrID);
     return _MainTex_var;
 }
 
 half4 SampleMaskMap(float2 uv)
 {
     int nMaskTexArrID = _MaskTexArr_ID;
-    half4 maskColour = half4(SAMPLE_MASKTEX(uv, nMaskTexArrID));
+    float2 atlasUV = RemapExpressionUV(uv);
+    half4 maskColour = half4(SAMPLE_MASKTEX(atlasUV, nMaskTexArrID));
     half4 invertedColour = half4(half3(1.0, 1.0, 1.0) - maskColour.rgb, 1.0 - maskColour.r);
     return invertedColour;
 }

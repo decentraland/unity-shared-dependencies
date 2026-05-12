@@ -6,6 +6,7 @@ Shader "DCL/DCL_Avatar_Facial_Features"
     {
         [HideInInspector] [PerRendererData] _MainTexArr_ID ("MainTex Array ID", Integer) = -1
         [HideInInspector] [PerRendererData] _MaskTexArr_ID ("MaskTex Array ID", Integer) = -1
+        [HideInInspector] [PerRendererData] _ExpressionIndex ("Expression Index (-1 disabled, 0..15 cell)", Integer) = -1
         
         [MainTexture] _BaseMap("Base Map (RGB) Smoothness / Alpha (A)", 2D) = "white" {}
         [MainColor]   _BaseColor("Base Color", Color) = (1, 1, 1, 1)
