@@ -417,10 +417,10 @@ half DirectBRDFSpecular(BRDFData brdfData, half3 normalWS, half3 lightDirectionW
     // On platforms where half actually means something, the denominator has a risk of overflow
     // clamp below was added specifically to "fix" that, but dx compiler (we convert bytecode to metal/gles)
     // sees that specularTerm have only non-negative terms, so it skips max(0,..) in clamp (leaving only min(100,...))
-    // Apply unconditionally: on full-float platforms (DX11/DX12) half is promoted to float32 and the clamp is a no-op;
-    // on true FP16 platforms (mobile, Switch, Vulkan, OpenGL Core on Linux/Mac) it prevents overflow.
+#if !defined(SHADER_API_D3D11) && !defined(SHADER_API_D3D12)
     specularTerm = specularTerm - HALF_MIN;
-    specularTerm = clamp(specularTerm, 0.0, 100.0); // Prevent FP16 overflow on mobile, Switch, Vulkan, GLCORE and other half-precision platforms
+    specularTerm = clamp(specularTerm, 0.0, 100.0);
+#endif
 
 return specularTerm;
 }
