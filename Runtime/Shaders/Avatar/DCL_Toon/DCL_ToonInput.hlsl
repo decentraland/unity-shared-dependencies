@@ -28,6 +28,7 @@ int _NormalMapArr_ID;
 int _MatCap_SamplerArr_ID; 
 int _Emissive_TexArr_ID; 
 int _MetallicGlossMapArr_ID;
+int _IsStylizedMetallic;
 int _lastWearableVertCount;
 int _lastAvatarVertCount;
 CBUFFER_END
@@ -58,6 +59,7 @@ UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(int, _MatCap_SamplerArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _Emissive_TexArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _MetallicGlossMapArr_ID)
+    UNITY_DOTS_INSTANCED_PROP(int, _IsStylizedMetallic)
     UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
@@ -95,7 +97,8 @@ static int unity_DOTS_Sampled_NormalMapArr_ID;
 static int unity_DOTS_Sampled_MatCap_SamplerArr_ID;
 static int unity_DOTS_Sampled_Emissive_TexArr_ID;
 static int unity_DOTS_Sampled_MetallicGlossMapArr_ID;
-static int unity_DOTS_Sampled_lastWearableVertCount; 
+static int unity_DOTS_Sampled_IsStylizedMetallic;
+static int unity_DOTS_Sampled_lastWearableVertCount;
 static int unity_DOTS_Sampled_lastAvatarVertCount;
 
 
@@ -120,8 +123,9 @@ void SetupDOTSToonMaterialPropertyCaches()
     unity_DOTS_Sampled_NormalMapArr_ID 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _NormalMapArr_ID); 
     unity_DOTS_Sampled_MatCap_SamplerArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MatCap_SamplerArr_ID); 
     unity_DOTS_Sampled_Emissive_TexArr_ID 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _Emissive_TexArr_ID); 
-    unity_DOTS_Sampled_MetallicGlossMapArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID); 
-    unity_DOTS_Sampled_lastWearableVertCount 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount); 
+    unity_DOTS_Sampled_MetallicGlossMapArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID);
+    unity_DOTS_Sampled_IsStylizedMetallic 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _IsStylizedMetallic);
+    unity_DOTS_Sampled_lastWearableVertCount 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount);
     unity_DOTS_Sampled_lastAvatarVertCount 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount); 
 }
 
@@ -148,7 +152,8 @@ void SetupDOTSToonMaterialPropertyCaches()
 #define _MatCap_SamplerArr_ID               unity_DOTS_Sampled_MatCap_SamplerArr_ID
 #define _Emissive_TexArr_ID                 unity_DOTS_Sampled_Emissive_TexArr_ID
 #define _MetallicGlossMapArr_ID             unity_DOTS_Sampled_MetallicGlossMapArr_ID
-#define _lastWearableVertCount              unity_DOTS_Sampled_lastWearableVertCount 
+#define _IsStylizedMetallic                 unity_DOTS_Sampled_IsStylizedMetallic
+#define _lastWearableVertCount              unity_DOTS_Sampled_lastWearableVertCount
 #define _lastAvatarVertCount                unity_DOTS_Sampled_lastAvatarVertCount
 #endif
 
@@ -174,9 +179,8 @@ void SetupDOTSToonMaterialPropertyCaches()
     #define SAMPLE_BUMPMAP(uv,texArrayID)                       DCL_SAMPLE_TEX2DARRAY(_BumpMapArr, float3(uv, texArrayID))
     #define SAMPLE_EMISSIONMAP(uv,texArrayID)                   DCL_SAMPLE_TEX2DARRAY(_EmissionMapArr, float3(uv, texArrayID))
     #define SAMPLE_MAINTEX(uv,texArrayID)                       DCL_SAMPLE_TEX2DARRAY_DEFAULT_SAMPLER(_MainTexArr, float3(uv, texArrayID))
-    #define SAMPLE_NORMALMAP(uv,texArrayID)                     float4(0.5f, 0.5f, 1.0f, 1.0f)
-    // #define SAMPLE_MATCAP(uv,texArrayID,lod)                    DCL_SAMPLE_TEX2DARRAY_LOD(_MatCap_SamplerArr, float3(uv, texArrayID), lod)
-    #define SAMPLE_MATCAP(uv,texArrayID,lod)                    float4(0.0f, 0.0f, 0.0f, 0.0f)
+    #define SAMPLE_NORMALMAP(uv,texArrayID)                     DCL_SAMPLE_TEX2DARRAY_DEFAULT_SAMPLER(_NormalMapArr, float3(uv, texArrayID))
+    #define SAMPLE_MATCAP(uv,texArrayID,lod)                    DCL_SAMPLE_TEX2DARRAY_LOD(_MatCap_SamplerArr, float3(uv, texArrayID), lod)
     #define SAMPLE_EMISSIVE(uv,texArrayID)                      DCL_SAMPLE_TEX2DARRAY(_Emissive_TexArr, float3(uv, texArrayID))
     #define SAMPLE_OCCLUSIONMAP(uv,texArrayID)                  DCL_SAMPLE_TEX2DARRAY(_OcclusionMapArr, float3(uv, texArrayID))
     #define SAMPLE_METALLICGLOSS(uv,texArrayID)                 DCL_SAMPLE_TEX2DARRAY(_MetallicGlossMapArr, float3(uv, texArrayID))
@@ -184,7 +188,7 @@ void SetupDOTSToonMaterialPropertyCaches()
     TEXTURE2D(_BaseMap);                SAMPLER(sampler_BaseMap);
     TEXTURE2D(_BumpMap);                SAMPLER(sampler_BumpMap);
     TEXTURE2D(_MainTex);                SAMPLER(sampler_MainTex);
-    TEXTURE2D(_NormalMap);
+    TEXTURE2D(_NormalMap);              SAMPLER(sampler_NormalMap);
     TEXTURE2D(_MetallicGlossMap);       SAMPLER(sampler_MetallicGlossMap);
 
     sampler2D _MatCap_Sampler;
@@ -194,7 +198,7 @@ void SetupDOTSToonMaterialPropertyCaches()
     #define SAMPLE_BUMPMAP(uv,texArrayID)                   SAMPLE_TEXTURE2D(_BumpMap,                  sampler_BumpMap, uv)
     #define SAMPLE_EMISSIONMAP(uv,texArrayID)               float4(0.0f, 0.0f, 0.0f, 0.0f)
     #define SAMPLE_MAINTEX(uv,texArrayID)                   SAMPLE_TEXTURE2D(_MainTex,                  sampler_MainTex, uv)
-    #define SAMPLE_NORMALMAP(uv,texArrayID)                 SAMPLE_TEXTURE2D(_NormalMap,                sampler_MainTex, uv)
+    #define SAMPLE_NORMALMAP(uv,texArrayID)                 SAMPLE_TEXTURE2D(_NormalMap,                sampler_NormalMap, uv)
     #define SAMPLE_OCCLUSIONMAP(uv,texArrayID)              float4(0.0f, 0.0f, 0.0f, 0.0f)
     #define SAMPLE_METALLICGLOSS(uv,texArrayID)             SAMPLE_TEXTURE2D(_MetallicGlossMap,         sampler_MetallicGlossMap, uv)
     #define SAMPLE_MATCAP(uv,texArrayID,lod)                tex2Dlod(_MatCap_Sampler,           float4(uv, 0.0f, lod))

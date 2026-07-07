@@ -8,10 +8,19 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
     float3x3 tangentTransform = float3x3( i.tangentDir, i.bitangentDir, i.normalDir);
     
     int nNormalMapArrID = _NormalMapArr_ID;
-    float3 _NormalMap_var = UnpackNormalScale(SAMPLE_NORMALMAP(TRANSFORM_TEX(Set_UV0, _NormalMap), nNormalMapArrID), _BumpScale);
-
-    float3 normalLocal = _NormalMap_var.rgb;
-    float3 normalDirection = normalize(mul( normalLocal, tangentTransform )); // Perturbed normals
+    float3 normalDirection;
+    // Uniform branch (per-material ID): materials without a normal map fall back to the
+    // geometric normal instead of sampling an invalid (-1) array slice.
+    if (nNormalMapArrID < 0)
+    {
+        normalDirection = i.normalDir;
+    }
+    else
+    {
+        float3 _NormalMap_var = UnpackNormalScale(SAMPLE_NORMALMAP(TRANSFORM_TEX(Set_UV0, _NormalMap), nNormalMapArrID), _BumpScale);
+        float3 normalLocal = _NormalMap_var.rgb;
+        normalDirection = normalize(mul( normalLocal, tangentTransform )); // Perturbed normals
+    }
 
 
     // todo. not necessary to calc gi factor in  shadowcaster pass.
@@ -182,8 +191,11 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
     half _Camera_Dir = _Camera_Right.y < 0 ? -1 : 1;
     float _Rot_MatCapUV_var_ang = (fRotate_MatCapUV*3.141592654) - _Camera_Dir*_Camera_Roll*_CameraRolling_Stabilizer;
     float2 _Rot_MatCapNmUV_var = RotateUV(Set_UV0, (_Rotate_NormalMapForMatCapUV*3.141592654), float2(0.5, 0.5), 1.0);
-    // MatCap with camera skew correction
-    float3 viewNormal = (mul(UNITY_MATRIX_V, float4(i.normalDir,0))).rgb;
+    // MatCap with camera skew correction.
+    // Use the normal-mapped world normal (normalDirection) so the matcap sheen catches normal-map
+    // detail. Falls back to the geometric normal automatically when no normal map is set, because
+    // normalDirection == i.normalDir in that case (see the _NormalMapArr_ID guard at the top).
+    float3 viewNormal = (mul(UNITY_MATRIX_V, float4(normalDirection,0))).rgb;
     //float3 viewNormal = (mul(UNITY_MATRIX_V, float4(lerp( i.normalDir, mul( _NormalMapForMatCap_var.rgb, tangentTransform ).rgb, _Is_NormalMapForMatCap ),0))).rgb;
     float3 NormalBlend_MatcapUV_Detail = viewNormal.rgb * float3(-1,-1,1);
     float3 NormalBlend_MatcapUV_Base = (mul( UNITY_MATRIX_V, float4(viewDirection,0) ).rgb*float3(-1,-1,1)) + float3(0,0,1);
@@ -201,23 +213,48 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
         _Rot_MatCapUV_var = _Rot_MatCapUV_var;
     }
 
-    int nMatCap_SamplerArrID = _MatCap_SamplerArr_ID;
-    float4 _MatCap_Sampler_var = SAMPLE_MATCAP(TRANSFORM_TEX(_Rot_MatCapUV_var, _MatCap_Sampler), nMatCap_SamplerArrID, _BlurLevelMatcap);
+    // The general UTS matcap feature is disabled (_MatCap == 0), so the base composition is RimLight.
+    float3 finalColor = _RimLight_var;// Final Composition before Emissive
 
-    // MatcapMask
-    float _Tweak_MatcapMaskLevel_var = 1.0f;//saturate(lerp(_Set_MatcapMask_var.g, (1.0 - _Set_MatcapMask_var.g), _Inverse_MatcapMask) + _Tweak_MatcapMaskLevel);
-    float3 _Is_LightColor_MatCap_var = lerp( (_MatCap_Sampler_var.rgb*_MatCapColor.rgb), ((_MatCap_Sampler_var.rgb*_MatCapColor.rgb)*Set_LightColor), _Is_LightColor_MatCap );
-    // ShadowMask on Matcap in Blend mode : multiply
-    float3 Set_MatCap = lerp( _Is_LightColor_MatCap_var, (_Is_LightColor_MatCap_var*((1.0 - Set_FinalShadowMask)+(Set_FinalShadowMask*_TweakMatCapOnShadow)) + lerp(Set_HighColor*Set_FinalShadowMask*(1.0-_TweakMatCapOnShadow), float3(0.0, 0.0, 0.0), _Is_BlendAddToMatCap)), _Is_UseTweakMatCapOnShadow );
+    // --- Stylized metallic (matcap-driven) ------------------------------------------------
+    // Uniform branch on per-material flags, so non-metallic materials pay no matcap fetch.
+    // Requires a matcap uploaded into _MatCap_SamplerArr; the optional _MetallicGlossMapArr
+    // slice acts as a per-pixel mask (r channel). No mask => fully metallic.
+    if (_IsStylizedMetallic > 0 && _MatCap_SamplerArr_ID >= 0)
+    {
+        int nMatCap_SamplerArrID = _MatCap_SamplerArr_ID;
+        float4 _MatCap_Sampler_var = SAMPLE_MATCAP(TRANSFORM_TEX(_Rot_MatCapUV_var, _MatCap_Sampler), nMatCap_SamplerArrID, _BlurLevelMatcap);
 
-    // Composition: RimLight and MatCap as finalColor
-    // Broke down finalColor composition
-    float3 matCapColorOnAddMode = _RimLight_var+Set_MatCap*_Tweak_MatcapMaskLevel_var;
-    float _Tweak_MatcapMaskLevel_var_MultiplyMode = _Tweak_MatcapMaskLevel_var * lerp (1.0, (1.0 - (Set_FinalShadowMask)*(1.0 - _TweakMatCapOnShadow)), _Is_UseTweakMatCapOnShadow);
-    float3 matCapColorOnMultiplyMode = Set_HighColor*(1-_Tweak_MatcapMaskLevel_var_MultiplyMode) + Set_HighColor*Set_MatCap*_Tweak_MatcapMaskLevel_var_MultiplyMode + lerp(float3(0,0,0),Set_RimLight,_RimLight);
-    float3 matCapColorFinal = lerp(matCapColorOnMultiplyMode, matCapColorOnAddMode, _Is_BlendAddToMatCap);
-    float3 finalColor = lerp(_RimLight_var, matCapColorFinal, _MatCap);// Final Composition before Emissive
-    // Matcap - End
+        // Mask = "where do we put the matcap". Sampled from the glTF metallic-roughness map, whose
+        // metallic channel is B (glTF packs occlusion=R, roughness=G, metallic=B). A uniform
+        // metallicFactor is baked into a flat mask on the C# side, so it flows through here too.
+        // _MetallicGlossMapArr_ID < 0 => no mask => fully metallic (metalAmt = 1).
+        int nMetalMaskID = _MetallicGlossMapArr_ID;
+        float metalAmt = (nMetalMaskID < 0) ? 1.0 : SAMPLE_METALLICGLOSS(uv_maintex, nMetalMaskID).b;
+
+        // Strength of the metallic effect (0 = none, 1 = full). Tune to taste.
+        const float _StylizedMetalStrength = 1.0;
+
+        // Matcap reflection, tinted by scene light colour.
+        float3 matcapRefl = _MatCap_Sampler_var.rgb * _MatCapColor.rgb * Set_LightColor;
+
+        // REPLACE (active): the matcap reflection BECOMES the surface where metalAmt = 1, so metal
+        // areas read as bright chrome/silver instead of a darkened base. lerp so the mask/strength
+        // fade cleanly back to the lit toon colour where there's no metal.
+        finalColor = lerp(finalColor, matcapRefl, saturate(metalAmt) * _StylizedMetalStrength);
+
+        // --- Alternative looks (swap the line above for ONE of these) --------------------------
+        // Colored metal (replace, but tint the reflection by the base colour so hue is kept — gold etc.):
+        //   finalColor = lerp(finalColor, matcapRefl * Set_FinalBaseColor, saturate(metalAmt) * _StylizedMetalStrength);
+        // Multiply (modulate base by matcap — subtle, can only darken, never full chrome):
+        //   finalColor *= lerp(float3(1.0, 1.0, 1.0), matcapRefl, saturate(metalAmt) * _StylizedMetalStrength);
+        // Additive sheen (layer the reflection on top instead of replacing):
+        //   finalColor += matcapRefl * saturate(metalAmt) * _StylizedMetalStrength;
+        // Screen blend (adds highlights with softer clipping than additive):
+        //   float3 sheen = saturate(matcapRefl * saturate(metalAmt) * _StylizedMetalStrength);
+        //   finalColor = 1.0 - (1.0 - finalColor) * (1.0 - sheen);
+    }
+    // --- Stylized metallic end ------------------------------------------------------------
 
     // GI_Intensity with Intensity Multiplier Filter
     float3 envLightColor = envColor.rgb;

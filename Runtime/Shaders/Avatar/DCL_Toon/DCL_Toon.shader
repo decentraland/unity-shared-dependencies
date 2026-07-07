@@ -11,6 +11,7 @@ Shader "DCL/DCL_Toon"
         [HideInInspector] [PerRendererData] _MatCap_SamplerArr_ID ("MatCap Array ID", Integer) = -1
         [HideInInspector] [PerRendererData] _Emissive_TexArr_ID ("Emissive Array ID", Integer) = -1
         [HideInInspector] [PerRendererData] _MetallicGlossMapArr_ID ("MetallicGlossMap Array ID", Integer) = -1
+        [HideInInspector] [PerRendererData] _IsStylizedMetallic ("Is Stylized Metallic (matcap)", Integer) = 0
 
         [HideInInspector] [PerRendererData] _lastWearableVertCount ("Last wearable Vert Count", Integer) = -1
         [HideInInspector] [PerRendererData] _lastAvatarVertCount ("Last avatar vert count", Integer) = -1
@@ -133,6 +134,9 @@ Shader "DCL/DCL_Toon"
 //
         [Toggle(_)] _MatCap ("MatCap", Float ) = 0
         _MatCap_Sampler ("MatCap_Sampler", 2D) = "black" {}
+        // Stylized-metallic mask (non-array path). glTF metallic-roughness map or a baked metallicFactor;
+        // the frag reads the metallic (.b) channel. Default black => no metal when no map is bound.
+        _MetallicGlossMap ("MetallicGlossMap (stylized metal mask)", 2D) = "black" {}
         //v.2.0.6
         _BlurLevelMatcap ("Blur Level of MatCap_Sampler", Range(0, 10)) = 0
         _MatCapColor ("MatCapColor", Color) = (1,1,1,1)

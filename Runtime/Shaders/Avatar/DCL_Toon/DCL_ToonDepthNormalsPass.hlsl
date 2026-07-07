@@ -33,6 +33,9 @@ struct Varyings
     float4 positionCS   : SV_POSITION;
     float2 uv           : TEXCOORD1;
     float3 normalWS     : TEXCOORD2;
+    // TBN carried so the normals buffer can match the lit surface's normal map (SSAO consistency).
+    float3 tangentWS    : TEXCOORD3;
+    float3 bitangentWS  : TEXCOORD4;
 
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -54,6 +57,8 @@ Varyings DepthNormalsVertex(Attributes input)
     #endif
     
     output.normalWS = NormalizeNormalPerVertex(normalInput.normalWS);
+    output.tangentWS = normalInput.tangentWS;
+    output.bitangentWS = normalInput.bitangentWS;
 
     return output;
 }
@@ -76,14 +81,25 @@ void DepthNormalsFragment(
     LODFadeCrossFade(input.positionCS);
 #endif
 
+    // Perturb the surface normal by the normal map (ID-guarded; same TBN transform as the
+    // ForwardLit pass) so SSAO / the camera normals buffer match the shaded surface.
+    float3 surfaceNormalWS = input.normalWS;
+    int nNormalMapArrID = _NormalMapArr_ID;
+    if (nNormalMapArrID >= 0)
+    {
+        float3x3 tangentToWorld = float3x3(input.tangentWS, input.bitangentWS, input.normalWS);
+        float3 normalTS = UnpackNormalScale(SAMPLE_NORMALMAP(input.uv, nNormalMapArrID), _BumpScale);
+        surfaceNormalWS = mul(normalTS, tangentToWorld);
+    }
+
     #if defined(_GBUFFER_NORMALS_OCT)
-    float3 normalWS = normalize(input.normalWS);
+    float3 normalWS = normalize(surfaceNormalWS);
     float2 octNormalWS = PackNormalOctQuadEncode(normalWS);           // values between [-1, +1], must use fp32 on some platforms.
     float2 remappedOctNormalWS = saturate(octNormalWS * 0.5 + 0.5);   // values between [ 0,  1]
     half3 packedNormalWS = PackFloat2To888(remappedOctNormalWS);      // values between [ 0,  1]
     outNormalWS = half4(packedNormalWS, 0.0);
     #else
-    float3 normalWS = NormalizeNormalPerPixel(input.normalWS);
+    float3 normalWS = NormalizeNormalPerPixel(surfaceNormalWS);
     outNormalWS = half4(normalWS, 0.0);
     #endif
 

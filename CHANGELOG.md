@@ -1,3 +1,7 @@
+#1.1.9
+- DCL_Toon: added normal map support (base/high-color/rim shading + DepthNormals for SSAO)
+- DCL_Toon: added stylized metallic via matcap, driven by per-renderer `_IsStylizedMetallic` and an optional `_MetallicGlossMap` mask
+
 #1.1.8
 - Reverted gltfast version to 5.0.0
 

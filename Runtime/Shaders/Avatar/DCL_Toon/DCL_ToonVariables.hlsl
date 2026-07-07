@@ -41,7 +41,7 @@
 #define _Is_LightColor_Outline 0.0f
 #define _Is_LightColor_RimLight 1.0f
 #define _Is_NormalMapForMatCap 0.0f
-#define _Is_NormalMapToBase 0.0f
+#define _Is_NormalMapToBase 1.0f
 #define _Is_NormalMapToHighColor 1.0f
 #define _Is_NormalMapToRimLight 1.0f
 #define _Is_Ortho 0.0f
