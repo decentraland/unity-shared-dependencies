@@ -1,3 +1,6 @@
+#1.1.10
+- DCL_Toon: added `MatcapPresets` ScriptableObject + bundled matcap library as the shared source of truth for stylized-metallic matcaps (consumed by aang-renderer, unity-explorer and future repos)
+
 #1.1.9
 - DCL_Toon: added normal map support (base/high-color/rim shading + DepthNormals for SSAO)
 - DCL_Toon: added stylized metallic via matcap, driven by per-renderer `_IsStylizedMetallic` and an optional `_MetallicGlossMap` mask
