@@ -14,26 +14,26 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   presets:
   - name: matcap_01
-    texture: {fileID: 2800000, guid: 78926e52a6d809f419a6b03e6f070d6b, type: 3}
+    texture: {fileID: 2800000, guid: 2f7715e42aa1474191c64539a77b2eb3, type: 3}
     tint: {r: 1, g: 1, b: 1, a: 1}
     blur: 0
   - name: matcap_02
-    texture: {fileID: 2800000, guid: c5c729ebd2c8621498ccfc06e36b5216, type: 3}
+    texture: {fileID: 2800000, guid: 512caf6744e742feb9d6bd5d4b8461cc, type: 3}
     tint: {r: 1, g: 1, b: 1, a: 1}
     blur: 0
   - name: matcap_03
-    texture: {fileID: 2800000, guid: 6cfb56c3cbc3d7542b3a15f2710845ae, type: 3}
+    texture: {fileID: 2800000, guid: 4a4e32217cd643909e1c7942c3df6c69, type: 3}
     tint: {r: 1, g: 1, b: 1, a: 1}
     blur: 0
   - name: matcap_04
-    texture: {fileID: 2800000, guid: 3873faab90b766e448a077a5ae871886, type: 3}
+    texture: {fileID: 2800000, guid: a13afab06939421496ff7fb742bdc8a9, type: 3}
     tint: {r: 1, g: 1, b: 1, a: 1}
     blur: 0
   - name: matcap_05
-    texture: {fileID: 2800000, guid: df72c83911787cc4480b2b24161c3c37, type: 3}
+    texture: {fileID: 2800000, guid: 3481c21125e64e9697e66d6751c7383a, type: 3}
     tint: {r: 1, g: 1, b: 1, a: 1}
     blur: 0
   - name: matcap_06
-    texture: {fileID: 2800000, guid: b813c04201607834ea55a0b3b7e34417, type: 3}
+    texture: {fileID: 2800000, guid: fe3d6696fe6f413e9afef8f25b6a0ca8, type: 3}
     tint: {r: 1, g: 1, b: 1, a: 1}
     blur: 0

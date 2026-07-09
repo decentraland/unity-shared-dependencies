@@ -1,3 +1,6 @@
+#1.1.11
+- DCL_Toon: promoted `_MatCapColor` and `_BlurLevelMatcap` from compile-time constants to runtime per-material properties, so matcap tint and blur can be driven per material (e.g. from `MatcapPresets`)
+
 #1.1.10
 - DCL_Toon: added `MatcapPresets` ScriptableObject + bundled matcap library as the shared source of truth for stylized-metallic matcaps (consumed by aang-renderer, unity-explorer and future repos)
 

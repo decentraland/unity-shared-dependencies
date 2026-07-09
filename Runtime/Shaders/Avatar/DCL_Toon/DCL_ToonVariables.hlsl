@@ -13,7 +13,7 @@
 #define _Ap_RimLight_Power 0.1f
 #define _BaseColor_Step 0.2f
 #define _BaseShade_Feather 0.02f
-#define _BlurLevelMatcap 0.0f
+// _BlurLevelMatcap promoted to a runtime per-material property (see DCL_ToonInput.hlsl)
 #define _BlurLevelSGM 0.0f
 #define _BumpScale 1.0f
 #define _BumpScaleMatcap 1.0f
@@ -91,7 +91,7 @@
 #define _Color float4 (1, 1, 1, 1)
 #define _EmissionColor float4 (0, 0, 0, 1)
 #define _HighColor float4 (1, 1, 1, 1)
-#define _MatCapColor float4 (1, 1, 1, 1)
+// _MatCapColor promoted to a runtime per-material property (see DCL_ToonInput.hlsl)
 // _Is_BlendBaseColor == 1.0f, so OutlineColor can be removed
 #define _Outline_Color float4 (0.6320754, 0.6320754, 0.6320754, 1)
 // _Is_LightColor_RimLight == 1.0f, so RimLightColor can be removed

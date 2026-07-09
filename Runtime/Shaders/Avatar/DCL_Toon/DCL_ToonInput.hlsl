@@ -16,6 +16,7 @@ float4 _BaseMap_ST; // Per Material
 half4 _BaseColor;
 half4 _SpecColor;
 float4 _Emissive_Color;
+float4 _MatCapColor;
 float _EndFadeDistance;
 float _StartFadeDistance;
 float _FadeDistance;
@@ -23,7 +24,8 @@ float4 _RevealPosition;
 float _RevealEnabled;
 float _Clipping_Level;
 float _Tweak_transparency;
-int _MainTexArr_ID; 
+float _BlurLevelMatcap;
+int _MainTexArr_ID;
 int _NormalMapArr_ID;
 int _MatCap_SamplerArr_ID; 
 int _Emissive_TexArr_ID; 
@@ -47,8 +49,10 @@ UNITY_DOTS_INSTANCING_START(MaterialPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _SpecColor)
     UNITY_DOTS_INSTANCED_PROP(float4, _Emissive_Color)
+    UNITY_DOTS_INSTANCED_PROP(float4, _MatCapColor)
     UNITY_DOTS_INSTANCED_PROP(float, _Clipping_Level)
     UNITY_DOTS_INSTANCED_PROP(float, _Tweak_transparency)
+    UNITY_DOTS_INSTANCED_PROP(float, _BlurLevelMatcap)
     UNITY_DOTS_INSTANCED_PROP(int, _lastWearableVertCount)
     UNITY_DOTS_INSTANCED_PROP(int, _lastAvatarVertCount)
 UNITY_DOTS_INSTANCING_END(MaterialPropertyMetadata)
@@ -85,6 +89,7 @@ static float4 unity_DOTS_Sampled_BaseMap_ST;
 static float4 unity_DOTS_Sampled_BaseColor;
 static float4 unity_DOTS_Sampled_SpecColor;
 static float4 unity_DOTS_Sampled_Emissive_Color;
+static float4 unity_DOTS_Sampled_MatCapColor;
 static float unity_DOTS_Sampled_EndFadeDistance;
 static float unity_DOTS_Sampled_StartFadeDistance;
 static float unity_DOTS_Sampled_FadeDistance;
@@ -92,6 +97,7 @@ static float4 unity_DOTS_Sampled_RevealPosition;
 static float unity_DOTS_Sampled_RevealEnabled;
 static float unity_DOTS_Sampled_Clipping_Level;
 static float unity_DOTS_Sampled_Tweak_transparency;
+static float unity_DOTS_Sampled_BlurLevelMatcap;
 static int unity_DOTS_Sampled_MainTexArr_ID;
 static int unity_DOTS_Sampled_NormalMapArr_ID;
 static int unity_DOTS_Sampled_MatCap_SamplerArr_ID;
@@ -111,14 +117,16 @@ void SetupDOTSToonMaterialPropertyCaches()
     unity_DOTS_Sampled_BaseMap_ST 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseMap_ST); 
     unity_DOTS_Sampled_BaseColor 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _BaseColor); 
     unity_DOTS_Sampled_SpecColor 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _SpecColor); 
-    unity_DOTS_Sampled_Emissive_Color 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Color); 
+    unity_DOTS_Sampled_Emissive_Color 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _Emissive_Color);
+    unity_DOTS_Sampled_MatCapColor 					= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _MatCapColor);
     unity_DOTS_Sampled_EndFadeDistance 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _EndFadeDistance); 
     unity_DOTS_Sampled_StartFadeDistance 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _StartFadeDistance); 
     unity_DOTS_Sampled_FadeDistance 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _FadeDistance); 
     unity_DOTS_Sampled_RevealPosition 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float4, _RevealPosition);
     unity_DOTS_Sampled_RevealEnabled 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _RevealEnabled);
     unity_DOTS_Sampled_Clipping_Level 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Clipping_Level); 
-    unity_DOTS_Sampled_Tweak_transparency 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency); 
+    unity_DOTS_Sampled_Tweak_transparency 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _Tweak_transparency);
+    unity_DOTS_Sampled_BlurLevelMatcap 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(float, _BlurLevelMatcap);
     unity_DOTS_Sampled_MainTexArr_ID 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MainTexArr_ID); 
     unity_DOTS_Sampled_NormalMapArr_ID 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _NormalMapArr_ID); 
     unity_DOTS_Sampled_MatCap_SamplerArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MatCap_SamplerArr_ID); 
@@ -140,6 +148,7 @@ void SetupDOTSToonMaterialPropertyCaches()
 #define _BaseColor                          unity_DOTS_Sampled_BaseColor
 #define _SpecColor                          unity_DOTS_Sampled_SpecColor
 #define _Emissive_Color                     unity_DOTS_Sampled_Emissive_Color
+#define _MatCapColor                        unity_DOTS_Sampled_MatCapColor
 #define _EndFadeDistance                    unity_DOTS_Sampled_EndFadeDistance
 #define _StartFadeDistance                  unity_DOTS_Sampled_StartFadeDistance
 #define _FadeDistance                       unity_DOTS_Sampled_FadeDistance
@@ -147,6 +156,7 @@ void SetupDOTSToonMaterialPropertyCaches()
 #define _RevealEnabled                      unity_DOTS_Sampled_RevealEnabled
 #define _Clipping_Level                     unity_DOTS_Sampled_Clipping_Level
 #define _Tweak_transparency                 unity_DOTS_Sampled_Tweak_transparency
+#define _BlurLevelMatcap                    unity_DOTS_Sampled_BlurLevelMatcap
 #define _MainTexArr_ID                      unity_DOTS_Sampled_MainTexArr_ID
 #define _NormalMapArr_ID                    unity_DOTS_Sampled_NormalMapArr_ID
 #define _MatCap_SamplerArr_ID               unity_DOTS_Sampled_MatCap_SamplerArr_ID
