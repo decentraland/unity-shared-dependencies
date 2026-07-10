@@ -25,6 +25,8 @@ Shader "DCL/DCL_Toon"
         [HideInInspector] _MainTexArr ("Main Texture Array", 2DArray) = "white" {}
         [HideInInspector] _NormalMapArr ("Normal Texture Array", 2DArray) = "bump" {}
         [HideInInspector] _Emissive_TexArr ("Emissive Texture Array", 2DArray) = "black" {}
+        [HideInInspector] _MetallicGlossMapArr ("MetallicGloss Texture Array", 2DArray) = "black" {}
+        [HideInInspector] _MatCap_SamplerArr ("MatCap Texture Array", 2DArray) = "black" {}
         
         [HideInInspector] _simpleUI ("SimpleUI", Int ) = 0
 

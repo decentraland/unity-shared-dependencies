@@ -1,3 +1,6 @@
+#1.1.12
+- DCL_Toon: declared `_MetallicGlossMapArr` and `_MatCap_SamplerArr` in the Properties block (they existed only in HLSL), so the texture-array path can actually bind the stylized-metallic mask + matcap arrays via `material.SetTexture` (texture-array consumers like unity-explorer)
+
 #1.1.11
 - DCL_Toon: promoted `_MatCapColor` and `_BlurLevelMatcap` from compile-time constants to runtime per-material properties, so matcap tint and blur can be driven per material (e.g. from `MatcapPresets`)
 
