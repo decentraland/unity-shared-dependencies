@@ -31,6 +31,7 @@ int _MatCap_SamplerArr_ID;
 int _Emissive_TexArr_ID; 
 int _MetallicGlossMapArr_ID;
 int _IsStylizedMetallic;
+int _IsIridescent;
 int _lastWearableVertCount;
 int _lastAvatarVertCount;
 CBUFFER_END
@@ -64,6 +65,7 @@ UNITY_DOTS_INSTANCING_START(UserPropertyMetadata)
     UNITY_DOTS_INSTANCED_PROP(int, _Emissive_TexArr_ID) 
     UNITY_DOTS_INSTANCED_PROP(int, _MetallicGlossMapArr_ID)
     UNITY_DOTS_INSTANCED_PROP(int, _IsStylizedMetallic)
+    UNITY_DOTS_INSTANCED_PROP(int, _IsIridescent)
     UNITY_DOTS_INSTANCED_PROP(float, _EndFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _StartFadeDistance)
     UNITY_DOTS_INSTANCED_PROP(float, _FadeDistance)
@@ -104,6 +106,7 @@ static int unity_DOTS_Sampled_MatCap_SamplerArr_ID;
 static int unity_DOTS_Sampled_Emissive_TexArr_ID;
 static int unity_DOTS_Sampled_MetallicGlossMapArr_ID;
 static int unity_DOTS_Sampled_IsStylizedMetallic;
+static int unity_DOTS_Sampled_IsIridescent;
 static int unity_DOTS_Sampled_lastWearableVertCount;
 static int unity_DOTS_Sampled_lastAvatarVertCount;
 
@@ -133,6 +136,7 @@ void SetupDOTSToonMaterialPropertyCaches()
     unity_DOTS_Sampled_Emissive_TexArr_ID 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _Emissive_TexArr_ID); 
     unity_DOTS_Sampled_MetallicGlossMapArr_ID 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _MetallicGlossMapArr_ID);
     unity_DOTS_Sampled_IsStylizedMetallic 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _IsStylizedMetallic);
+    unity_DOTS_Sampled_IsIridescent 				= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _IsIridescent);
     unity_DOTS_Sampled_lastWearableVertCount 		= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastWearableVertCount);
     unity_DOTS_Sampled_lastAvatarVertCount 			= UNITY_ACCESS_DOTS_INSTANCED_PROP_WITH_DEFAULT(int, _lastAvatarVertCount); 
 }
@@ -163,6 +167,7 @@ void SetupDOTSToonMaterialPropertyCaches()
 #define _Emissive_TexArr_ID                 unity_DOTS_Sampled_Emissive_TexArr_ID
 #define _MetallicGlossMapArr_ID             unity_DOTS_Sampled_MetallicGlossMapArr_ID
 #define _IsStylizedMetallic                 unity_DOTS_Sampled_IsStylizedMetallic
+#define _IsIridescent                       unity_DOTS_Sampled_IsIridescent
 #define _lastWearableVertCount              unity_DOTS_Sampled_lastWearableVertCount
 #define _lastAvatarVertCount                unity_DOTS_Sampled_lastAvatarVertCount
 #endif

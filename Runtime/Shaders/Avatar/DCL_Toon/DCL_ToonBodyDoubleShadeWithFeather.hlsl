@@ -238,6 +238,31 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
         // Matcap reflection, tinted by scene light colour.
         float3 matcapRefl = _MatCap_Sampler_var.rgb * _MatCapColor.rgb * Set_LightColor;
 
+        // --- Iridescence (view/fresnel thin-film, non-animated) -------------------------------
+        // Off by default; only tints the stylized-metal reflection. Reuses the grazing-angle
+        // fresnel (_RimArea_var = abs(1 - N·V)) so the hue shifts with camera angle like a real
+        // thin film. Cosine spectral palette (iq) — no time input, so nothing animates.
+        if (_IsIridescent > 0)
+        {
+            const float _IridescenceStrength  = 1.0; // tint amount AT the grazing edge (0..1)
+            const float _IridescenceFrequency = 3.0; // spectral bands across the fresnel sweep
+            const float _IridescenceEdge      = 1.0; // edge falloff: lower = wider mask, higher = hugs silhouette
+            float fresnel = saturate(_RimArea_var);   // 0 head-on .. 1 grazing
+            float3 iri = 0.5 + 0.5 * cos(6.2831853 * (_IridescenceFrequency * fresnel + float3(0.0, 0.33, 0.67)));
+
+            // Multiplying by a [0,1] hue removes energy (darkens ~2 of 3 channels). Rescale the tinted
+            // reflection back to the original luminance so we shift hue WITHOUT losing brightness
+            // (energy-conserving, like real thin-film interference).
+            const float3 LUMA = float3(0.2126, 0.7152, 0.0722);
+            float3 tinted = matcapRefl * iri;
+            tinted *= dot(matcapRefl, LUMA) / max(dot(tinted, LUMA), 1e-4);
+
+            // Concentrate the effect at the fresnel/grazing edge so the surface stays plain chrome
+            // face-on and only the silhouette shimmers (real thin-film reads strongest at grazing angles).
+            float edge = pow(fresnel, _IridescenceEdge);
+            matcapRefl = lerp(matcapRefl, tinted, _IridescenceStrength * edge);
+        }
+
         // REPLACE (active): the matcap reflection BECOMES the surface where metalAmt = 1, so metal
         // areas read as bright chrome/silver instead of a darkened base. lerp so the mask/strength
         // fade cleanly back to the lit toon colour where there's no metal.

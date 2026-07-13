@@ -12,6 +12,7 @@ Shader "DCL/DCL_Toon"
         [HideInInspector] [PerRendererData] _Emissive_TexArr_ID ("Emissive Array ID", Integer) = -1
         [HideInInspector] [PerRendererData] _MetallicGlossMapArr_ID ("MetallicGlossMap Array ID", Integer) = -1
         [HideInInspector] [PerRendererData] _IsStylizedMetallic ("Is Stylized Metallic (matcap)", Integer) = 0
+        [HideInInspector] [PerRendererData] _IsIridescent ("Is Iridescent (matcap)", Integer) = 0
 
         [HideInInspector] [PerRendererData] _lastWearableVertCount ("Last wearable Vert Count", Integer) = -1
         [HideInInspector] [PerRendererData] _lastAvatarVertCount ("Last avatar vert count", Integer) = -1
