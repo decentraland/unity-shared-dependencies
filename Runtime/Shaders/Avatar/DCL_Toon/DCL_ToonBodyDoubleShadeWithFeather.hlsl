@@ -59,15 +59,8 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
     
     InitializeInputData(input, surfaceData.normalTS, inputData);
 
-    BRDFData brdfData;
-    InitializeBRDFData( surfaceData.albedo,
-                        surfaceData.metallic,
-                        surfaceData.specular,
-                        surfaceData.smoothness,
-                        surfaceData.alpha, brdfData);
-
-    half3 envColor = GlobalIlluminationUTS(brdfData, inputData.bakedGI, surfaceData.occlusion, inputData.normalWS, inputData.viewDirectionWS, i.posWorld.xyz, inputData.normalizedScreenSpaceUV);
-    envColor *= 1.8f;
+    // GI/reflection-probe chain removed: _GI_Intensity is a compile-time 0.0f literal
+    // (_DCL_VARIABLE_OPTIMISATION is unconditional), so the envColor contribution is provably zero.
 
     UtsLight mainLight = GetMainUtsLightByID(i.mainLightID, i.posWorld.xyz, inputData.shadowCoord, i.positionCS);
 
@@ -219,9 +212,6 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
     float3 finalColor = lerp(_RimLight_var, matCapColorFinal, _MatCap);// Final Composition before Emissive
     // Matcap - End
 
-    // GI_Intensity with Intensity Multiplier Filter
-    float3 envLightColor = envColor.rgb;
-    float envLightIntensity = 0.299*envLightColor.r + 0.587*envLightColor.g + 0.114*envLightColor.b <1 ? (0.299*envLightColor.r + 0.587*envLightColor.g + 0.114*envLightColor.b) : 1;
     float3 pointLightColor = 0;
 
     // TODO: Rework the tiled forward lighting to work with the recent Unity changes
@@ -382,7 +372,7 @@ float4 fragDoubleShadeFeather(VertexOutput i, half facing : VFACE) : SV_TARGET
     float3 emissive = _Emissive_Tex_var.rgb * _Emissive_Color.rgb * 2.5f;
     
     //Final Composition
-    finalColor = SATURATE_IF_SDR(finalColor) + (envLightColor*envLightIntensity*_GI_Intensity*smoothstep(1,0,envLightIntensity/2)) + emissive;
+    finalColor = SATURATE_IF_SDR(finalColor) + emissive;
     
     finalColor += pointLightColor;
 
